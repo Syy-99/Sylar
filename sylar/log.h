@@ -4,6 +4,9 @@
 #include <string>
 #include <cstdint>
 #include <list>
+#include <sstream>
+#include <fstream>
+
 namespace sylar {
 
     // 日志事件：保存该条日志的所有相关信息，会传递给日志器以进行日志写入
@@ -51,9 +54,14 @@ namespace sylar {
         virtual ~LogAppender() {};  // 因为可能有多种日志输出地（终端or文件），因此需要定义为虚基类
 
         // 输出到指定的目的地
-        void log(LogLevel::Level level, LogEvent::ptr event);
-    private:
-        LogLevel::Level m_level;    // 日志输出地支持的最低日志级别
+        virtual void log(LogLevel::Level level, LogEvent::ptr event) = 0;
+
+        void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
+        LogFormatter::ptr getFormatter() const { return m_formatter}
+
+    protected:  // 设置为protected, 子类可以使用下面的属性
+        LogLevel::Level m_level;        // 日志输出地支持的最低日志级别
+        LogFormatter::ptr m_formatter;  // 控制日志文件的输出格式
 
     };
 
@@ -85,12 +93,23 @@ namespace sylar {
 
     // 具体的日志输出地——控制台
     class StdoutLogAppender : public LogAppender {
-
+    public:
+        typedef std::shared_ptr<StdoutLogAppender> ptr;
+        void log(LogLevel::Level level, LogEvent::ptr event) override;
+    private:
     };
 
     // 具体的日志输出地——文件
     class FileLogAppender : public LogAppender {
+    public:
+        typedef std::shared_ptr<FileLogAppender> ptr;
+        FileLogAppender(const std::string& filename);
+        void log(LogLevel::Level level, LogEvent::ptr event) override;
 
+        bool reopen();  // 重新打开文件
+    private:
+        std::string m_name;
+        std::ofstream m_filestream;     // 文件输出流
     };
 
 }

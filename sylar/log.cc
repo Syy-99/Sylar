@@ -1,3 +1,4 @@
+#include <iostream>
 #include "log.h"
 
 sylar::Logger::Logger(const std::string &name) : m_name(name) {
@@ -44,4 +45,34 @@ void sylar::Logger::delAppender(sylar::LogAppender::ptr appender) {
             break;
         }
     }
+}
+
+
+bool sylar::FileLogAppender::reopen() {
+    if (m_filestream) {
+        // 如果已经打开了文件，则需要先关闭
+        m_filestream.close();
+    }
+    m_filestream.open(m_name);
+
+    return !!m_filestream   // 返回是否打开成功
+}
+
+void sylar::StdoutLogAppender::log(sylar::LogLevel::Level level, sylar::LogEvent::ptr event) {
+    if (level >= m_level) {
+        // 按格式构造日志信息，并输出到指定的日志输出地
+        std::cout<<m_formatter->format(event);  // 输出到标准输出流中
+    }
+
+}
+
+void sylar::FileLogAppender::log(sylar::LogLevel::Level level, sylar::LogEvent::ptr event) {
+    if (level >= m_level) {
+        // 按格式构造日志信息，并输出到指定的日志输出地
+        m_filestream<<m_formatter->format(event);   // 输出到文件流中
+    }
+}
+
+sylar::FileLogAppender::FileLogAppender(const std::string &filename) : m_name(filename){
+
 }
