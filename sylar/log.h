@@ -3,7 +3,7 @@
 
 #include <string>
 #include <cstdint>
-
+#include <list>
 namespace sylar {
 
     // 日志事件：保存该条日志的所有相关信息，会传递给日志器以进行日志写入
@@ -57,18 +57,30 @@ namespace sylar {
 
     };
 
-    // 日志器
+    // 日志器: 日志信息输出的起始位置
     class Logger {
     public:
         typedef std::shared_ptr<Logger> ptr;
 
-        Logger(const std::string& name = "root");
+        explicit Logger(const std::string& name = "root");
 
         void log(LogLevel::Level level, LogEvent::ptr event);
+
+        void debug(LogEvent::ptr event);    // 输出debug级别的日志
+        void info(LogEvent::ptr event);
+        void warn(LogEvent::ptr event);
+        void error(LogEvent::ptr event);
+        void fatal(LogEvent::ptr event);
+
+        void addAppender(LogAppender::ptr appender);
+        void delAppender(LogAppender::ptr appender);
+
+        LogLevel::Level getLevel() const { return m_level; }
+        void setLevel(LogLevel::Level val) { m_level = val; }
     private:
-        std::string m_name;     // 日志器的名字
-        LogLevel::Level m_level;    // 由该日志器输出的日志的级别
-        LogAppender::ptr p;
+        std::string m_name;                     // 日志器的名字
+        LogLevel::Level m_level;                // 日志器支持的最低日志级别
+        std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地
     };
 
     // 具体的日志输出地——控制台
