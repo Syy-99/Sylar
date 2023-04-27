@@ -9,14 +9,24 @@
 
 namespace sylar {
 
+    class Logger;
+
     // 日志事件：保存该条日志的所有相关信息，会传递给日志器以进行日志写入
     class LogEvent {
     public:
         typedef std::shared_ptr<LogEvent> ptr;
         LogEvent();
+
+        const char * getFile() const { return m_file; };
+        int32_t getLine() const { return m_line; }
+        uint32_t getElapse() const { return m_elapse; }
+        uint32_t getThreadId() const { return m_threadId; }
+        uint32_t getFiberId() const { return  m_fiberId; }
+        uint64_t getTime() const { return m_time; }
+        const std::string& getContent() const {return m_content; }
     private:
         const char *m_file = nullptr;   // 文件名
-        uint32_t m_line = 0;            // 行号
+        int32_t m_line = 0;            // 行号
         uint32_t m_elapse = 0;          // 程序启动开始到现在的毫秒数，添加后，内存对齐
         uint32_t m_threadId = 0;        // 线程id
         uint32_t m_fiberId = 0;         // 协程id
@@ -29,22 +39,39 @@ namespace sylar {
     class LogLevel {
     public:
         enum Level {
+            UNKNOW = 0,
             DEBUG = 1,
             INFO = 2,
             WARN = 3,
             ERROR = 4,
             FATAL = 5,
         };
+
+        static const char * ToString(LogLevel::Level level);
     };
 
     // 日志格式器：控制日志写入的格式
     class LogFormatter{
     public:
         typedef std::shared_ptr<LogFormatter> ptr;
+        LogFormatter(const std::string& pattern);
+        // 根据设置的格式，解析event中内容, 获得最终输出的日志信息
+        std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level,LogEvent::ptr event);
+    public:
+        class FormatItem {
+        public:
+            typedef std::shared_ptr<FormatItem> ptr;
+            FormatItem(const std::string& fmt = "");
+            virtual ~FormatItem() {};
+            // 输出解析m_pattern后的每个格式对应信息
+            virtual void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
+        };
 
-        // 控制event中内容的输出格式
-        std::string format(LogEvent::ptr event);
+        // 解析m_pattern
+        void init();
     private:
+        std::string m_pattern;  // 具体的格式
+        std::vector<FormatItem::ptr> m_items;
     };
 
     // 日志输出地
@@ -54,10 +81,10 @@ namespace sylar {
         virtual ~LogAppender() {};  // 因为可能有多种日志输出地（终端or文件），因此需要定义为虚基类
 
         // 输出到指定的目的地
-        virtual void log(LogLevel::Level level, LogEvent::ptr event) = 0;
+        virtual void log(std::shared_ptr<Logger> logger,LogLevel::Level level, LogEvent::ptr event) = 0;
 
         void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
-        LogFormatter::ptr getFormatter() const { return m_formatter}
+        LogFormatter::ptr getFormatter() const { return m_formatter; }
 
     protected:  // 设置为protected, 子类可以使用下面的属性
         LogLevel::Level m_level;        // 日志输出地支持的最低日志级别
@@ -85,6 +112,8 @@ namespace sylar {
 
         LogLevel::Level getLevel() const { return m_level; }
         void setLevel(LogLevel::Level val) { m_level = val; }
+
+        std::string getName() const { return m_name; }
     private:
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别
@@ -95,7 +124,7 @@ namespace sylar {
     class StdoutLogAppender : public LogAppender {
     public:
         typedef std::shared_ptr<StdoutLogAppender> ptr;
-        void log(LogLevel::Level level, LogEvent::ptr event) override;
+        void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
     private:
     };
 
@@ -104,7 +133,7 @@ namespace sylar {
     public:
         typedef std::shared_ptr<FileLogAppender> ptr;
         FileLogAppender(const std::string& filename);
-        void log(LogLevel::Level level, LogEvent::ptr event) override;
+        void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
 
         bool reopen();  // 重新打开文件
     private:
