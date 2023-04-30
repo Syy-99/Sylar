@@ -38,41 +38,72 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = /Users/shenyanyu/CLionProjects/Sylar/cmake-build-debug/
 # =============================================================================
-# Object build statements for EXECUTABLE target Sylar
+# Object build statements for SHARED_LIBRARY target sylar
 
 
 #############################################
-# Order-only phony target for Sylar
+# Order-only phony target for sylar
 
-build cmake_object_order_depends_target_Sylar: phony || CMakeFiles/Sylar.dir
+build cmake_object_order_depends_target_sylar: phony || CMakeFiles/sylar.dir
 
-build CMakeFiles/Sylar.dir/main.cpp.o: CXX_COMPILER__Sylar_Debug /Users/shenyanyu/CLionProjects/Sylar/main.cpp || cmake_object_order_depends_target_Sylar
-  DEP_FILE = CMakeFiles/Sylar.dir/main.cpp.o.d
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1 -fcolor-diagnostics -std=gnu++17
-  OBJECT_DIR = CMakeFiles/Sylar.dir
-  OBJECT_FILE_DIR = CMakeFiles/Sylar.dir
-
-build CMakeFiles/Sylar.dir/sylar/log.cc.o: CXX_COMPILER__Sylar_Debug /Users/shenyanyu/CLionProjects/Sylar/sylar/log.cc || cmake_object_order_depends_target_Sylar
-  DEP_FILE = CMakeFiles/Sylar.dir/sylar/log.cc.o.d
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1 -fcolor-diagnostics -std=gnu++17
-  OBJECT_DIR = CMakeFiles/Sylar.dir
-  OBJECT_FILE_DIR = CMakeFiles/Sylar.dir/sylar
+build CMakeFiles/sylar.dir/sylar/log.cc.o: CXX_COMPILER__sylar_Debug /Users/shenyanyu/CLionProjects/Sylar/sylar/log.cc || cmake_object_order_depends_target_sylar
+  DEFINES = -Dsylar_EXPORTS
+  DEP_FILE = CMakeFiles/sylar.dir/sylar/log.cc.o.d
+  FLAGS = -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1 -fPIC -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/sylar.dir
+  OBJECT_FILE_DIR = CMakeFiles/sylar.dir/sylar
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target Sylar
+# Link build statements for SHARED_LIBRARY target sylar
 
 
 #############################################
-# Link the executable Sylar
+# Link the shared library lib/libsylar.dylib
 
-build Sylar: CXX_EXECUTABLE_LINKER__Sylar_Debug CMakeFiles/Sylar.dir/main.cpp.o CMakeFiles/Sylar.dir/sylar/log.cc.o
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1
-  OBJECT_DIR = CMakeFiles/Sylar.dir
+build lib/libsylar.dylib: CXX_SHARED_LIBRARY_LINKER__sylar_Debug CMakeFiles/sylar.dir/sylar/log.cc.o
+  ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1
+  INSTALLNAME_DIR = /Users/shenyanyu/CLionProjects/Sylar/cmake-build-debug/lib/
+  LANGUAGE_COMPILE_FLAGS = -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g
+  OBJECT_DIR = CMakeFiles/sylar.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = Sylar
-  TARGET_PDB = Sylar.dbg
+  SONAME = libsylar.dylib
+  SONAME_FLAG = -install_name
+  TARGET_FILE = lib/libsylar.dylib
+  TARGET_PDB = sylar.dylib.dbg
+
+# =============================================================================
+# Object build statements for EXECUTABLE target test
+
+
+#############################################
+# Order-only phony target for test
+
+build cmake_object_order_depends_target_test: phony || cmake_object_order_depends_target_sylar
+
+build CMakeFiles/test.dir/tests/test.cc.o: CXX_COMPILER__test_Debug /Users/shenyanyu/CLionProjects/Sylar/tests/test.cc || cmake_object_order_depends_target_test
+  DEP_FILE = CMakeFiles/test.dir/tests/test.cc.o.d
+  FLAGS = -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1 -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/test.dir
+  OBJECT_FILE_DIR = CMakeFiles/test.dir/tests
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target test
+
+
+#############################################
+# Link the executable bin/test
+
+build bin/test: CXX_EXECUTABLE_LINKER__test_Debug CMakeFiles/test.dir/tests/test.cc.o | lib/libsylar.dylib || lib/libsylar.dylib
+  FLAGS = -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1
+  LINK_LIBRARIES = lib/libsylar.dylib
+  OBJECT_DIR = CMakeFiles/test.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = bin/test
+  TARGET_PDB = test.dbg
 
 
 #############################################
@@ -100,6 +131,12 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
+build libsylar.dylib: phony lib/libsylar.dylib
+
+build sylar: phony lib/libsylar.dylib
+
+build test: phony bin/test
+
 # =============================================================================
 # Folder targets.
 
@@ -108,7 +145,12 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /Users/shenyanyu/CLionProjects/Sylar/cmake-build-debug
 
-build all: phony Sylar
+build all: phony lib/libsylar.dylib bin/test
+
+# =============================================================================
+# Unknown Build Time Dependencies.
+# Tell Ninja that they may appear as side effects of build rules
+# otherwise ordered by order-only dependencies.
 
 # =============================================================================
 # Built-in targets

@@ -328,7 +328,7 @@ namespace sylar {
                 }
             }
 
-
+            std::cout << std::get<0>(i) << " - " << std::get<1>(i) << " - " << std::get<2>(i) << std::endl;
         }
     }
 
