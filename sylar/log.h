@@ -120,6 +120,7 @@ namespace sylar {
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别
         std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地
+        LogFormatter::ptr m_formatter;
     };
 
     // 具体的日志输出地——控制台

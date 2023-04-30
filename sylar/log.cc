@@ -115,7 +115,7 @@ namespace sylar {
     };
 
     Logger::Logger(const std::string &name) : m_name(name) {
-
+        m_formatter.reset(new LogFormatter("%d [%p] %f %l %m %n"));
     }
 
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
@@ -154,6 +154,9 @@ namespace sylar {
     }
 
     void Logger::addAppender(LogAppender::ptr appender) {
+        if (!appender->getFormatter()) {
+            appender->setFormatter(m_formatter);
+        }
         m_appenders.push_back(appender);
     }
 
