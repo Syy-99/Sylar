@@ -1,6 +1,7 @@
 #include "log.h"
 #include <iostream>
 #include <map>
+#include <functional>
 
 namespace sylar {
 
@@ -119,11 +120,17 @@ namespace sylar {
 
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
+             auto self = shared_from_this();   // 返回一个当前类的std::share_ptr
             // 遍历每个目的地，根据日志级别来判断该日志是否可以输出到该目的地
             for (auto &it: m_appenders) {
-                it->log(level, event);
+                it->log(self, level, event);
             }
         }
+    }
+
+    LogEvent::LogEvent(const char* file, int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time) 
+    : m_file(file), m_line(line), m_elapse(elapse), m_threadId(thread_id), m_fiberId(fiber_id), m_time(time) {
+
     }
 
     void Logger::debug(LogEvent::ptr event) {
@@ -198,6 +205,8 @@ namespace sylar {
         // 由格式项，输出LogFormatter的每个日志格式
         for (auto &i: m_items)
             i->format(ss, logger, level,event);
+        
+        return ss.str();
     }
 
 

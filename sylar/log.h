@@ -6,6 +6,8 @@
 #include <list>
 #include <sstream>
 #include <fstream>
+#include <memory>
+#include <vector>
 
 namespace sylar {
 
@@ -15,7 +17,7 @@ namespace sylar {
     class LogEvent {
     public:
         typedef std::shared_ptr<LogEvent> ptr;
-        LogEvent();
+        LogEvent(const char* file, int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time);
 
         const char * getFile() const { return m_file; };
         int32_t getLine() const { return m_line; }
@@ -61,7 +63,7 @@ namespace sylar {
         class FormatItem {
         public:
             typedef std::shared_ptr<FormatItem> ptr;
-            FormatItem(const std::string& fmt = "");
+            FormatItem(const std::string& fmt = "") {};
             virtual ~FormatItem() {};
             // 输出解析m_pattern后的每个格式对应信息
             virtual void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
@@ -93,7 +95,7 @@ namespace sylar {
     };
 
     // 日志器: 日志信息输出的起始位置
-    class Logger {
+    class Logger : public std::enable_shared_from_this<Logger>{
     public:
         typedef std::shared_ptr<Logger> ptr;
 
