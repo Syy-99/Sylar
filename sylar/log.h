@@ -63,7 +63,6 @@ namespace sylar {
         class FormatItem {
         public:
             typedef std::shared_ptr<FormatItem> ptr;
-            FormatItem(const std::string& fmt = "") {};
             virtual ~FormatItem() {};
             // 输出解析m_pattern后的每个格式对应信息
             virtual void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;

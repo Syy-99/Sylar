@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <functional>
+#include <time.h>
 
 namespace sylar {
 
@@ -73,9 +74,22 @@ namespace sylar {
     };
     class DateTimeFormatItem : public LogFormatter::FormatItem {
     public:
-        DateTimeFormatItem(const std::string& format = "%Y:%m:%d %H:%M%s") : m_format(format) {}
+        DateTimeFormatItem(const std::string& format = "%Y-%m-%d %H:%M:%S")
+        :m_format(format) {
+            // Q: 为什们这里需要额外判断一下?
+            // A： XX(d, DateTimeFormatItem)的原因，实际上这个默认参数未生效
+            if(m_format.empty()) {
+                m_format = "%Y-%m-%d %H:%M:%S";
+            }
+        }
         void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override {
-            os<<event->getTime();
+            struct tm tm;
+            time_t time = event->getTime();
+            localtime_r(&time, &tm);
+            char buf[64];
+            
+            strftime(buf, sizeof(buf), m_format.c_str(), &tm);
+            os<<buf;
         }
     private:
         std::string  m_format;
@@ -115,7 +129,7 @@ namespace sylar {
     };
 
     Logger::Logger(const std::string &name) : m_name(name), m_level(LogLevel::DEBUG) {
-        m_formatter.reset(new LogFormatter("%d [%p] %f %l %m %n"));
+        m_formatter.reset(new LogFormatter("%d [%p] <%f:%l> %m %n"));
     }
 
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
@@ -184,7 +198,6 @@ namespace sylar {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
             std::cout << m_formatter->format(logger, level, event);  // 输出到标准输出流中
-            std::cout<<"*****"<<endl;
         }
 
     }
@@ -201,7 +214,7 @@ namespace sylar {
     }
 
     LogFormatter::LogFormatter(const std::string &pattern) : m_pattern(pattern) {
-
+        init();
     }
 
     std::string LogFormatter::format(std::shared_ptr<Logger> logger,LogLevel::Level level,LogEvent::ptr event) {
@@ -218,6 +231,7 @@ namespace sylar {
     // 假设m_pattern = "str: %%, %f{1,1},hhh"
     // 可以尝试使用有限状态机实现？？？？
     void LogFormatter::init() {
+        std::cout<<"my_pattern: "<< m_pattern<<std::endl;
         // 保存每个格式控制符的内容
         // str, format, type :<f, 1.1, 1>
         std::vector<std::tuple<std::string, std::string, int> > vec;
@@ -246,12 +260,13 @@ namespace sylar {
             std::string fmt; // 保存1.1
             size_t fmt_begin = 0;
             while (n < m_pattern.size()) {
-                if (isspace(m_pattern[i])) {
-                    // 如果遇到空格符，则格式控制符解析结束
+                if (!fmt_status && (!isalpha(m_pattern[n]) && m_pattern[n] != '{'
+                    && m_pattern[n] != '}')) {
+                    str = m_pattern.substr(i + 1, n - i - 1);
                     break;
                 }
                 if (fmt_status == 0) {
-                    if ((m_pattern[n] = '{')) {
+                    if ((m_pattern[n] == '{')) {
                         str = m_pattern.substr(i + 1, n - i - 1);
                         fmt_status = 1;
                         fmt_begin = n;      // 不写成=n+1,是为了下面调用substr的格式一致
@@ -263,35 +278,32 @@ namespace sylar {
                 if (fmt_status == 1) {
                     if (m_pattern[n] == '}') {
                         fmt = m_pattern.substr(fmt_begin + 1, n - fmt_begin - 1);
-                        fmt_status = 2;
+                        fmt_status = 0;
                         ++n;
                         continue;
                     }
                 }
                 ++n;
+
+                if(n == m_pattern.size()) {
+                    if(str.empty()) {
+                        str = m_pattern.substr(i + 1);
+                }
+            }
             }
 
             if (fmt_status == 0) {
                 // 处理 str:
-                if (nstr.empty()) {
+                if (!nstr.empty()) {
                     vec.push_back(std::make_tuple(nstr, "", 0));
-                    nstr.clear()
+                    nstr.clear();
                 }
-                str = m_pattern.substr(i + 1, n - i - 1);
+                // str = m_pattern.substr(i + 1, n - i - 1);
                 vec.push_back(std::make_tuple(str, fmt, 1));
-                i = n;
+                i = n - 1;
             } else if (fmt_status == 1) {
                 std::cout << "pattern parse error: " << m_pattern << " - " << m_pattern.substr(i) << std::endl;
                 vec.push_back(std::make_tuple("<<pattern error>>", fmt, 0));
-                // ???这里不用 i=n?
-            } else if (fmt_status == 2) {
-                if (nstr.empty()) {
-                    vec.push_back(std::make_tuple(nstr, "", 0));
-
-                }
-                vec.push_back(std::make_tuple(str, fmt, 1));
-                i = n;
-
             }
         }
 
@@ -343,9 +355,12 @@ namespace sylar {
                 }
             }
 
-            std::cout << std::get<0>(i) << " - " << std::get<1>(i) << " - " << std::get<2>(i) << std::endl;
+           std::cout << "(" << std::get<0>(i) << ") - (" << std::get<1>(i) << ") - (" << std::get<2>(i) << ")" << std::endl;
         }
+
+        std::cout << m_items.size() << std::endl;
     }
 
 
-}
+
+}   // sylar
