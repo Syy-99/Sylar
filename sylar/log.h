@@ -89,8 +89,9 @@ namespace sylar {
         LogFormatter::ptr getFormatter() const { return m_formatter; }
 
     protected:  // 设置为protected, 子类可以使用下面的属性
-        LogLevel::Level m_level;        // 日志输出地支持的最低日志级别
-        LogFormatter::ptr m_formatter;  // 控制日志文件的输出格式
+        LogLevel::Level m_level = LogLevel::DEBUG;        // 日志输出地支持的最低日志级别
+
+        LogFormatter::ptr m_formatter;  // 该输出地的日志日志输出格式
 
     };
 
@@ -119,8 +120,9 @@ namespace sylar {
     private:
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别
+
         std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地
-        LogFormatter::ptr m_formatter;
+        LogFormatter::ptr m_formatter;      // 该日志器输出的格式
     };
 
     // 具体的日志输出地——控制台

@@ -114,7 +114,7 @@ namespace sylar {
         std::string m_string;
     };
 
-    Logger::Logger(const std::string &name) : m_name(name) {
+    Logger::Logger(const std::string &name) : m_name(name), m_level(LogLevel::DEBUG) {
         m_formatter.reset(new LogFormatter("%d [%p] %f %l %m %n"));
     }
 
@@ -184,6 +184,7 @@ namespace sylar {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
             std::cout << m_formatter->format(logger, level, event);  // 输出到标准输出流中
+            std::cout<<"*****"<<endl;
         }
 
     }
@@ -274,11 +275,11 @@ namespace sylar {
                 // 处理 str:
                 if (nstr.empty()) {
                     vec.push_back(std::make_tuple(nstr, "", 0));
+                    nstr.clear()
                 }
                 str = m_pattern.substr(i + 1, n - i - 1);
                 vec.push_back(std::make_tuple(str, fmt, 1));
                 i = n;
-                //??? 是否要清空nstr？？
             } else if (fmt_status == 1) {
                 std::cout << "pattern parse error: " << m_pattern << " - " << m_pattern.substr(i) << std::endl;
                 vec.push_back(std::make_tuple("<<pattern error>>", fmt, 0));
@@ -286,9 +287,11 @@ namespace sylar {
             } else if (fmt_status == 2) {
                 if (nstr.empty()) {
                     vec.push_back(std::make_tuple(nstr, "", 0));
+
                 }
                 vec.push_back(std::make_tuple(str, fmt, 1));
                 i = n;
+
             }
         }
 
