@@ -75,13 +75,8 @@ namespace sylar {
     class DateTimeFormatItem : public LogFormatter::FormatItem {
     public:
         DateTimeFormatItem(const std::string& format = "%Y-%m-%d %H:%M:%S")
-        :m_format(format) {
-            // Q: 为什们这里需要额外判断一下?
-            // A： XX(d, DateTimeFormatItem)的原因，实际上这个默认参数未生效
-            if(m_format.empty()) {
-                m_format = "%Y-%m-%d %H:%M:%S";
-            }
-        }
+        :m_format(format) { }
+
         void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override {
             struct tm tm;
             time_t time = event->getTime();
@@ -128,8 +123,26 @@ namespace sylar {
         std::string m_string;
     };
 
+    class TabFormatItem : public LogFormatter::FormatItem {
+    public:
+       TabFormatItem(const std::string& str) {}
+        void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override {
+            os<<'\t';
+        }
+    private:
+    };
+
+    class FiberIdFormatItem : public LogFormatter::FormatItem {
+    public:
+       FiberIdFormatItem(const std::string& str) {}
+        void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override {
+            os<<event->getFiberId();
+        }
+    private:
+    };
+
     Logger::Logger(const std::string &name) : m_name(name), m_level(LogLevel::DEBUG) {
-        m_formatter.reset(new LogFormatter("%d [%p] <%f:%l> %m %n"));
+        m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
     }
 
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
@@ -280,7 +293,7 @@ namespace sylar {
                         fmt = m_pattern.substr(fmt_begin + 1, n - fmt_begin - 1);
                         fmt_status = 0;
                         ++n;
-                        continue;
+                        break;
                     }
                 }
                 ++n;
@@ -340,6 +353,8 @@ namespace sylar {
         XX(d, DateTimeFormatItem),
         XX(f, FilenameFormatItem),
         XX(l, LineFormatItem),
+        XX(T, TabFormatItem),
+        XX(F, FiberIdFormatItem),
 #undef XX
         };
 
@@ -355,10 +370,10 @@ namespace sylar {
                 }
             }
 
-           std::cout << "(" << std::get<0>(i) << ") - (" << std::get<1>(i) << ") - (" << std::get<2>(i) << ")" << std::endl;
+        //    std::cout << "(" << std::get<0>(i) << ") - (" << std::get<1>(i) << ") - (" << std::get<2>(i) << ")" << std::endl;
         }
 
-        std::cout << m_items.size() << std::endl;
+        // std::cout << m_items.size() << std::endl;
     }
 
 
