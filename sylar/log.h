@@ -8,8 +8,10 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include <stdarg.h>
+#include <map>
 
-#include <iostream>
+#include "singleton.h"
 
 /**
  * @brief 使用流式方式将日志级别level的日志写入到logger
@@ -45,6 +47,43 @@
  */
 #define SYLAR_LOG_FATAL(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::FATAL)
 
+
+
+/**
+ * @brief 使用格式化方式将日志级别level的日志写入到logger
+ */
+#define SYLAR_LOG_FMT_LEVEL(logger, level, fmt, ...) \
+    if(logger->getLevel() <= level) \
+        sylar::LogEventWrap(sylar::LogEvent::ptr(new sylar::LogEvent(logger, level, \
+                        __FILE__, __LINE__, 0, sylar::GetThreadId(),\
+                sylar::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+
+ 
+/**
+ * @brief 使用格式化方式将日志级别debug的日志写入到logger
+ */
+#define SYLAR_LOG_FMT_DEBUG(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::DEBUG, fmt, __VA_ARGS__)
+
+/**
+ * @brief 使用格式化方式将日志级别info的日志写入到logger
+ */
+#define SYLAR_LOG_FMT_INFO(logger, fmt, ...)  SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::INFO, fmt, __VA_ARGS__)
+
+/**
+ * @brief 使用格式化方式将日志级别warn的日志写入到logger
+ */
+#define SYLAR_LOG_FMT_WARN(logger, fmt, ...)  SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::WARN, fmt, __VA_ARGS__)
+
+/**
+ * @brief 使用格式化方式将日志级别error的日志写入到logger
+ */
+#define SYLAR_LOG_FMT_ERROR(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::ERROR, fmt, __VA_ARGS__)
+
+/**
+ * @brief 使用格式化方式将日志级别fatal的日志写入到logger
+ */
+#define SYLAR_LOG_FMT_FATAL(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::FATAL, fmt, __VA_ARGS__)
+               
 
 namespace sylar {
 
@@ -86,6 +125,13 @@ namespace sylar {
         std::stringstream& getSS() { 
             return m_ss; 
         }
+
+       void format(const char* fmt, ...);
+
+        /**
+        * @brief 格式化写入日志内容
+        */
+        void format(const char* fmt, va_list al);
     private:
         const char *m_file = nullptr;   // 文件名
         int32_t m_line = 0;            // 行号
@@ -174,6 +220,15 @@ namespace sylar {
         void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
 
+        /**
+        * @brief 获取日志级别
+        */
+        LogLevel::Level getLevel() const { return m_level;}
+
+        /**
+        * @brief 设置日志级别
+        */
+        void setLevel(LogLevel::Level val) { m_level = val;}
     protected:  // 设置为protected, 子类可以使用下面的属性
         LogLevel::Level m_level = LogLevel::DEBUG;        // 日志输出地支持的最低日志级别
 
@@ -205,10 +260,10 @@ namespace sylar {
         std::string getName() const { return m_name; }
     private:
         std::string m_name;                     // 日志器的名字
-        LogLevel::Level m_level;                // 日志器支持的最低日志级别
+        LogLevel::Level m_level;                // 日志器支持的最低日志级别，默认是DEBUG级别
 
-        std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地
-        LogFormatter::ptr m_formatter;      // 该日志器输出的格式
+        std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地，只能手动添加
+        LogFormatter::ptr m_formatter;          // 该日志器输出的格式
     };
 
     // 具体的日志输出地——控制台
@@ -231,6 +286,28 @@ namespace sylar {
         std::string m_name;
         std::ofstream m_filestream;     // 文件输出流
     };
+
+
+  /**
+ * @brief 日志器管理类, 负责管理所有的logger
+ */
+class LoggerManager {
+public:
+    LoggerManager();
+    Logger::ptr getLogger(const std::string& name);
+
+    void init();
+private:
+
+    // 日志器容器
+    std::map<std::string, Logger::ptr> m_loggers;
+    // 主日志器
+    Logger::ptr m_root;
+
+};  
+
+/// 日志器管理类单例模式
+typedef sylar::Singleton<LoggerManager> LoggerMgr;
 
 }
 //#endif

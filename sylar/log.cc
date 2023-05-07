@@ -7,24 +7,23 @@
 namespace sylar {
 
     const char* LogLevel::ToString(LogLevel::Level level) {
-        switch (level) {
-#define XX(name) \
+        switch(level) {
+    #define XX(name) \
         case LogLevel::name: \
-            return #name;   \
+            return #name; \
             break;
 
-            XX(DEBUG);
-            XX(INFO);
-            XX(WARN);
-            XX(ERROR);
-            XX(FATAL);
-#undef XX
-            default:
-                return "UNKNOW";
+        XX(DEBUG);
+        XX(INFO);
+        XX(WARN);
+        XX(ERROR);
+        XX(FATAL);
+    #undef XX
+        default:
+            return "UNKNOW";
         }
         return "UNKNOW";
     }
-
     LogEventWrap::LogEventWrap(LogEvent::ptr e) : m_event(e) {
 
     }
@@ -33,6 +32,22 @@ namespace sylar {
     }
     std::stringstream& LogEventWrap::getSS() {
         return m_event->getSS();
+    }
+
+    void LogEvent::format(const char* fmt, ...) {
+        va_list al;
+        va_start(al, fmt);
+        format(fmt, al);
+        va_end(al);
+    }
+
+    void LogEvent::format(const char* fmt, va_list al) {
+        char* buf = nullptr;
+        int len = vasprintf(&buf, fmt, al); // 将格式化数据从可变参数列表写入缓冲区
+        if (len != -1) {
+            m_ss<< std::string(buf, len);
+            free(buf);
+        }
     }
     
     /*
@@ -85,7 +100,11 @@ namespace sylar {
     class DateTimeFormatItem : public LogFormatter::FormatItem {
     public:
         DateTimeFormatItem(const std::string& format = "%Y-%m-%d %H:%M:%S")
-        :m_format(format) { }
+        :m_format(format) {
+            if(m_format.empty()) {
+                m_format = "%Y-%m-%d %H:%M:%S";
+            }
+         }
 
         void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override {
             struct tm tm;
@@ -94,6 +113,7 @@ namespace sylar {
             char buf[64];
             
             strftime(buf, sizeof(buf), m_format.c_str(), &tm);
+            // std::cout<<"data level: "<<level<<" "<<buf<<"?"<<time<<"?"<<m_format.c_str()<<std::endl;
             os<<buf;
         }
     private:
@@ -230,12 +250,13 @@ namespace sylar {
     void FileLogAppender::log(std::shared_ptr<Logger> logger,LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
+            // std::cout<<"file_appender log"<<std::endl;
             m_filestream << m_formatter->format(logger, level, event);   // 输出到文件流中
         }
     }
 
     FileLogAppender::FileLogAppender(const std::string &filename) : m_name(filename) {
-
+        reopen();   // 根据参数获得文件流
     }
 
     LogFormatter::LogFormatter(const std::string &pattern) : m_pattern(pattern) {
@@ -245,8 +266,11 @@ namespace sylar {
     std::string LogFormatter::format(std::shared_ptr<Logger> logger,LogLevel::Level level,LogEvent::ptr event) {
         std::stringstream ss;
         // 由格式项，输出LogFormatter的每个日志格式
-        for (auto &i: m_items)
-            i->format(ss, logger, level,event);
+        for (auto &i: m_items) {
+            // std::cout<<"formatter"<<std::endl;
+            i->format(ss, logger, level, event);
+            // std::cout<<ss.str()<<"?"<<std::endl;
+        }
         
         return ss.str();
     }
@@ -256,7 +280,8 @@ namespace sylar {
     // 假设m_pattern = "str: %%, %f{1,1},hhh"
     // 可以尝试使用有限状态机实现？？？？
     void LogFormatter::init() {
-        std::cout<<"my_pattern: "<< m_pattern<<std::endl;
+        // std::cout<<"my_pattern: "<< m_pattern<<std::endl;
+        
         // 保存每个格式控制符的内容
         // str, format, type :<f, 1.1, 1>
         std::vector<std::tuple<std::string, std::string, int> > vec;
@@ -388,6 +413,17 @@ namespace sylar {
         // std::cout << m_items.size() << std::endl;
     }
 
+LoggerManager::LoggerManager() {
+    m_root.reset(new Logger);
+    m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
 
+}
+
+Logger::ptr LoggerManager::getLogger(const std::string& name) {
+    auto it = m_loggers.find(name);
+
+    return it == m_loggers.end() ? m_root : it->second;
+
+}
 
 }   // sylar

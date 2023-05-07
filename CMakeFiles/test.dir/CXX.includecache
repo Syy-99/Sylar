@@ -21,8 +21,14 @@ memory
 -
 vector
 -
-iostream
+stdarg.h
 -
+map
+-
+singleton.h
+/home/shenyanyu/Desktop/Sylar/sylar/singleton.h
+
+/home/shenyanyu/Desktop/Sylar/sylar/singleton.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 pthread.h
