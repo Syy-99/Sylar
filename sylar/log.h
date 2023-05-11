@@ -85,6 +85,9 @@
 #define SYLAR_LOG_FMT_FATAL(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::FATAL, fmt, __VA_ARGS__)
                
 
+// 获得root日志器
+#define SYLAR_LOG_ROOT() sylar::LoggerMgr::GetInstance()->getRoot()
+
 namespace sylar {
 
     class Logger;
@@ -297,11 +300,13 @@ public:
     Logger::ptr getLogger(const std::string& name);
 
     void init();
+
+    Logger::ptr getRoot() const { return m_root; }
 private:
 
     // 日志器容器
     std::map<std::string, Logger::ptr> m_loggers;
-    // 主日志器
+    // 默认的主日志器
     Logger::ptr m_root;
 
 };  
