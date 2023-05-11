@@ -1,5 +1,5 @@
-//#ifdef __SYLAR_LOG_H__
-//#define __SYLAR_LOG_H__
+#ifndef __SYLAR_LOG_H__
+#define __SYLAR_LOG_H__
 
 #include <string>
 #include <cstdint>
@@ -10,7 +10,7 @@
 #include <vector>
 #include <stdarg.h>
 #include <map>
-
+#include "util.h"
 #include "singleton.h"
 
 /**
@@ -306,7 +306,7 @@ private:
 
     // 日志器容器
     std::map<std::string, Logger::ptr> m_loggers;
-    // 默认的主日志器
+    // 默认的主日志器, 写到控制台
     Logger::ptr m_root;
 
 };  
@@ -315,4 +315,4 @@ private:
 typedef sylar::Singleton<LoggerManager> LoggerMgr;
 
 }
-//#endif
+#endif

@@ -10,8 +10,10 @@
 #include <string>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
-#include "sylar/log.h"
+#include "log.h"
 
+
+#include <iostream>
 
 namespace sylar {
 
@@ -39,13 +41,13 @@ namespace sylar {
     protected:
         std::string m_name; // 配置参数的名称
         std::string m_description;  // 配置参数的描述 
-    }
+    };
 
     
     /**
      * @brief 配置参数模板子类,保存对应类型的参数值 -> 具体配置项
      */
-    template<class T, >
+    template<class T>
     class ConfigVar : public ConfigVarBase {
     public:
         typedef std::shared_ptr<ConfigVar> ptr;
@@ -63,7 +65,7 @@ namespace sylar {
             try {
                 return boost::lexical_cast<std::string>(m_val);
             } catch (std::exception& e) {
-                SYLARE_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::toString exception"
+                SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::toString exception"
                                                    << e.what() 
                                                    << " convert: " << typeid(m_val).name() << "to string";
             }
@@ -75,16 +77,18 @@ namespace sylar {
                 m_val = boost::lexical_cast<T>(val);
                 return true;
             } catch (std::exception& e) {
-                  SYLARE_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::fromString exception"
+                  SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::fromString exception"
                                                    << e.what() 
                                                    << " convert: string to" << typeid(m_val).name();
             }
             return false;
         }
-                 
+        
+        const T getValue() const { return m_val; }
+        void setValue(const T& v) { m_val = v; }
     private:
         T m_val;
-    }
+    };
 
     /// ConfigVar的管理类
     class Config {
@@ -96,17 +100,17 @@ namespace sylar {
         template<class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string& name, 
                                                  const T& default_value, 
-                                                 const std::string& description = '') {
+                                                 const std::string& description = "") {
             auto tmp = Lookup<T>(name);
             if (tmp) {
-                SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << " "Lookup name=" << name << " exists;
-                return tpm;
+                SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
+                return tmp;
             }
 
-            // 假设配置参数名只能是abcdefghikjlmnopqrstuvwxyz._012345678
-            if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") == std::string::npos) {
-                  SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name invalid " << name;
-                   throw std::invalid_argument(name);
+            // 假设配置参数名只允许有abcdefghikjlmnopqrstuvwxyz._012345678
+            if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos) {
+                SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name invalid " << name;
+                throw std::invalid_argument(name);
             }
 
             // 创建这个配置
@@ -118,7 +122,7 @@ namespace sylar {
 
         // 查找配置参数
         template<class T>
-        static typename ConfigVar<T>::ptr Lookup(const std:string& name) {
+        static typename ConfigVar<T>::ptr Lookup(const std::string& name) {
             auto it = s_datas.find(name);
             if (it == s_datas.end())
                 return nullptr;
@@ -126,6 +130,6 @@ namespace sylar {
         }
     private:
         static ConfigVarMap s_datas;    
-    }
+    };
 }
 #endif
