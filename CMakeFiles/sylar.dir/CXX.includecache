@@ -9,6 +9,8 @@
 /home/shenyanyu/Desktop/Sylar/sylar/config.cc
 config.h
 /home/shenyanyu/Desktop/Sylar/sylar/config.h
+list
+-
 
 /home/shenyanyu/Desktop/Sylar/sylar/config.h
 memory
@@ -18,6 +20,8 @@ string
 sstream
 -
 boost/lexical_cast.hpp
+-
+yaml-cpp/yaml.h
 -
 log.h
 /home/shenyanyu/Desktop/Sylar/sylar/log.h

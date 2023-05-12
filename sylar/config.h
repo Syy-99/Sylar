@@ -10,8 +10,8 @@
 #include <string>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
 #include "log.h"
-
 
 #include <iostream>
 
@@ -28,7 +28,8 @@ namespace sylar {
         ConfigVarBase(const std::string& name, const std::string& description = "")
             : m_name(name),
               m_description(description) {
-
+                // key的大写转小写
+                std::transform(m_name.begin(), m_name.end(), m_name.begin(), ::tolower);
             } 
 
         virtual ~ConfigVarBase() {}
@@ -107,7 +108,7 @@ namespace sylar {
                 return tmp;
             }
 
-            // 假设配置参数名只允许有abcdefghikjlmnopqrstuvwxyz._012345678
+            // 假设配置参数名中只允许有abcdefghikjlmnopqrstuvwxyz._012345678
             if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos) {
                 SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name invalid " << name;
                 throw std::invalid_argument(name);
@@ -128,6 +129,12 @@ namespace sylar {
                 return nullptr;
             return std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
         }
+
+        /// 使用YAML::Node初始化配置模块
+        static void LoadFromYaml(const YAML::Node& root);
+
+        /// 查找配置参数,返回配置参数的基类
+        static ConfigVarBase::ptr LookupBase(const std::string& name);
     private:
         static ConfigVarMap s_datas;    
     };
