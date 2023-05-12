@@ -18,11 +18,13 @@ C++高性能服务器框架
 
 Config -> Yaml
 
-- 支持复杂类型的Yaml， 配置的值可以允许vector,map,set，自定义class
+- 支持复杂类型的Yaml， 配置的值可以允许vector,map<string, T>,set，自定义class
 
     - 简单类型： 用boost:lexical_cast内置转换方式
 
     - 复杂类型： 提供自定义的解析方法 -> 序列化与反序列化
+    
+    - Config::LookUp(key), key相同，但是类型不同，不会报错，需要处理?
 
         - 利用模版偏特例化
 
