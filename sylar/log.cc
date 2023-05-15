@@ -258,7 +258,7 @@ namespace sylar {
 
     void Logger::addAppender(LogAppender::ptr appender) {
         if (!appender->getFormatter()) {
-            appender->setFormatter(m_formatter);
+            appender->setFormatter(m_formatter);    // 如果appender没有指定，则继承logger日志器的
         }
         m_appenders.push_back(appender);
     }
@@ -276,13 +276,30 @@ namespace sylar {
         m_appenders.clear();
     }
 
+    std::string Logger::toYamlString() {
+        YAML::Node node;
+        node["name"] = m_name;
+        if(m_level != LogLevel::UNKNOW) {
+            node["level"] = LogLevel::ToString(m_level);
+        }
+        if(m_formatter) {
+            node["formatter"] = m_formatter->getPattern();
+        }
+
+        for(auto& i : m_appenders) {
+            node["appenders"].push_back(YAML::Load(i->toYamlString()));
+        }
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
+    }
 
     bool FileLogAppender::reopen() {
         if (m_filestream) {
             // 如果已经打开了文件，则需要先关闭
             m_filestream.close();
         }
-        m_filestream.open(m_name);
+        m_filestream.open(m_filename);
 
         return !!m_filestream;   // 返回是否打开成功
     }
@@ -294,7 +311,36 @@ namespace sylar {
         }
 
     }
+    std::string StdoutLogAppender::toYamlString() {
+        YAML::Node node;
+        node["type"] = "StdoutLogAppender";
+        if(m_level != LogLevel::UNKNOW) {
+            node["level"] = LogLevel::ToString(m_level);
+        }
+        if(m_formatter) {
+            node["formatter"] = m_formatter->getPattern();
+        }
 
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
+    }
+
+    std::string FileLogAppender::toYamlString() {
+        YAML::Node node;
+        node["type"] = "FileLogAppender";
+        node["file"] = m_filename;
+        if(m_level != LogLevel::UNKNOW) {
+            node["level"] = LogLevel::ToString(m_level);
+        }
+        if(m_formatter) {
+            node["formatter"] = m_formatter->getPattern();
+        }
+
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
+    }
     void FileLogAppender::log(std::shared_ptr<Logger> logger,LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
@@ -303,7 +349,7 @@ namespace sylar {
         }
     }
 
-    FileLogAppender::FileLogAppender(const std::string &filename) : m_name(filename) {
+    FileLogAppender::FileLogAppender(const std::string &filename) : m_filename(filename) {
         reopen();   // 根据参数获得文件流
     }
 
@@ -468,6 +514,10 @@ LoggerManager::LoggerManager() {
     m_root.reset(new Logger);
     m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
 
+    m_loggers[m_root->m_name] = m_root;
+    
+    init();
+
 }
 
 Logger::ptr LoggerManager::getLogger(const std::string& name) {
@@ -598,13 +648,14 @@ public:
     std::string operator()(const LogDefine& i) {
         YAML::Node n;
 
-        n["name"] = i.name;
+        n["name"] = i.name;     // 确保i.name不为空
 
         if(i.level != LogLevel::UNKNOW) {
             n["level"] = LogLevel::ToString(i.level);
         }
 
-        if(!i.formatter.empty()) {
+        // 约定： 如果没有设置foramter, 则不写
+        if(!i.formatter.empty()) { 
             n["formatter"] = i.formatter;
         }
 
@@ -648,7 +699,7 @@ struct LogIniter {
                 sylar::Logger::ptr logger;
                 if (it == old_value.end()) {
                     // 配置文件中新增logger
-                     logger.reset(new sylar::Logger(i.name));
+                    logger = SYLAR_LOG_NAME(i.name);    // SYLAR_LOG_NAME宏会自动将该logger加入管理类之中
                 } else {
                     if (!(i == *it)) {  
                         //  配置文件中修改原先logger中的某些属性
@@ -657,9 +708,11 @@ struct LogIniter {
                     }
                 }
                 logger->setLevel(i.level);
+                // std::cout << "** " << i.name << " level=" << i.level
+                // << "  " << i.formatter << std::endl;
                 if (!i.formatter.empty()) {
                     logger->setFormatter(i.formatter);      // 这里是以string的形式传递formatter
-                    }
+                }
             
                 logger->clearAppenders();
                 for(auto& a : i.appenders) {
@@ -684,12 +737,21 @@ struct LogIniter {
                     logger->clearAppenders();
                 }
             }    
-            // Q: 新增or删除logger,不需要对LoggerMgr中的m_loggers进行修改吗?
         });
     }
 };
 
 static LogIniter __log_init;   // 该变量的构造函数会在main执行之前执行
+
+std::string LoggerManager::toYamlString() {
+    YAML::Node node;
+    for(auto& i : m_loggers) {
+        node.push_back(YAML::Load(i.second->toYamlString()));
+    }
+    std::stringstream ss;
+    ss << node;
+    return ss.str();
+}
 
 void LoggerManager::init() {
 

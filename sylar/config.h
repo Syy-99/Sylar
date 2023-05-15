@@ -357,7 +357,7 @@ public:
             }
             return "";
         }
-
+        // Yaml参数变为加载为指定的类型
         bool fromString(const std::string& val) override {
             try {
                 setValue(FromStr()(val));

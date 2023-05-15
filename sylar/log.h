@@ -212,6 +212,10 @@ namespace sylar {
 
         bool isError() const { return m_error; }
 
+         /**
+        * @brief 返回日志模板
+        */
+        const std::string getPattern() const { return m_pattern; }
     private:
         std::string m_pattern;  // 具体的格式
         std::vector<FormatItem::ptr> m_items;   // 具体的每个格式对应的项
@@ -227,6 +231,9 @@ namespace sylar {
 
         // 输出到指定的目的地
         virtual void log(std::shared_ptr<Logger> logger,LogLevel::Level level, LogEvent::ptr event) = 0;
+
+        /// 调试用：将日志输出目标的配置转成YAML String
+        virtual std::string toYamlString() = 0;
 
         void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
@@ -275,6 +282,8 @@ namespace sylar {
         void setFormatter(LogFormatter::ptr val);
         void setFormatter(const std::string& val);
         LogFormatter::ptr getFormatter() const { return m_formatter; }
+
+        std::string toYamlString();
     private:
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别，默认是DEBUG级别
@@ -291,6 +300,8 @@ namespace sylar {
     public:
         typedef std::shared_ptr<StdoutLogAppender> ptr;
         void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
+    
+        std::string toYamlString() override;
     private:
     };
 
@@ -302,8 +313,10 @@ namespace sylar {
         void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
 
         bool reopen();  // 重新打开文件
+
+        std::string toYamlString() override;
     private:
-        std::string m_name;
+        std::string m_filename;
         std::ofstream m_filestream;     // 文件输出流
     };
 
@@ -319,6 +332,8 @@ public:
     void init();
 
     Logger::ptr getRoot() const { return m_root; }
+
+    std::string toYamlString();
 private:
 
     // 日志器容器
