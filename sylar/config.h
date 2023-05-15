@@ -18,6 +18,7 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 #include <iostream>
 
@@ -29,9 +30,8 @@ namespace sylar {
     class ConfigVarBase {
     public:
         typedef std::shared_ptr<ConfigVarBase> ptr;
-
         
-        ConfigVarBase(const std::string& name, const std::string& description = "")
+        ConfigVarBase(const std::string& name, const std::string& description = "") 
             : m_name(name),
               m_description(description) {
                 // key的大写转小写
@@ -334,6 +334,9 @@ public:
     class ConfigVar : public ConfigVarBase {
     public:
         typedef std::shared_ptr<ConfigVar> ptr;
+        
+         // 回调函数
+        typedef std::function<void (const T& old_value, const T& new_value)> on_change_cb;
 
         ConfigVar(const std::string& name, 
                   const T& default_value, 
@@ -368,11 +371,45 @@ public:
         }
         
         const T getValue() const { return m_val; }
-        void setValue(const T& v) { m_val = v; }
+        void setValue(const T& v) { 
+            if (v == m_val) {
+                return;
+            }
+
+            // 执行回调函数
+            for (auto& i : m_cbs) {
+                i.second(m_val, v);
+            }
+
+            m_val = v;
+            
+        }
 
         std::string getTypeName() const override { return typeid(T).name(); }
+
+        /**
+        * @brief 添加回调函数
+        * @return 返回该回调函数对应的唯一id,用于删除回调
+        */
+        void addListener(uint64_t key, on_change_cb cb) {
+            m_cbs[key] = cb;
+        }
+
+        void delListener(uint64_t key) {
+            m_cbs.erase(key);
+        }
+
+        on_change_cb getListener(uint64_t key) {
+            auto it = m_cbs.find(key);
+            return it == m_cbs.end() ? nullptr : it->second;
+        }
     private:
         T m_val;
+
+        //变更回调函数组, uint64_t key,要求唯一，一般可以用hash
+        // 如何保证唯一？
+        std::map<uint64_t, on_change_cb> m_cbs;
+        // function没有比较函数，所有必须拿一个哈希key来确定某一个函数
     };
 
     /// ConfigVar的管理类
