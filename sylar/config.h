@@ -428,8 +428,8 @@ public:
         static typename ConfigVar<T>::ptr Lookup(const std::string& name, 
                                                  const T& default_value, 
                                                  const std::string& description = "") {
-            auto it = s_datas.find(name);   
-            if (it != s_datas.end()) {
+            auto it = GetDatas().find(name);   
+            if (it != GetDatas().end()) {
                 auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);   
                 if (tmp) {
                     SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
@@ -450,7 +450,7 @@ public:
 
             // 创建这个配置
             typename ConfigVar<T>::ptr v(new ConfigVar<T>(name, default_value, description));
-            s_datas[name] = v;
+            GetDatas()[name] = v;
             return v;
 
         }
@@ -458,8 +458,8 @@ public:
         // 查找配置参数
         template<class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string& name) {
-            auto it = s_datas.find(name);
-            if (it == s_datas.end())
+            auto it = GetDatas().find(name);
+            if (it == GetDatas().end())
                 return nullptr;
             return std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
         }
@@ -470,7 +470,11 @@ public:
         /// 查找配置参数,返回配置参数的基类
         static ConfigVarBase::ptr LookupBase(const std::string& name);
     private:
-        static ConfigVarMap s_datas;    
+        static ConfigVarMap& GetDatas() {
+            // 利用函数，确保静态成员变量s_datas在静态方法Lookup之前调用
+            static ConfigVarMap s_datas;    
+            return s_datas;
+        }
     };
 }
 #endif

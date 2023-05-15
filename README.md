@@ -79,5 +79,15 @@ log:
 sylar::Logger g_logger = sylar::LoggerMgr::GetInstance()->getLogger(name);
 SYLAR_LOG_INFO(g_logger)<<"xxxxx";
 ```
-- 用户自定义的日志，继承root的配置
+- 用户自定义的日志，如果有则返回，如果没有则创建
+
+- 自定义的日志在在初始化时除了有名字，其他的属性都相当于时没有的，因此在调用时需要判断：
+
+    - 如果某个属性不存在，则实际是是利用root日志器执行写日志操作
+
+
+```c++
+// 定义LogDefine LogAppenderDefine + 偏特化LexicalCast， 实现日志配置解析
+```
+
 

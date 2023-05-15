@@ -107,6 +107,7 @@ namespace sylar {
         };
 
         static const char * ToString(LogLevel::Level level);
+        static LogLevel::Level FromString(const std::string& str);
     };
 
     // 日志事件：保存该条日志的所有相关信息，会传递给日志器以进行日志写入
@@ -208,9 +209,14 @@ namespace sylar {
 
         // 解析m_pattern
         void init();
+
+        bool isError() const { return m_error; }
+
     private:
         std::string m_pattern;  // 具体的格式
-        std::vector<FormatItem::ptr> m_items;
+        std::vector<FormatItem::ptr> m_items;   // 具体的每个格式对应的项
+
+        bool m_error = false;   // 判断是否m_pattern是否有效
     };
 
     // 日志输出地
@@ -259,11 +265,16 @@ namespace sylar {
 
         void addAppender(LogAppender::ptr appender);
         void delAppender(LogAppender::ptr appender);
+        void clearAppenders();
 
         LogLevel::Level getLevel() const { return m_level; }
         void setLevel(LogLevel::Level val) { m_level = val; }
 
         std::string getName() const { return m_name; }
+
+        void setFormatter(LogFormatter::ptr val);
+        void setFormatter(const std::string& val);
+        LogFormatter::ptr getFormatter() const { return m_formatter; }
     private:
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别，默认是DEBUG级别
