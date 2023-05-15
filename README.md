@@ -54,3 +54,30 @@ Config -> Yaml
     - 当一个配置项发生修改的时候，可以反向通知对应的代码， 利用回调函数 -> 观察者模式
 
         - 通过添加回调函数，当配置被修改时，可以知晓
+
+
+## 日志系统整合配置系统
+```yaml
+log:
+    - name: root     # 日志名
+      level:         # 这个日志记录的最低日志级别
+      formatter:     # 这个日志模式的输出格式
+      appender:      # 这个日志会输出的目的地
+        - type:          #输出地的类型
+          level:         #输出地接收的最低日志级别
+          file:          #file日志输出的路径
+    - name: root2     # 日志名
+      level:         # 这个日志记录的最低日志级别
+      formatter:     # 这个日志模式的输出格式
+      appender:      # 这个日志会输出的目的地
+        - type:          #输出地的类型
+          level:         #输出地接收的最低日志级别
+          file:          #file日志输出的路径
+```
+
+```c++
+sylar::Logger g_logger = sylar::LoggerMgr::GetInstance()->getLogger(name);
+SYLAR_LOG_INFO(g_logger)<<"xxxxx";
+```
+- 用户自定义的日志，继承root的配置
+

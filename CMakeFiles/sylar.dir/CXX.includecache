@@ -6,40 +6,16 @@
 
 #IncludeRegexTransform: 
 
-/home/shenyanyu/Desktop/Sylar/sylar/config.cc
-config.h
-/home/shenyanyu/Desktop/Sylar/sylar/config.h
-list
--
-
-/home/shenyanyu/Desktop/Sylar/sylar/config.h
-memory
--
-string
--
-sstream
--
-boost/lexical_cast.hpp
--
-yaml-cpp/yaml.h
--
+/home/shenyanyu/Desktop/Sylar/sylar/log.cc
 log.h
 /home/shenyanyu/Desktop/Sylar/sylar/log.h
-vector
--
-list
+iostream
 -
 map
 -
-set
--
-unordered_map
--
-unordered_set
--
 functional
 -
-iostream
+time.h
 -
 
 /home/shenyanyu/Desktop/Sylar/sylar/log.h

@@ -3,6 +3,7 @@
 #include <map>
 #include <functional>
 #include <time.h>
+#include "config.h"
 
 namespace sylar {
 
@@ -87,7 +88,8 @@ namespace sylar {
     public:
         NameFormatItem(const std::string& str) {}
         void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override {
-            os<<logger->getName();
+            // os<<logger->getName();
+              os<<event->getLogger()->getName();    // 返回最原始的Logger名称，而不是实际调用的Logger名称
         }
     };
     class ThreadIdFormatItem : public LogFormatter::FormatItem {
@@ -173,14 +175,20 @@ namespace sylar {
 
     Logger::Logger(const std::string &name) : m_name(name), m_level(LogLevel::DEBUG) {
         m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
+
     }
 
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
-             auto self = shared_from_this();   // 返回一个当前类的std::share_ptr
-            // 遍历每个目的地，根据日志级别来判断该日志是否可以输出到该目的地
-            for (auto &it: m_appenders) {
-                it->log(self, level, event);
+            auto self = shared_from_this();   // 返回一个当前类的std::share_ptr
+            if (!m_appenders.empty()) {
+                // 遍历每个目的地，根据日志级别来判断该日志是否可以输出到该目的地
+                for (auto &it: m_appenders) {
+                    it->log(self, level, event);
+                }
+            } else if (m_root){ 
+                // 如果某个用户自定义的Logger没有指定appender,设置为无效，则仍然通过root日志器写
+                m_root->log(level, event);
             }
         }
     }
@@ -422,7 +430,78 @@ LoggerManager::LoggerManager() {
 Logger::ptr LoggerManager::getLogger(const std::string& name) {
     auto it = m_loggers.find(name);
 
-    return it == m_loggers.end() ? m_root : it->second;
+    if (it != m_loggers.end()) {
+        return it->second;
+    }
+
+    // 不存在
+    Logger::ptr logger(new Logger(name));   // 只有名字，其他都没有
+    logger->m_root = m_root;
+
+    m_loggers[name] = logger;
+    return logger;
+
+}
+
+
+struct LogAppenderDefine {
+    int type = 0; //1 File, 2 Stdout
+    LogLevel::Level level = LogLevel::UNKNOW;
+    std::string formatter;
+    std::string file;
+
+    bool operator==(const LogAppenderDefine& oth) const {
+        return type == oth.type
+            && level == oth.level
+            && formatter == oth.formatter
+            && file == oth.file;
+    }
+};
+
+/// 读取配置文件中某个配置器的一系列属性
+struct LogDefine {
+    std::string name;
+    LogLevel::Level level = LogLevel::UNKNOW;
+    std::string formatter;
+    std::vector<LogAppenderDefine> appenders;
+
+    // 因为可能存在回调机制，判断是否相等，所以必须提供重载=运算符
+    bool operator==(const LogDefine& oth) const {
+        return name == oth.name
+            && level == oth.level
+            && formatter == oth.formatter
+            && appenders == appenders;
+    }
+
+    // 为后面set集合重载<运算符
+    bool operator<(const LogDefine& oth) const {
+        return name < oth.name;
+        //Q: 创建Logger的时候，名字应该是可能重复的?
+    }
+
+    bool isValid() const {
+        return !name.empty();
+    }
+};
+
+sylar::ConfigVar<std::set<LogDefine> >::ptr g_log_defines =
+    sylar::Config::Lookup("logs", std::set<LogDefine>(), "logs config");
+
+
+struct LogIniter {
+    LogIniter() {
+        g_log_defines->addListener(0xF1E231, 
+        [](const std::set<LogDefine>& old_value, const std::set<LogDefine>& new_value){
+
+                    
+
+        });
+    }
+}
+
+static LogIniter __log_init;   // 该变量的构造函数会在main执行之前执行
+
+void LoggerManager::init() {
 
 }
 

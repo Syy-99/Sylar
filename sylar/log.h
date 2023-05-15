@@ -84,13 +84,15 @@
  */
 #define SYLAR_LOG_FMT_FATAL(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::FATAL, fmt, __VA_ARGS__)
                
-
 // 获得root日志器
 #define SYLAR_LOG_ROOT() sylar::LoggerMgr::GetInstance()->getRoot()
+
+#define SYLAR_LOG_NAME(name) sylar::LoggerMgr::GetInstance()->getLogger(name)
 
 namespace sylar {
 
     class Logger;
+    class LoggerManager;
 
     // 日志级别
     class LogLevel {
@@ -241,6 +243,7 @@ namespace sylar {
 
     // 日志器: 日志信息输出的起始位置
     class Logger : public std::enable_shared_from_this<Logger>{
+        friend class LoggerManager;
     public:
         typedef std::shared_ptr<Logger> ptr;
 
@@ -267,6 +270,9 @@ namespace sylar {
 
         std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地，只能手动添加
         LogFormatter::ptr m_formatter;          // 该日志器输出的格式
+
+        /// 主日志器
+        Logger::ptr m_root;     // 每个日志器都可能需要访问root日志器，以读取配置
     };
 
     // 具体的日志输出地——控制台

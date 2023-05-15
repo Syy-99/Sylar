@@ -403,6 +403,11 @@ public:
             auto it = m_cbs.find(key);
             return it == m_cbs.end() ? nullptr : it->second;
         }
+
+        void clearListener() {
+            m_cbs.clear();
+        }
+        
     private:
         T m_val;
 
