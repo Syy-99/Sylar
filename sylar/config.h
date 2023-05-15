@@ -45,6 +45,8 @@ namespace sylar {
 
         virtual std::string toString() = 0;
         virtual bool fromString(const std::string& val) = 0;
+
+        virtual std::string getTypeName() const = 0;
     protected:
         std::string m_name; // 配置参数的名称
         std::string m_description;  // 配置参数的描述 
@@ -367,6 +369,8 @@ public:
         
         const T getValue() const { return m_val; }
         void setValue(const T& v) { m_val = v; }
+
+        std::string getTypeName() const override { return typeid(T).name(); }
     private:
         T m_val;
     };
@@ -382,11 +386,19 @@ public:
         static typename ConfigVar<T>::ptr Lookup(const std::string& name, 
                                                  const T& default_value, 
                                                  const std::string& description = "") {
-            auto tmp = Lookup<T>(name);
-            if (tmp) {
-                SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
-                return tmp;
-            }
+            auto it = s_datas.find(name);   
+            if (it != s_datas.end()) {
+                auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);   
+                if (tmp) {
+                    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
+                    return tmp;
+                } else {
+                    // 找到了，但是类型不符合，导致类型转换操作返回空指针
+                    SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists but type not "
+                        << typeid(T).name() << " real_type=" << it->second->getTypeName() << " " << it->second->toString();
+                    return nullptr;
+                }
+            }                     
 
             // 假设配置参数名中只允许有abcdefghikjlmnopqrstuvwxyz._012345678
             if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos) {
