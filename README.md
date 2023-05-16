@@ -14,6 +14,8 @@ C++高性能服务器框架
 >
 > 可以对比Log4cpp
 
+- 可以通过类图理解
+
 ## 配置系统
 
 Config -> Yaml
@@ -43,9 +45,7 @@ Config -> Yaml
 
     - 本质来说，系统、类库或框架应该假定合理的默认值，而非要求提供不必要的配置
 
-    - 通过约定来减少配置
-
-    - 只会配置约定的参数
+    - 通过约定来指定可以配置的内容，并且只会配置这些内存
 
 - 配置的事件机制： 配置变更后，代码级别如何感知做到实时变更？ 
 
@@ -81,13 +81,23 @@ SYLAR_LOG_INFO(g_logger)<<"xxxxx";
 ```
 - 用户自定义的日志，如果有则返回，如果没有则创建
 
-- 自定义的日志在在初始化时除了有名字，其他的属性都相当于时没有的，因此在调用时需要判断：
-
-    - 如果某个属性不存在，则实际是是利用root日志器执行写日志操作
+  - 如果自定义的日志在配置时，缺少了某些属性，则在log时，会调用root日志器执行写日志操作
 
 
 ```c++
 // 定义LogDefine LogAppenderDefine + 偏特化LexicalCast， 实现日志配置解析
 ```
+
+```c++
+sylar::ConfigVar<std::set<LogDefine> >::ptr g_log_defines =
+    sylar::Config::Lookup("logs", std::set<LogDefine>(), "logs config");
+```
+- 提供约定的日志器配置
+
+- 当log下有配置文件时，通过loadYaml()执行对Log下的所有配置执行ConfigVar的反序列化函数，获得set<LogDefine>后，然后设置g_log_defines对象的值
+
+- 在设置值时，会触发g_log_defines的回调函数，将所有的日志器加入日志管理对象中
+
+- 最后，通过宏，根据用户传入的日志器名字，在日志管理对象中寻找是否有相应名称的日志器，执行日志输出操作
 
 

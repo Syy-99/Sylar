@@ -48,7 +48,7 @@ namespace sylar {
 
         virtual std::string getTypeName() const = 0;
     protected:
-        std::string m_name; // 配置参数的名称
+        std::string m_name;         // 配置参数的名称
         std::string m_description;  // 配置参数的描述 
     };
 
@@ -323,7 +323,7 @@ public:
 
     
     /**
-    * @brief 配置参数模板子类,保存对应类型的参数值
+    * @brief 配置参数模板子类,保存对应类型的参数值，表示一个配置项
     * @details T 参数的具体类型
     *          FromStr 从std::string转换成T类型的仿函数 -> 序列化 
     *          ToStr 从T转换成std::string的仿函数   -> 反序列化
@@ -360,7 +360,7 @@ public:
         // Yaml参数变为加载为指定的类型
         bool fromString(const std::string& val) override {
             try {
-                setValue(FromStr()(val));
+                setValue(FromStr()(val));   
                 return true;
             } catch (std::exception& e) {
                   SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::fromString exception"
@@ -409,15 +409,15 @@ public:
         }
         
     private:
-        T m_val;
+        T m_val;    // 配置的值，有实际的类型
 
-        //变更回调函数组, uint64_t key,要求唯一，一般可以用hash
+        // 变更回调函数组, uint64_t key,要求唯一，一般可以用hash
         // 如何保证唯一？
         std::map<uint64_t, on_change_cb> m_cbs;
         // function没有比较函数，所有必须拿一个哈希key来确定某一个函数
     };
 
-    /// ConfigVar的管理类
+    /// ConfigVar的管理类，管理所有的配置项
     class Config {
     public:
         typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
