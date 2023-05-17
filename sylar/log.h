@@ -12,6 +12,7 @@
 #include <map>
 #include "util.h"
 #include "singleton.h"
+#include "thread.h"
 
 /**
  * @brief 使用流式方式将日志级别level的日志写入到logger
@@ -221,12 +222,18 @@ namespace sylar {
         std::vector<FormatItem::ptr> m_items;   // 具体的每个格式对应的项
 
         bool m_error = false;   // 判断是否m_pattern是否有效
+
+        // 日志写入格式一旦确定,内部就不会改变
+        // 即使是其他类使用时，也是使用新的日志格式覆盖掉原本的
+        // 因此这个类中不需要锁
     };
 
     // 日志输出地
     class LogAppender{
+    friend class Logger;
     public:
         typedef std::shared_ptr<LogAppender> ptr;
+        typedef Mutex MutexType;
         virtual ~LogAppender() {};  // 因为可能有多种日志输出地（终端or文件），因此需要定义为虚基类
 
         // 输出到指定的目的地
@@ -235,13 +242,16 @@ namespace sylar {
         /// 调试用：将日志输出目标的配置转成YAML String
         virtual std::string toYamlString() = 0;
 
-        void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
-        LogFormatter::ptr getFormatter() const { return m_formatter; }
+        void setFormatter(LogFormatter::ptr val);
+        LogFormatter::ptr getFormatter();
 
         /**
         * @brief 获取日志级别
         */
-        LogLevel::Level getLevel() const { return m_level;}
+        LogLevel::Level getLevel() const { 
+            // m_levle是原子类型int，所以不需要加锁
+            return m_level;
+        }
 
         /**
         * @brief 设置日志级别
@@ -249,17 +259,20 @@ namespace sylar {
         void setLevel(LogLevel::Level val) { m_level = val;}
     protected:  // 设置为protected, 子类可以使用下面的属性
         LogLevel::Level m_level = LogLevel::DEBUG;        // 日志输出地支持的最低日志级别
-
+        /// 是否有自己的日志格式器
+        bool m_hasFormatter = false;
+        /// Mutex
+        MutexType m_mutex;      // 多个线程可以同时对LogAppender内的属性进行修改
         LogFormatter::ptr m_formatter;  // 该输出地的日志日志输出格式
 
     };
 
     // 日志器: 日志信息输出的起始位置
     class Logger : public std::enable_shared_from_this<Logger>{
-        friend class LoggerManager;
+    friend class LoggerManager;
     public:
         typedef std::shared_ptr<Logger> ptr;
-
+        typedef Mutex MutexType;        // 方便调试不同的锁
         explicit Logger(const std::string& name = "root");
 
         void log(LogLevel::Level level, LogEvent::ptr event);
@@ -277,17 +290,22 @@ namespace sylar {
         LogLevel::Level getLevel() const { return m_level; }
         void setLevel(LogLevel::Level val) { m_level = val; }
 
-        std::string getName() const { return m_name; }
+        std::string getName() const { 
+            // 认为日志器的名字不会改变，所以不需要加锁
+            return m_name; 
+        }
 
         void setFormatter(LogFormatter::ptr val);
         void setFormatter(const std::string& val);
-        LogFormatter::ptr getFormatter() const { return m_formatter; }
+        LogFormatter::ptr getFormatter();
 
         std::string toYamlString();
     private:
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别，默认是DEBUG级别
 
+        /// Mutex
+        MutexType m_mutex;
         std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地，只能手动添加
         LogFormatter::ptr m_formatter;          // 该日志器输出的格式
 
@@ -326,6 +344,7 @@ namespace sylar {
  */
 class LoggerManager {
 public:
+    typedef Mutex MutexType;
     LoggerManager();
     Logger::ptr getLogger(const std::string& name);
 
@@ -335,7 +354,7 @@ public:
 
     std::string toYamlString();
 private:
-
+    MutexType m_mutex;
     // 日志器容器
     std::map<std::string, Logger::ptr> m_loggers;
     // 默认的主日志器, 写到控制台

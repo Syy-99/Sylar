@@ -6,12 +6,14 @@ CMakeFiles/sylar.dir/sylar/config.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/config.h
  /home/shenyanyu/Desktop/Sylar/sylar/log.h
  /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
+ /home/shenyanyu/Desktop/Sylar/sylar/thread.h
  /home/shenyanyu/Desktop/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/log.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/config.h
  /home/shenyanyu/Desktop/Sylar/sylar/log.cc
  /home/shenyanyu/Desktop/Sylar/sylar/log.h
  /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
+ /home/shenyanyu/Desktop/Sylar/sylar/thread.h
  /home/shenyanyu/Desktop/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/thread.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/log.h

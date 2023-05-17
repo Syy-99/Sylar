@@ -199,9 +199,17 @@ namespace sylar {
     }
 
     void Logger::setFormatter(LogFormatter::ptr val) {
+        MutexType::Lock lock(m_mutex);
         m_formatter = val;
+        
+        for(auto&i : m_appenders) {
+            MutexType::Lock lock(i->m_mutex);
+            if (!i->m_hasFormatter) {
+                i->m_formatter = m_formatter;       // Q: 为什们不用appender的setFormatter呢？ 因为setFormatter会改变m_hasFormatter
+                                                    // 但是此时的formatter并不是自己的，所以不能直接调
+            }
+        }
     }
-
 
     void Logger::setFormatter(const std::string& val) {
         sylar::LogFormatter::ptr new_val(new sylar::LogFormatter(val));
@@ -214,9 +222,15 @@ namespace sylar {
         setFormatter(new_val);  
     }
 
+    LogFormatter::ptr Logger::getFormatter() {
+        MutexType::Lock lock(m_mutex);
+        return m_formatter;
+    }
+
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             auto self = shared_from_this();   // 返回一个当前类的std::share_ptr
+            MutexType::Lock lock(m_mutex);
             if (!m_appenders.empty()) {
                 // 遍历每个目的地，根据日志级别来判断该日志是否可以输出到该目的地
                 for (auto &it: m_appenders) {
@@ -256,14 +270,20 @@ namespace sylar {
         log(LogLevel::FATAL, event);
     }
 
+
+
     void Logger::addAppender(LogAppender::ptr appender) {
+        MutexType::Lock lock(m_mutex);      // 访问Logger的appender需要加锁
         if (!appender->getFormatter()) {
-            appender->setFormatter(m_formatter);    // 如果appender没有指定，则继承logger日志器的
+            MutexType::Lock lock(appender->m_mutex);  // 修改这个appender内部需要加锁
+            appender->m_formatter = m_formatter;
+            // appender->setFormatter(m_formatter);    // 如果appender没有指定，则继承logger日志器的
         }
         m_appenders.push_back(appender);
     }
 
     void Logger::delAppender(LogAppender::ptr appender) {
+        MutexType::Lock lock(m_mutex);
         for (auto it = m_appenders.begin(); it != m_appenders.end(); ++it) {
             if (*it == appender) {
                 m_appenders.erase(it);
@@ -273,20 +293,23 @@ namespace sylar {
     }
 
     void Logger::clearAppenders() {
+        MutexType::Lock lock(m_mutex);
         m_appenders.clear();
     }
 
     std::string Logger::toYamlString() {
+        MutexType::Lock lock(m_mutex);
         YAML::Node node;
         node["name"] = m_name;
         if(m_level != LogLevel::UNKNOW) {
             node["level"] = LogLevel::ToString(m_level);
         }
-        if(m_formatter) {
+
+        if (m_formatter) {    // 访问加锁
             node["formatter"] = m_formatter->getPattern();
         }
 
-        for(auto& i : m_appenders) {
+        for(auto& i : m_appenders) {    // 访问加锁
             node["appenders"].push_back(YAML::Load(i->toYamlString()));
         }
         std::stringstream ss;
@@ -294,7 +317,24 @@ namespace sylar {
         return ss.str();
     }
 
+    void LogAppender::setFormatter(LogFormatter::ptr val) {
+        MutexType::Lock lock(m_mutex);
+        m_formatter = val;
+        if (m_hasFormatter && m_formatter){
+            m_hasFormatter = true;
+        } else {
+            m_hasFormatter = false;
+        }
+    }
+
+    LogFormatter::ptr LogAppender::getFormatter() {
+        // 因为m_formatter可能被其他线程改变，所以访问需要加锁
+        MutexType::Lock lock(m_mutex);
+        return m_formatter;
+    }
+
     bool FileLogAppender::reopen() {
+        MutexType::Lock lock(m_mutex);
         if (m_filestream) {
             // 如果已经打开了文件，则需要先关闭
             m_filestream.close();
@@ -307,11 +347,13 @@ namespace sylar {
     void StdoutLogAppender::log(std::shared_ptr<Logger> logger,LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
+            MutexType::Lock lock(m_mutex);      // std::cout输出也要加，确保有序输出
             std::cout << m_formatter->format(logger, level, event);  // 输出到标准输出流中
         }
 
     }
     std::string StdoutLogAppender::toYamlString() {
+        MutexType::Lock lock(m_mutex);
         YAML::Node node;
         node["type"] = "StdoutLogAppender";
         if(m_level != LogLevel::UNKNOW) {
@@ -327,6 +369,7 @@ namespace sylar {
     }
 
     std::string FileLogAppender::toYamlString() {
+        MutexType::Lock lock(m_mutex);
         YAML::Node node;
         node["type"] = "FileLogAppender";
         node["file"] = m_filename;
@@ -345,6 +388,7 @@ namespace sylar {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
             // std::cout<<"file_appender log"<<std::endl;
+            MutexType::Lock lock(m_mutex);
             m_filestream << m_formatter->format(logger, level, event);   // 输出到文件流中
         }
     }
@@ -521,6 +565,7 @@ LoggerManager::LoggerManager() {
 }
 
 Logger::ptr LoggerManager::getLogger(const std::string& name) {
+    MutexType::Lock lock(m_mutex);
     auto it = m_loggers.find(name);
 
     if (it != m_loggers.end()) {
@@ -530,7 +575,6 @@ Logger::ptr LoggerManager::getLogger(const std::string& name) {
     // 不存在
     Logger::ptr logger(new Logger(name));   // 只有名字，其他都没有
     logger->m_root = m_root;
-
     m_loggers[name] = logger;
     return logger;
 
@@ -744,6 +788,7 @@ struct LogIniter {
 static LogIniter __log_init;   // 该变量的构造函数会在main执行之前执行
 
 std::string LoggerManager::toYamlString() {
+    MutexType::Lock lock(m_mutex);
     YAML::Node node;
     for(auto& i : m_loggers) {
         node.push_back(YAML::Load(i.second->toYamlString()));

@@ -29,8 +29,24 @@ util.h
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 singleton.h
 /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
+thread.h
+/home/shenyanyu/Desktop/Sylar/sylar/thread.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
+
+/home/shenyanyu/Desktop/Sylar/sylar/thread.h
+thread
+-
+functional
+-
+memory
+-
+string
+-
+pthread.h
+-
+semaphore.h
+-
 
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 pthread.h
