@@ -23,8 +23,6 @@ boost/lexical_cast.hpp
 -
 yaml-cpp/yaml.h
 -
-log.h
-/home/shenyanyu/Desktop/Sylar/sylar/log.h
 vector
 -
 list
@@ -41,6 +39,10 @@ functional
 -
 iostream
 -
+log.h
+/home/shenyanyu/Desktop/Sylar/sylar/log.h
+thread.h
+/home/shenyanyu/Desktop/Sylar/sylar/thread.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/log.cc
 log.h
@@ -83,14 +85,6 @@ thread.h
 /home/shenyanyu/Desktop/Sylar/sylar/thread.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
-
-/home/shenyanyu/Desktop/Sylar/sylar/thread.cc
-thread.h
-/home/shenyanyu/Desktop/Sylar/sylar/thread.h
-log.h
-/home/shenyanyu/Desktop/Sylar/sylar/log.h
-util.h
-/home/shenyanyu/Desktop/Sylar/sylar/util.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/thread.h
 thread

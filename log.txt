@@ -1,0 +1,51 @@
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = class.vec_map des = system person typename = St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt6vectorI6PersonSaIS7_EESt4lessIS5_ESaISt4pairIKS5_S9_EEE value = k1:
+  - name: m1
+    age: 33
+    sex: true
+  - name: m2
+    age: 44
+    sex: false
+k2:
+  - name: m3
+    age: 33
+    sex: true
+  - name: m4
+    age: 44
+    sex: false
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = class.map des = system person typename = St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE6PersonSt4lessIS5_ESaISt4pairIKS5_S6_EEE value = sylar01:
+  name: sylar01
+  age: 18
+  sex: false
+sylar02:
+  name: sylar02
+  age: 40
+  sex: true
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = class.person des = system person typename = 6Person value = name: sylar
+age: 11
+sex: true
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.str_int_map des = system str int map typename = St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiSt4lessIS5_ESaISt4pairIKS5_iEEE value = k: 30
+k2: 20
+k3: 10
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.int_uset des = system int uset typename = St13unordered_setIiSt4hashIiESt8equal_toIiESaIiEE value = - 2
+- 1
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.int_set des = system int set typename = St3setIiSt4lessIiESaIiEE value = - 1000
+- 2000
+- 3000
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.int_list des = system int list typename = NSt7__cxx114listIiSaIiEEE value = - 100
+- 200
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.int_vec des = system int vec typename = St6vectorIiSaIiEE value = - 10
+- 20
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.value des = system value typename = f value = 15
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = system.port des = system port typename = i value = 9900
+2023-05-18 21:15:56	2042321	0	[INFO]	[root]	/home/shenyanyu/Desktop/Sylar/tests/test_config.cc:253	name = logs des = logs config typename = St3setIN5sylar9LogDefineESt4lessIS1_ESaIS1_EE value = - name: root
+  level: INFO
+  appenders:
+    - type: FileLogAppender
+      file: log.txt
+    - type: StdoutLogAppender
+- name: system
+  level: DEBUG
+  appenders:
+    - type: FileLogAppender
+      file: log.txt
+    - type: StdoutLogAppender
