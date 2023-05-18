@@ -1,4 +1,5 @@
 /home/shenyanyu/Desktop/Sylar/CMakeFiles/rebuild_cache.dir
+/home/shenyanyu/Desktop/Sylar/CMakeFiles/test_util.dir
 /home/shenyanyu/Desktop/Sylar/CMakeFiles/test_config.dir
 /home/shenyanyu/Desktop/Sylar/CMakeFiles/edit_cache.dir
 /home/shenyanyu/Desktop/Sylar/CMakeFiles/test_thread.dir

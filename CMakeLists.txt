@@ -34,5 +34,10 @@ add_executable(test_thread tests/test_thread.cc)
 add_dependencies(test_thread sylar)
 target_link_libraries(test_thread ${LIB_LIB})
 
+# 测试协程模块
+add_executable(test_util tests/test_util.cc)
+add_dependencies(test_util sylar)
+target_link_libraries(test_util ${LIB_LIB})
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

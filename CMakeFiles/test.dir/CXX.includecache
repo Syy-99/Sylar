@@ -63,6 +63,10 @@ stdio.h
 -
 stdint.h
 -
+vector
+-
+string
+-
 
 /home/shenyanyu/Desktop/Sylar/tests/test.cc
 iostream
