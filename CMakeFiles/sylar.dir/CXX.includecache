@@ -105,6 +105,8 @@ pthread.h
 -
 semaphore.h
 -
+atomic
+-
 
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 pthread.h

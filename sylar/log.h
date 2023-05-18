@@ -233,7 +233,7 @@ namespace sylar {
     friend class Logger;
     public:
         typedef std::shared_ptr<LogAppender> ptr;
-        typedef Mutex MutexType;
+        typedef Spinlock MutexType;
         virtual ~LogAppender() {};  // 因为可能有多种日志输出地（终端or文件），因此需要定义为虚基类
 
         // 输出到指定的目的地
@@ -261,7 +261,7 @@ namespace sylar {
         LogLevel::Level m_level = LogLevel::DEBUG;        // 日志输出地支持的最低日志级别
         /// 是否有自己的日志格式器
         bool m_hasFormatter = false;
-        /// Mutex
+        /// Spinlock
         MutexType m_mutex;      // 多个线程可以同时对LogAppender内的属性进行修改
         LogFormatter::ptr m_formatter;  // 该输出地的日志日志输出格式
 
@@ -272,7 +272,7 @@ namespace sylar {
     friend class LoggerManager;
     public:
         typedef std::shared_ptr<Logger> ptr;
-        typedef Mutex MutexType;        // 方便调试不同的锁
+        typedef Spinlock MutexType;        // 方便调试不同的锁
         explicit Logger(const std::string& name = "root");
 
         void log(LogLevel::Level level, LogEvent::ptr event);
@@ -304,7 +304,7 @@ namespace sylar {
         std::string m_name;                     // 日志器的名字
         LogLevel::Level m_level;                // 日志器支持的最低日志级别，默认是DEBUG级别
 
-        /// Mutex
+        /// Spinlock
         MutexType m_mutex;
         std::list<LogAppender::ptr> m_appenders;// 该日志器可以输出的目的地，只能手动添加
         LogFormatter::ptr m_formatter;          // 该日志器输出的格式
@@ -336,6 +336,8 @@ namespace sylar {
     private:
         std::string m_filename;
         std::ofstream m_filestream;     // 文件输出流
+
+        uint64_t m_lastTime;      
     };
 
 
@@ -344,7 +346,7 @@ namespace sylar {
  */
 class LoggerManager {
 public:
-    typedef Mutex MutexType;
+    typedef Spinlock MutexType;
     LoggerManager();
     Logger::ptr getLogger(const std::string& name);
 

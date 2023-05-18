@@ -387,9 +387,16 @@ namespace sylar {
     void FileLogAppender::log(std::shared_ptr<Logger> logger,LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             // 按格式构造日志信息，并输出到指定的日志输出地
-            // std::cout<<"file_appender log"<<std::endl;
+            uint64_t now = time(0);
+            if(now != m_lastTime) {       // 每3s打开一次
+                reopen();
+                m_lastTime = now;
+            }
             MutexType::Lock lock(m_mutex);
-            m_filestream << m_formatter->format(logger, level, event);   // 输出到文件流中
+            if(!m_filestream << m_formatter->format(logger, level, event)) {  // 输出到文件流中
+                // 感知删除操作
+                std::cout << "error" << std::endl;
+            }
         }
     }
 
