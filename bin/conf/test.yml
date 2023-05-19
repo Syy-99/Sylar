@@ -1,0 +1,61 @@
+logs:
+    - name: root
+      level: info
+      formater: '%d%T%m%n'
+      appenders:
+          - type: FileLogAppender
+            file: log.txt
+          - type: StdoutLogAppender
+    - name: system
+      level: debug
+      formater: '%d%T%m%n'
+      appenders:
+          - type: FileLogAppender
+            file: log.txt
+          - type: StdoutLogAppender
+# 测试用
+system:
+    port: 9900  # 普通变量类型
+    value: 15 
+    int_vec: 
+      - 10
+      - 20
+    int_list: [100, 200]
+    int_set: [1000, 2000, 2000, 3000] # 这种形式更好理解序列
+    str_int_map:  # map类型
+      k: 30
+      k2: 20
+      k3: 10
+
+class:
+  person:
+    name: sylar
+    age: 11
+    sex: true
+  map:
+    sylar01:
+      name: sylar01
+      age: 18
+      sex: false
+    sylar02:
+      name: sylar02
+      age: 40
+      sex: true
+  vec_map:
+      k1:
+        - name: m1
+          age: 33
+          sex: true
+        - name: m2
+          age: 44
+          sex: false
+      k2:
+        - name: m3
+          age: 33
+          sex: true
+        - name: m4
+          age: 44
+          sex: false
+
+
+  
