@@ -7,15 +7,35 @@ void run_in_fiber() {
     SYLAR_LOG_INFO(g_logger) << "run_in_fiber begin";
     sylar::Fiber::YieldToHold();
     SYLAR_LOG_INFO(g_logger) << "run_in_fiber end";
+    sylar::Fiber::YieldToHold();
 }
-int main() {
-    sylar::Fiber::GetThis();       // 创建主协程
 
-    SYLAR_LOG_INFO(g_logger) << "main begin";
-    sylar::Fiber::ptr fiber(new sylar::Fiber(run_in_fiber));     // 创建一个Fiber
-    fiber->swapIn();
-    SYLAR_LOG_INFO(g_logger) << "main after swapIn";
-    fiber->swapIn();        // 注意，切换到协程会继续执行
-    SYLAR_LOG_INFO(g_logger) << "main after end";
+void test_fiber() {
+    SYLAR_LOG_INFO(g_logger) << "main begin -1";
+    {
+        sylar::Fiber::GetThis();
+        SYLAR_LOG_INFO(g_logger) << "main begin";
+        sylar::Fiber::ptr fiber(new sylar::Fiber(run_in_fiber));
+        fiber->swapIn();
+        SYLAR_LOG_INFO(g_logger) << "main after swapIn";
+        fiber->swapIn();
+        SYLAR_LOG_INFO(g_logger) << "main after end";
+        fiber->swapIn();
+    }
+    SYLAR_LOG_INFO(g_logger) << "main after end2";
+}
+
+
+int main() {
+    sylar::Thread::SetName("main"); // 设置线程名称
+
+    std::vector<sylar::Thread::ptr> thrs;
+    for(int i = 0; i < 3; ++i) {
+        // 三个工作线程
+        thrs.push_back(sylar::Thread::ptr(new sylar::Thread(&test_fiber, "name_" + std::to_string(i))));
+    }
+    for(auto i : thrs) {
+        i->join();
+    }
     return 0;
 }

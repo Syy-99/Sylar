@@ -26,7 +26,7 @@ namespace sylar {
     }
 
     // thread_local定义成线程局部变量,在run中设置
-    static thread_local Thread* t_thread = nullptr;
+    static thread_local Thread* t_thread = nullptr;     // 指向当前线程，实际上也是每个进程的主线程
     static thread_local std::string t_thread_name = "UNKNOW";
 
     /// 系统库使用"system"日志

@@ -63,8 +63,8 @@ Fiber::Fiber(std::function<void()> cb, size_t stacksize) : m_id(++s_fiber_id), m
         SYLAR_ASSERT2(false, "getcontext");
     }
     /// 设置上下文
-    //m_ctx.uc_link = nullptr;    // 该协程关联的上文
-    m_ctx.uc_link = &t_threadFiber->m_ctx;    // 该协程结束后，会回到主协程
+    m_ctx.uc_link = nullptr;    // 该协程关联的上文
+    // m_ctx.uc_link = &t_threadFiber->m_ctx;    // 该协程结束后，会回到主协程
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
 
@@ -132,7 +132,6 @@ void Fiber::swapIn() {
         SYLAR_ASSERT2(false, "swapcontext");
     }
 
-    // ??? 只切换上下文，程序运行的函数切换了吗???
 }
 
 
@@ -140,7 +139,7 @@ void Fiber::swapIn() {
 void Fiber::swapOut() {
     SetThis(t_threadFiber.get());
 
-    // ??? 当前协程的状态不用改变吗?
+    // 当前协程的状态不用改变吗? -> 已经在MainFunc中改变了
 
     if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)) {
         SYLAR_ASSERT2(false, "swapcontext");
@@ -188,7 +187,7 @@ uint64_t Fiber::TotalFibers() {
 
 /// 协程执行函数
 void Fiber::MainFunc() {
-    Fiber::ptr cur = GetThis();
+    Fiber::ptr cur = GetThis();      // 增加引用计数，导致对象无法被释放
     SYLAR_ASSERT(cur);
 
     try {
@@ -205,6 +204,12 @@ void Fiber::MainFunc() {
         cur->m_state = EXCEPT;
         SYLAR_LOG_ERROR(g_logger) << "Fiber Except";
     }
+
+    auto raw_ptr = cur.get();
+    cur.reset();        // 释放这个智能指针
+    raw_ptr->swapOut();
+
+    SYLAR_ASSERT2(false, "never reach");
 }
 
 uint64_t Fiber::GetFiberId() {
