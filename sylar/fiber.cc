@@ -36,10 +36,10 @@ public:
 using StackAllocator = MallocStackAllocator;
 
 
-Fiber::Fiber() {
+Fiber::Fiber() {      
     /// 第一个协程，即主协程的构造函数
-    m_stack = EXEC;
-    SetThis(this);      //?????
+    m_state = EXEC;
+    SetThis(this);      
 
     /// 获得当前协程的上下文
     if(getcontext(&m_ctx)) {
@@ -48,11 +48,11 @@ Fiber::Fiber() {
 
     ++s_fiber_count;    // 总协程数量加1
 
-    // SYLAR_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
+    SYLAR_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
 
 }      
 
-Fiber(std::function<void()> cb, size_t stacksize = 0) : m_id(++s_fiber_id), m_cb(cb){
+Fiber::Fiber(std::function<void()> cb, size_t stacksize) : m_id(++s_fiber_id), m_cb(cb){
     /// 真正创建一个执行协程(子协程)
     ++s_fiber_count;
 
@@ -63,12 +63,15 @@ Fiber(std::function<void()> cb, size_t stacksize = 0) : m_id(++s_fiber_id), m_cb
         SYLAR_ASSERT2(false, "getcontext");
     }
     /// 设置上下文
-    m_ctx.uc_link = nullptr;    // 该协程关联的上文
+    //m_ctx.uc_link = nullptr;    // 该协程关联的上文
+    m_ctx.uc_link = &t_threadFiber->m_ctx;    // 该协程结束后，会回到主协程
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
 
-    makecontext(&m_ctx, &Fiber::MainFunc, 0);   // 设置执行的函数
+    makecontext(&m_ctx, &Fiber::MainFunc, 0);   // 设置执行完后的回调函数
 
+
+    SYLAR_LOG_DEBUG(g_logger) << "Fiber::Fiber id=" << m_id;
 
 }
 
@@ -92,31 +95,124 @@ Fiber::~Fiber() {
             SetThis(nullptr);
         }
     }
+    SYLAR_LOG_DEBUG(g_logger) << "Fiber::~Fiber id=" << m_id;
 }
 
 /// 重置协程执行函数，并设置状态 -> 减少内存分配和释放操作
-void reset(std::function<void() cb); 
+void Fiber::reset(std::function<void()> cb) {
+    SYLAR_ASSERT(m_stack); // 要求有栈
+
+    SYLAR_ASSERT(m_state == TERM
+                || m_state == EXCEPT
+                || m_state == INIT);
+
+    m_cb = cb;  // 重新设置执行函数
+
+    if(getcontext(&m_ctx)) {
+        SYLAR_ASSERT2(false, "getcontext");
+    }
+
+    m_ctx.uc_link = nullptr;
+    m_ctx.uc_stack.ss_sp = m_stack;
+    m_ctx.uc_stack.ss_size = m_stacksize;
+
+    makecontext(&m_ctx, &Fiber::MainFunc, 0);   // 设置执行完后的回调函数
+    m_state = INIT;
+}
 
 /// 将当前协程切换到运行态执行
-void swapIn();
-/// 将当前协程切换到后台
-void swapOut();
+void Fiber::swapIn() {
+    SetThis(this);
+
+    SYLAR_ASSERT(m_state != EXEC);
+    m_state = EXEC;
+
+    /// 交换主协程（正在运行）和工作协程的上下文，使得工作线程开始运行
+    if(swapcontext(&t_threadFiber->m_ctx, &m_ctx)) {
+        SYLAR_ASSERT2(false, "swapcontext");
+    }
+
+    // ??? 只切换上下文，程序运行的函数切换了吗???
+}
+
+
+/// 将当前协程切换到后台, 运行主协程
+void Fiber::swapOut() {
+    SetThis(t_threadFiber.get());
+
+    // ??? 当前协程的状态不用改变吗?
+
+    if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)) {
+        SYLAR_ASSERT2(false, "swapcontext");
+    }
+
+}
 
 /// 设置当前运行的协程
 void Fiber::SetThis(Fiber* f) {
     t_fiber = f;
 }
 
-/// 返回当前所在的协程
-static Fiber::ptr GetThis();
+/// 返回当前正在执行的协程
+Fiber::ptr Fiber::GetThis() {
+    if(t_fiber) {
+        return t_fiber->shared_from_this(); // 返回当前协程的智能指针
+    }
 
-/// 将当前协程切换到后台,并设置为READY状态
-static void YieldToReady();
+    Fiber::ptr main_fiber(new Fiber);     // 初始化主协程
+    SYLAR_ASSERT(t_fiber == main_fiber.get());  // 判断是否设置生效
+    t_threadFiber = main_fiber;     // 保存主协程
+    return t_fiber->shared_from_this();
+}
+
+/// 将当前协程切换到后台,设置为READY状态, 
+void Fiber::YieldToReady() {
+    Fiber::ptr cur = GetThis();
+    SYLAR_ASSERT(cur->m_state == EXEC);
+
+    cur->m_state = READY;
+    cur->swapOut();     // 切换到主协程
+}
 /// 将当前协程切换到后台,并设置为HOLD状态
-static void YieldToHold();
-/// 总协程数量
-static uint64_t TotalFibers();
+void Fiber::YieldToHold() {
+    Fiber::ptr cur = GetThis();
+    SYLAR_ASSERT(cur->m_state == EXEC);
 
-/// 协程执行函数， 执行完成会返回到线程的主协程
-static void MainFunc();
+    cur->m_state = HOLD;
+    cur->swapOut();     // 切换到主协程
+}
+/// 总协程数量
+uint64_t Fiber::TotalFibers() {
+    return s_fiber_count;
+}
+
+/// 协程执行函数
+void Fiber::MainFunc() {
+    Fiber::ptr cur = GetThis();
+    SYLAR_ASSERT(cur);
+
+    try {
+        cur->m_cb();            // 执行协程的函数
+        cur->m_cb = nullptr;    // 执行完就清空
+        cur->m_state = TERM;    // 执行完状态就改变
+    } catch (std::exception& ex) {
+        cur->m_state = EXCEPT;
+        SYLAR_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what();
+                                //   << " fiber_id=" << cur->getId()
+                                //   << std::endl
+                                //   << sylar::BacktraceToString();
+    } catch (...) {
+        cur->m_state = EXCEPT;
+        SYLAR_LOG_ERROR(g_logger) << "Fiber Except";
+    }
+}
+
+uint64_t Fiber::GetFiberId() {
+    if (t_fiber) {
+        return t_fiber->m_id;
+    }
+
+    return 0;
+}
+
 }

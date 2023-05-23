@@ -9,6 +9,7 @@ set(LIB_SRC
     sylar/util.cc
     sylar/config.cc
     sylar/thread.cc
+    sylar/fiber.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件
@@ -38,6 +39,11 @@ target_link_libraries(test_thread ${LIB_LIB})
 add_executable(test_util tests/test_util.cc)
 add_dependencies(test_util sylar)
 target_link_libraries(test_util ${LIB_LIB})
+
+# 测试协程模块
+add_executable(test_fiber tests/test_fiber.cc)
+add_dependencies(test_fiber sylar)
+target_link_libraries(test_fiber ${LIB_LIB})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
