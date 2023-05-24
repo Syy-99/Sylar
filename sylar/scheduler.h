@@ -75,7 +75,16 @@ public:
 
 protected:
     /// 通知协程调度器有任务了
-    virtual viud tickle();
+    virtual void tickle();
+
+    virtual void run(); 
+
+    virtual bool stopping();
+
+    /**
+     * @brief 设置当前的协程调度器
+     */
+    void setThis();
 private:
     /// 协程调度启动(无锁)
     template<class FiberorCb>
@@ -136,8 +145,24 @@ private:
     /// 线程池
     std::vector<Thread::ptr> m_threads;
     /// 待执行的协程队列
-    std::list<FiberAndThread> m_fibers;   // ?? 为什们用list
+    std::list<FiberAndThread> m_fibers;   // 用list方便增删
+    /// use_caller为true时有效, 调度协程
+    Fiber::ptr m_rootFiber;
     std::string m_name;
+
+protected:
+    /// 协程下的线程id数组
+    std::vector<int> m_threadIds;   
+    /// 线程数量
+    size_t m_threadCount = 0
+    /// 工作线程数量
+    size_t m_idleThreadCount = 0;
+    size_t m_activeThreadCount = 0;
+
+    bool m_stopping = true;
+    bool m_autostop = false;
+    /// 主线程id
+    int m_rootThread = 0     
 }
 
 }   // sylar
