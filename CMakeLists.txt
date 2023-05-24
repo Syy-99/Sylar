@@ -10,6 +10,7 @@ set(LIB_SRC
     sylar/config.cc
     sylar/thread.cc
     sylar/fiber.cc
+    sylar/mutex.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件

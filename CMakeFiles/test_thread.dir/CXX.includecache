@@ -82,6 +82,14 @@ log.h
 util.h
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 
+/home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+semaphore.h
+-
+atomic
+-
+pthread.h
+-
+
 /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/sylar.h
@@ -109,10 +117,8 @@ string
 -
 pthread.h
 -
-semaphore.h
--
-atomic
--
+mutex.h
+/home/shenyanyu/Desktop/Sylar/sylar/mutex.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 pthread.h

@@ -588,7 +588,7 @@ Logger::ptr LoggerManager::getLogger(const std::string& name) {
         return it->second;
     }
 
-    // 不存在
+    // 如果不存在，则新建一个
     Logger::ptr logger(new Logger(name));   // 只有名字，其他都没有
     logger->m_root = m_root;
     m_loggers[name] = logger;
