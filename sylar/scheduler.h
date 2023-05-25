@@ -7,8 +7,10 @@
 #define __SYLAR_SCHEDULER_H__
 
 #include <memory>
+#include <vector>
+#include <list>
+#include <iostream>
 #include "fiber.h"
-#include "mutex.h"
 #include "thread.h"
 
 namespace sylar {
@@ -29,7 +31,7 @@ public:
      * @param[in] use_caller 是否使用当前调用线程 ??
      * @param[in] name 协程调度器名称
      */
-    Scheduler(size_t threads = 1, bool use_caller = true, const std::string& name = "")
+    Scheduler(size_t threads = 1, bool use_caller = true, const std::string& name = "");
     virtual ~Scheduler();
 
     const std::string getName() const { return m_name; }
@@ -44,15 +46,16 @@ public:
     void stop();
 
     /// 调度一个协程
-    template<class FiberorCb>
+    // fb可以是一个协程，也可以是一个函数
+    template<class FiberOrCb>
     void schedule(FiberOrCb fc, int thread = -1) {
         bool need_tickle = false;
         {
             MutexType::Lock lock(m_mutex);
-            need_tickle = scheduleNoLock(fc ,thread);
+            need_tickle = scheduleNoLock(fc, thread);
         }
 
-        if (need_tickle) {
+        if(need_tickle) {
             tickle();
         }
     }
@@ -80,15 +83,19 @@ protected:
     virtual void run(); 
 
     virtual bool stopping();
+    
+    /// 协程无任务可调度时执行idle协程
+    virtual void idle();
 
     /**
      * @brief 设置当前的协程调度器
      */
     void setThis();
+
 private:
     /// 协程调度启动(无锁)
-    template<class FiberorCb>
-    void schedule(FiberOrCb fc, int thread) {
+    template<class FiberOrCb>
+    bool scheduleNoLock(FiberOrCb fc, int thread) {
         bool need_tickle = m_fibers.empty();
         FiberAndThread ft(fc, thread);
         if (ft.fiber || ft.cb) {    // 这里的判断有意义吗? 不就只有这两种类型
@@ -113,7 +120,7 @@ private:
 
         /// ????
         FiberAndThread(Fiber::ptr* f, int thr) : thread(thr) {
-            fiber.swap(&f); // 为什么前一个构造函数不需要swap呢?
+            fiber.swap(*f); // 为什么前一个构造函数不需要swap呢?
 
             /// 这难道不是程序员规定的吗: 传递指针就是swap,不传就普通拷贝
             /// 但是，那第一个构造函数会导致引用计数增加，难道就不需要考虑可能的问题吗?
@@ -138,7 +145,7 @@ private:
             cb = nullptr;
             thread = -1;
         }
-    }
+    };
 private:
     /// Mutex
     MutexType m_mutex;
@@ -154,16 +161,18 @@ protected:
     /// 协程下的线程id数组
     std::vector<int> m_threadIds;   
     /// 线程数量
-    size_t m_threadCount = 0
+    std::atomic<size_t> m_threadCount = {0};
     /// 工作线程数量
-    size_t m_idleThreadCount = 0;
-    size_t m_activeThreadCount = 0;
+    std::atomic<size_t> m_idleThreadCount = {0};
+    std::atomic<size_t> m_activeThreadCount = {0};
 
     bool m_stopping = true;
-    bool m_autostop = false;
-    /// 主线程id
-    int m_rootThread = 0     
-}
+    bool m_autoStop = false;
+
+    /// 主线程id(use_caller) 
+    /// 因为只有一个调度器，记录的是这个调度器的所有者吗???
+    int m_rootThread = 0;     
+};
 
 }   // sylar
 #endif

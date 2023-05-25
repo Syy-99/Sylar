@@ -7,12 +7,17 @@
 
 #include <memory>
 #include <functional>
-#include<ucontext.h>
+#include <ucontext.h>
 
 
 namespace sylar{     
 
+class Scheduler;
+
 class Fiber : public std::enable_shared_from_this<Fiber> { // enable_shared_from_this直接获得当前类的智能指针
+
+friend class Scheduler;
+
 public:
     typedef std::shared_ptr<Fiber> ptr;
 
@@ -40,7 +45,7 @@ private:
 
 public:
 
-    Fiber(std::function<void()> cb, size_t stacksize = 0);
+    Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
     ~Fiber();
 
     /// 重置协程执行函数，并设置状态 -> 减少内存分配和释放操作
@@ -50,6 +55,23 @@ public:
     void swapIn();
     /// 将当前协程切换到后台
     void swapOut();
+
+    
+    /**
+     * @brief 将当前线程切换到执行状态
+     * @pre 执行的为当前线程的主协程
+     */
+    void call();
+
+    /**
+     * @brief 将当前线程切换到后台
+     * @pre 执行的为该协程
+     * @post 返回到线程的主协程
+     */
+    void back();
+
+    uint64_t getId() const { return m_id; }
+    State getState() const { return m_state; }
     
     /// 设置当前协程
     static void SetThis(Fiber* f);
@@ -63,8 +85,18 @@ public:
     /// 总协程数量
     static uint64_t TotalFibers();
 
-    /// 协程执行函数， 执行完成会返回到线程的主协程
+    /**
+     * @brief 协程执行函数
+     * @post 执行完成返回到线程主协程
+     */
     static void MainFunc();
+
+    /**
+     * @brief 协程执行函数
+     * @post 执行完成返回到线程调度协程
+     */
+
+    static void CallerMainFunc();
 
     /// 获得当前协程id
     static uint64_t GetFiberId();

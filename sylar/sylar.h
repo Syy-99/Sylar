@@ -7,5 +7,6 @@
 #include "../sylar/thread.h"
 #include "../sylar/util.h"
 #include "../sylar/macro.h"
+#include "../sylar/scheduler.h"
 
 #endif

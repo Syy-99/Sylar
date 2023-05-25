@@ -90,6 +90,20 @@ atomic
 pthread.h
 -
 
+/home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
+memory
+-
+vector
+-
+list
+-
+iostream
+-
+fiber.h
+/home/shenyanyu/Desktop/Sylar/sylar/fiber.h
+thread.h
+/home/shenyanyu/Desktop/Sylar/sylar/thread.h
+
 /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/sylar.h
@@ -105,6 +119,8 @@ pthread.h
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 ../sylar/macro.h
 /home/shenyanyu/Desktop/Sylar/sylar/macro.h
+../sylar/scheduler.h
+/home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/thread.h
 thread
