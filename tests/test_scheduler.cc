@@ -12,19 +12,14 @@ void test_fiber() {
     }
 }
 
-int main() {
-     SYLAR_LOG_INFO(g_logger) << "main";
-    sylar::Scheduler sc;    // 创建一个调度器, 默认user_caller=true,说明该线程中的协程也是需要调度的
-
-    // SYLAR_LOG_INFO(g_logger) << "schedule";
-    // sc.schedule(&test_fiber);          // 将test_fiber加入调度, 此时调度器始终在run
-    sc.start();  // 调度器开始工作
-    // sleep(2);
-
-    SYLAR_LOG_INFO(g_logger) << "schedule1";
-    sc.schedule(&test_fiber);          // 将test_fiber加入调度, 此时调度器始终在run
-    SYLAR_LOG_INFO(g_logger) << "schedule2";
-    sc.stop();  // 调度器结束工作
+int main(int argc, char** argv) {
+    SYLAR_LOG_INFO(g_logger) << "main";
+    sylar::Scheduler sc(3, false, "test");
+    sc.start();
+    sleep(2);
+    SYLAR_LOG_INFO(g_logger) << "schedule";
+    sc.schedule(&test_fiber);   // 任务可以在任意一个线程中的任意协程中运行
+    sc.stop();
     SYLAR_LOG_INFO(g_logger) << "over";
     return 0;
 }
