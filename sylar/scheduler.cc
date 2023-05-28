@@ -25,7 +25,7 @@ Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
 
         t_fiber = m_rootFiber.get();
         m_rootThread = sylar::GetThreadId();
-        m_threadIds.push_back(m_rootThread);
+        m_threadIds.push_back(m_rootbThread);
     } else {
         m_rootThread = -1;
     }
