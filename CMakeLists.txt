@@ -12,6 +12,7 @@ set(LIB_SRC
     sylar/fiber.cc
     sylar/mutex.cc
     sylar/scheduler.cc
+    sylar/iomanager.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件
@@ -51,6 +52,10 @@ target_link_libraries(test_fiber ${LIB_LIB})
 add_executable(test_scheduler tests/test_scheduler.cc)
 add_dependencies(test_scheduler sylar)
 target_link_libraries(test_scheduler ${LIB_LIB})
+
+add_executable(test_iomanager tests/test_iomanager.cc)
+add_dependencies(test_iomanager sylar)
+target_link_libraries(test_iomanager ${LIB_LIB})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

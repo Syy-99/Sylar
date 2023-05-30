@@ -18,8 +18,8 @@ public:
     enum Event {
         NONE = 0x0,
         READ = 0x1,
-        WRITE = 0x4,
-    }
+        WRITE = 0x4,    // EPOLLOUT
+    };
 private:
     // Socket事件对应的类
     struct FdContext {
@@ -33,7 +33,7 @@ private:
             Fiber::ptr fiber;
             /// 事件的回调函数
             std::function<void()> cb;            
-        }
+        };
 
         /// 获取事件上下文类
         /// 根据传入的event，来判断最终的类型 读 or 写 or 读写

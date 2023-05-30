@@ -20,12 +20,12 @@ Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
         SYLAR_ASSERT(GetThis() == nullptr);
         t_scheduler = this;
 
-        m_rootFiber.reset(new Fiber(std:    :bind(&Scheduler::run, this), 0, true));
+        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
         sylar::Thread::SetName(m_name);
 
         t_fiber = m_rootFiber.get();
         m_rootThread = sylar::GetThreadId();
-        m_threadIds.push_back(m_rootbThread);
+        m_threadIds.push_back(m_rootThread);
     } else {
         m_rootThread = -1;
     }
@@ -94,7 +94,7 @@ void Scheduler::stop() {
 
     m_stopping = true;
     for(size_t i = 0; i < m_threadCount; ++i) {
-        tickle();
+        tickle();       // 结合IO协程调度，那么这里的tickle有什么用，又没有事件发生??
         SYLAR_LOG_INFO(g_logger) << " m_threadCount";
     }
 
@@ -153,6 +153,7 @@ void Scheduler::run() {
             MutexType::Lock lock(m_mutex);
             auto it = m_fibers.begin();
             while(it != m_fibers.end()) {
+                // SYLAR_LOG_INFO(g_logger) << "find!! " << m_fibers.size();
                 if(it->thread != -1 && it->thread != sylar::GetThreadId()) {
                     ++it;
                     tickle_me = true;
@@ -167,6 +168,7 @@ void Scheduler::run() {
 
                 ft = *it;
                 m_fibers.erase(it);
+                // SYLAR_LOG_INFO(g_logger) << "find!!2 " << m_fibers.size();
                 ++m_activeThreadCount;
                 is_active = true;
                 break;
@@ -174,7 +176,7 @@ void Scheduler::run() {
         }
 
         if(tickle_me) {
-            tickle("the task is belong fixed thread");
+            tickle();
         }
 
         if(ft.fiber && (ft.fiber->getState() != Fiber::TERM
@@ -191,9 +193,10 @@ void Scheduler::run() {
             ft.reset();
         } else if(ft.cb) {
             if(cb_fiber) {
-                cb_fiber->reset(ft.cb);
+                cb_fiber->reset(ft.cb);     // 设置这个协程需要执行的代码
             } else {
-                cb_fiber.reset(new Fiber(ft.cb));
+                cb_fiber.reset(new Fiber(ft.cb));     // 这里是否意味着，实际上每个线程中只有一个工作协程??
+                // ?? 那这里的协程的优点还是没有体现出来呀?
             }
             ft.reset();
             cb_fiber->swapIn();
@@ -215,6 +218,7 @@ void Scheduler::run() {
             }
             if(idle_fiber->getState() == Fiber::TERM) {
                 SYLAR_LOG_INFO(g_logger) << "idle fiber term";
+                tickle();   // 某个idle结束，说明已经没有可执行的任务了，则可以立刻唤醒其他陷入epoll_wait的线程
                 break;
             }
 
@@ -229,13 +233,15 @@ void Scheduler::run() {
     }
 }
 
-void Scheduler::tickle(string msg) {
-    SYLAR_LOG_INFO(g_logger) << "tickle " << msg;
+void Scheduler::tickle() {
+    SYLAR_LOG_INFO(g_logger) << "tickle ";
 }
 
 bool Scheduler::stopping() {
     MutexType::Lock lock(m_mutex);
-    return m_autoStop && m_stopping
+    // SYLAR_LOG_INFO(g_logger) << m_autoStop << " " << m_stopping 
+    //                 << " " << m_fibers.size() << " " << m_activeThreadCount;
+    return m_autoStop && m_stopping 
         && m_fibers.empty() && m_activeThreadCount == 0;
 }
 

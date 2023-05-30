@@ -233,7 +233,7 @@ void Fiber::MainFunc() {
 
     auto raw_ptr = cur.get();
     cur.reset();        // 释放这个智能指针
-    raw_ptr->swapOut();     // 如果不是user_caller, 则会和调度协程切换
+    raw_ptr->swapOut();     // 如果不是user_caller, 则会和main协程切换
 
     SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
 }

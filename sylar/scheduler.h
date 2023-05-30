@@ -29,6 +29,7 @@ public:
 
     template<class FiberOrCb>
     void schedule(FiberOrCb fc, int thread = -1) {
+        // std::cout<<m_fibers.size()<<std::endl;
         bool need_tickle = false;
         {
             MutexType::Lock lock(m_mutex);
@@ -37,7 +38,7 @@ public:
 
         if(need_tickle) {
             tickle();
-            std::cout<<"sc"<<std::endl;
+            // std::cout<<"sc"<<std::endl;
         }
     }
 
