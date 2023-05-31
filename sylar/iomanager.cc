@@ -297,13 +297,26 @@ void IOManager::tickle() {
     if(!hasIdleThreads()) {     // 必须有闲置的线程才有意义
         return;
     }
+    // SYLAR_LOG_INFO(g_logger) << " IOManager::tickle ";
     int rt = write(m_tickleFds[1], "T", 1);     // 往管道中写一个数据，通知有事件加入
     SYLAR_ASSERT(rt == 1);
 }
 
+
+bool IOManager::stopping(uint64_t& timeout) {
+    timeout = getNextTimer();
+    return timeout == ~0ull
+        && m_pendingEventCount == 0
+        && Scheduler::stopping();
+
+}
+
 bool IOManager::stopping() {
-    return m_pendingEventCount == 0      // 所有的事件都完成了
-        && Scheduler::stopping();       // Scheduler的stop条件满足
+    uint64_t timeout = 0;
+    return stopping(timeout);
+    // return m_pendingEventCount == 0      // 所有的事件都完成了
+    //     && hasTimer()           // 并且没有定时器事件
+    //     && Scheduler::stopping();       // Scheduler的stop条件满足
 }
 
 /// 核心
@@ -317,29 +330,63 @@ void IOManager::idle() {
     });
 
     while(true) {
-        if (stopping()) {   // 调度器结束了
+        uint64_t next_timeout = 0;
+        if (stopping(next_timeout)) {   // 调度器结束了
+            next_timeout = getNextTimer();
             SYLAR_LOG_INFO(g_logger) << "name = " << getName() << "idle stopping exit";
             break;
         }
-        // SYLAR_LOG_INFO(g_logger) << "idel!!!!!!!!";
+
+        
         int rt = 0;
         do {
-            static const int MAX_TIMEOUT = 5000;    // 毫秒级的超时时间
-            rt = epoll_wait(m_epfd, events, MAX_EVNETS, MAX_TIMEOUT);   // 如果没有事件，则陷入epoll_wait
-            // ? 只有在线程空闲才会调用epoll_wait吗???
+            static const int MAX_TIMEOUT = 1000;    // 毫秒级的超时时间
+            if (next_timeout  != ~0ull) {
+                // 这里可能next_timeout=0???????
+                next_timeout = (int)next_timeout > MAX_TIMEOUT ? MAX_TIMEOUT : next_timeout;
+            } else {
+                next_timeout = MAX_TIMEOUT;
+            }
+            //  SYLAR_LOG_DEBUG(g_logger) << "next_timeout = " << next_timeout;
+            // epool_wait的超时时间会参考最近的定时器任务
+            rt = epoll_wait(m_epfd, events, MAX_EVNETS, (int)next_timeout);   // 如果没有事件，则陷入epoll_wait
             if (rt < 0 && errno == EINTR) {
 
             } else {
-                // epoll_wati出错
+                // 超时
                 break;
             }
+            // static const int MAX_TIMEOUT = 3000;
+            // if(next_timeout != ~0ull) {
+            //     next_timeout = (int)next_timeout > MAX_TIMEOUT
+            //                     ? MAX_TIMEOUT : next_timeout;
+            // } else {
+            //     next_timeout = MAX_TIMEOUT;
+            // }
+            // rt = epoll_wait(m_epfd, events, MAX_EVNETS, (int)next_timeout);
+            // if(rt < 0 && errno == EINTR) {
+            // } else {
+            //     break;
+            // }
         } while(true);
 
+        // 检查满足条件的定时器任务
+        std::vector<std::function<void()> > cbs;
+        listExpiredCb(cbs);
+        if (!cbs.empty()) {
+            // SYLAR_LOG_DEBUG(g_logger) << "on timer cbs.size=" << cbs.size();
+            schedule(cbs.begin(), cbs.end());    // 把定时任务加入调度
+            // for(auto& i : cbs)
+            //     schedule(i);
+            cbs.clear();
+        }
+
         // 此时rt返回所有就绪的事件的数量
-        SYLAR_LOG_INFO(g_logger) << "epoll wait events=" << rt << " pendingevnet = " << m_pendingEventCount;
+        // SYLAR_LOG_INFO(g_logger) << "epoll wait events=" << rt << " pendingevnet = " << m_pendingEventCount;
         for (int i = 0; i < rt; i++) {
             epoll_event& event = events[i];
             if(event.data.fd == m_tickleFds[0]) {   // 说明外部发消息来唤醒
+            //  SYLAR_LOG_INFO(g_logger) << "??epoll wait events=" << rt << " pendingevnet = " << m_pendingEventCount;
                 uint8_t dummy[256];
                 while(read(m_tickleFds[0], dummy, sizeof(dummy)) > 0);     // 收消息，while确保读干净
                 // ?? 还是不明白用信号量和管道通信的区别?
@@ -389,13 +436,19 @@ void IOManager::idle() {
         }
 
             // 触发的事件都通过schduler()加入了任务队列，则可以让出控制权
-    Fiber::ptr cur = Fiber::GetThis();
-    auto raw_ptr = cur.get();
-    cur.reset();
+        Fiber::ptr cur = Fiber::GetThis();
+        auto raw_ptr = cur.get();
+        cur.reset();
 
-    raw_ptr->swapOut();  // 切换的线程的main协程/调度协程，执行run
+        raw_ptr->swapOut();  // 切换的线程的main协程/调度协程，执行run
     }
 
+}
+
+void IOManager::onTimerInsertedAtFront() {
+    SYLAR_LOG_INFO(g_logger) << "?";
+    // 一旦调用该函数，就应该重新设定epoll_wait的等待时间
+    tickle();   // 唤醒epoll_wite的线程
 }
 
 

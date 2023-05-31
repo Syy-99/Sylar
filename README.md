@@ -1,6 +1,11 @@
 # Sylar
 C++高性能服务器框架
 
+## 项目配置
+boost
+yaml-cpp
+
+
 流程图-uml图
 
 ## 项目路径

@@ -50,6 +50,7 @@ public:
             while(begin != end) {
                 need_tickle = scheduleNoLock(&*begin, -1) || need_tickle;
                 ++begin;
+                // std::cout<<m_fibers.size()<<std::endl;
             }
         }
         if(need_tickle) {
@@ -72,6 +73,7 @@ private:
         FiberAndThread ft(fc, thread);
         if(ft.fiber || ft.cb) {
             m_fibers.push_back(ft);
+            // std::cout<<"push";
         }
         return need_tickle;
     }

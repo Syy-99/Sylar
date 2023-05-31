@@ -152,6 +152,7 @@ void Scheduler::run() {
         {
             MutexType::Lock lock(m_mutex);
             auto it = m_fibers.begin();
+            // SYLAR_LOG_INFO(g_logger) << "before find " << m_fibers.size();
             while(it != m_fibers.end()) {
                 // SYLAR_LOG_INFO(g_logger) << "find!! " << m_fibers.size();
                 if(it->thread != -1 && it->thread != sylar::GetThreadId()) {
@@ -232,6 +233,8 @@ void Scheduler::run() {
         }
     }
 }
+
+
 
 void Scheduler::tickle() {
     SYLAR_LOG_INFO(g_logger) << "tickle ";

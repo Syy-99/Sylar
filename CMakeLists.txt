@@ -13,6 +13,7 @@ set(LIB_SRC
     sylar/mutex.cc
     sylar/scheduler.cc
     sylar/iomanager.cc
+    sylar/timer.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件

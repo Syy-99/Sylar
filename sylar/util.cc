@@ -1,6 +1,6 @@
 #include "util.h"
 #include <execinfo.h>
-#include <sys/timer.h>
+#include <sys/time.h>
 
 #include "log.h"
 #include "fiber.h"

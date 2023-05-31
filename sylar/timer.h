@@ -5,8 +5,10 @@
 #ifndef __SYLAR_TIMER_H__
 #define __SYLAR_TIMER_H__
 
-#include <memroy>
+#include <memory>
 #include <functional>
+#include <vector>
+#include <set>
 #include "mutex.h"
 
 
@@ -18,6 +20,16 @@ friend class TimerManager;
 public:
     typedef std::shared_ptr<Timer> ptr;
 
+    bool cancel();
+    /// 刷新设置定时器的执行时间
+    bool refresh();
+    /**
+     * @brief 重置定时器时间
+     * @param[in] ms 定时器执行间隔时间(毫秒)
+     * @param[in] from_now 是否从当前时间开始计算
+     */
+    bool reset(uint64_t ms, bool from_now);
+
 private:
     /**
      * @brief 构造函数
@@ -28,16 +40,6 @@ private:
      */
     Timer(uint64_t ms, std::function<void()> cb, bool recurring, TimerManager* manager);        // Timer只能通过TimeManager创建
     Timer(uint64_t next);
-
-    bool cancel();
-    /// 刷新设置定时器的执行时间
-    bool refresh();
-    /**
-     * @brief 重置定时器时间
-     * @param[in] ms 定时器执行间隔时间(毫秒)
-     * @param[in] from_now 是否从当前时间开始计算
-     */
-    bool reset(uint64_t ms, bool from_now);
 
 private:
     bool m_recurring = false;
@@ -72,7 +74,7 @@ public:
     Timer::ptr addTimer(uint64_t ms, std::function<void()> cb, bool recurring = false);
 
     /// 条件触发器
-    Timer::ptr addConditionTimer(uint64_t ms, std::function<void()> cb,
+    Timer::ptr addConditionTimer(uint64_t ms, std::function<void()> cb
                                 ,std::weak_ptr<void> weak_cond      // !!!注意这里使用智能指针
                                 ,bool recurring = false);
     
@@ -80,7 +82,12 @@ public:
     uint64_t getNextTimer();
 
     /// 获取需要执行的定时器的回调函数列表
-    void listExpiredCb(std::vector<std::function<void()>& cbs);
+    void listExpiredCb(std::vector<std::function<void()> >& cbs);
+
+    /**
+    * @brief 是否有定时器
+    */
+    bool hasTimer();
 protected:
     /// 当有新的定时器插入到定时器的首部,执行该函数
     /// 为什么需要执行???有什么用????
