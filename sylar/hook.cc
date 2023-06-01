@@ -10,6 +10,26 @@ static thread_local bool t_hook_enable = false;     // 线程局部变量，判�
 #define HOOK_FUN(XX) \
     XX(sleep) \
     XX(usleep) \
+    XX(nanosleep) \
+    XX(socket) \
+    XX(connect) \
+    XX(accept) \
+    XX(read) \
+    XX(readv) \
+    XX(recv) \
+    XX(recvfrom) \
+    XX(recvmsg) \
+    XX(write) \
+    XX(writev) \
+    XX(send) \
+    XX(sendto) \
+    XX(sendmsg) \
+    XX(close) \
+    XX(fcntl) \
+    XX(ioctl) \
+    XX(getsockopt) \
+    XX(setsockopt)
+    
 /// 从库中取出最初的系统调用
 void hook_init() {
     static bool is_inited = false;
@@ -36,7 +56,6 @@ struct _HookIniter {
 static _HookIniter s_hook_initer;
 
 
-
 bool is_hook_enable() {
     return t_hook_enable;
 }
@@ -44,7 +63,6 @@ bool is_hook_enable() {
 void set_hook_enable(bool flag) {
     t_hook_enable = flag;
 }
-
 
 
 extern "C" {
@@ -87,6 +105,22 @@ int usleep(useconds_t usec) {
 
     return 0;
 }
+
+int nanosleep(const struct timespec *req, struct timespec *rem) {
+    if(!sylar::t_hook_enable) {
+        return nanosleep_f(req, rem);
+    }
+
+    int timeout_ms = req->tv_sec * 1000 + req->tv_nsec / 1000 /1000;    // 可能有精度问题
+    sylar::Fiber::ptr fiber = sylar::Fiber::GetThis();
+    sylar::IOManager* iom = sylar::IOManager::GetThis();
+    iom->addTimer(timeout_ms, [iom, fiber] () {
+        iom->schedule(fiber);
+    });
+    sylar::Fiber::YieldToHold();
+    return 0;
+}
+
 
 }   // extern "c"
 
