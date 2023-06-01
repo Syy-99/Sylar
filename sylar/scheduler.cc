@@ -1,7 +1,7 @@
 #include "scheduler.h"
 #include "log.h"
 #include "macro.h"
-
+#include "hook.h"
 namespace sylar {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
@@ -136,6 +136,9 @@ void Scheduler::setThis() {
 
 void Scheduler::run() {
     SYLAR_LOG_INFO(g_logger) << "run";
+    // 所有线程都默认启动hook
+    set_hook_enable(true);
+
     setThis();
     if(sylar::GetThreadId() != m_rootThread) {
         t_fiber = Fiber::GetThis().get();       // 创建主协程
