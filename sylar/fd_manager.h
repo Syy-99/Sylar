@@ -1,13 +1,14 @@
 /**
  * @file fd_manager.h
  * @brief 文件句柄管理类
+ * 用来判断传递的文件描述符的类型：如果是普通文件，则不Hook; 如果是socket则Hook
  */
 #ifndef __FD_MANAGER_H__
 #define __FD_MANAGER_H__
 
 #include <memory>
 #include "mutex.h"
-
+#include "singleton.h"
 namespace sylar {
 
 /**
@@ -84,6 +85,8 @@ private:
     /// 文件句柄集合
     std::vector<FdCtx::ptr> m_datas;
 };
+
+typedef Singleton<FdManager> FdMgr;
 
 }
 

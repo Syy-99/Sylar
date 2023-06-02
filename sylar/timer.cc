@@ -123,7 +123,7 @@ Timer::ptr TimerManager::addTimer(uint64_t ms, std::function<void()> cb, bool re
 
 static void OnTimer(std::weak_ptr<void> weak_cond, std::function<void()> cb) {
     std::shared_ptr<void> tmp = weak_cond.lock();   
-    if (tmp) {  // 如果这个智能指针每释放，则说明条件满足
+    if (tmp) {  // 如果这个智能指针没释放，则说明条件满足
         cb();
     }
 }

@@ -161,7 +161,8 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb) {
     if(cb) {
         event_ctx.cb.swap(cb);
     } else {
-        event_ctx.fiber = Fiber::GetThis(); // 这里的逻辑是什么？
+        // 如果没有指定可调用对象，则将当前协程作为唤醒对象, 发生该事件时程序会切换到当前协程中运行
+        event_ctx.fiber = Fiber::GetThis();
         SYLAR_ASSERT(event_ctx.fiber->getState() == Fiber::EXEC);
     }
     // SYLAR_LOG_INFO(g_logger) << " addEvent";
@@ -356,18 +357,6 @@ void IOManager::idle() {
                 // 超时
                 break;
             }
-            // static const int MAX_TIMEOUT = 3000;
-            // if(next_timeout != ~0ull) {
-            //     next_timeout = (int)next_timeout > MAX_TIMEOUT
-            //                     ? MAX_TIMEOUT : next_timeout;
-            // } else {
-            //     next_timeout = MAX_TIMEOUT;
-            // }
-            // rt = epoll_wait(m_epfd, events, MAX_EVNETS, (int)next_timeout);
-            // if(rt < 0 && errno == EINTR) {
-            // } else {
-            //     break;
-            // }
         } while(true);
 
         // 检查满足条件的定时器任务
