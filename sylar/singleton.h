@@ -2,9 +2,10 @@
  * @file singleton.h
  * @brief 单例模式封装
  */
+#ifndef __SYLAR_SINGLETON_H__
+#define __SYLAR_SINGLETON_H__
 
  namespace sylar {
-
 
     /**
     * @brief 单例模式封装类
@@ -45,3 +46,5 @@
         }
     };
  }
+
+ #endif

@@ -6,6 +6,16 @@
 
 #IncludeRegexTransform: 
 
+/home/shenyanyu/Desktop/Sylar/sylar/fd_manager.h
+memory
+-
+vector
+-
+mutex.h
+/home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+singleton.h
+/home/shenyanyu/Desktop/Sylar/sylar/singleton.h
+
 /home/shenyanyu/Desktop/Sylar/sylar/fiber.h
 memory
 -
@@ -21,8 +31,12 @@ fiber.h
 /home/shenyanyu/Desktop/Sylar/sylar/fiber.h
 iomanager.h
 /home/shenyanyu/Desktop/Sylar/sylar/iomanager.h
+fd_manager.h
+/home/shenyanyu/Desktop/Sylar/sylar/fd_manager.h
 dlfcn.h
 -
+log.h
+/home/shenyanyu/Desktop/Sylar/sylar/log.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/hook.h
 fcntl.h
@@ -72,16 +86,6 @@ singleton.h
 thread.h
 /home/shenyanyu/Desktop/Sylar/sylar/thread.h
 
-/home/shenyanyu/Desktop/Sylar/sylar/macro.h
-string.h
--
-assert.h
--
-log.h
-/home/shenyanyu/Desktop/Sylar/sylar/log.h
-util.h
-/home/shenyanyu/Desktop/Sylar/sylar/util.h
-
 /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
 semaphore.h
 -
@@ -89,16 +93,6 @@ atomic
 -
 pthread.h
 -
-
-/home/shenyanyu/Desktop/Sylar/sylar/scheduler.cc
-scheduler.h
-/home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
-log.h
-/home/shenyanyu/Desktop/Sylar/sylar/log.h
-macro.h
-/home/shenyanyu/Desktop/Sylar/sylar/macro.h
-hook.h
-/home/shenyanyu/Desktop/Sylar/sylar/hook.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
 memory

@@ -1,4 +1,9 @@
 #include "fd_manager.h"
+#include "fd_manager.h"
+#include "hook.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace sylar {
 
@@ -74,7 +79,7 @@ FdManager::FdManager() {
 
 /// 获取/创建文件句柄类FdCtx 
 /// auto_create: 是否自动创建
-FdCtx::ptr FdManager::get(int fd, bool auto_create = false) {
+FdCtx::ptr FdManager::get(int fd, bool auto_create) {
     RWMutexType::ReadLock lock(m_mutex);
     if((int)m_datas.size() <= fd) {
         if(auto_create == false) {  // 找不到，且不需要自动创建

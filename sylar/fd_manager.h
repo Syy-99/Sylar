@@ -7,6 +7,7 @@
 #define __FD_MANAGER_H__
 
 #include <memory>
+#include <vector>
 #include "mutex.h"
 #include "singleton.h"
 namespace sylar {

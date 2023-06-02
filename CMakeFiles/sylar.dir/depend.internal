@@ -9,6 +9,12 @@ CMakeFiles/sylar.dir/sylar/config.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
  /home/shenyanyu/Desktop/Sylar/sylar/thread.h
  /home/shenyanyu/Desktop/Sylar/sylar/util.h
+CMakeFiles/sylar.dir/sylar/fd_manager.cc.o
+ /home/shenyanyu/Desktop/Sylar/sylar/fd_manager.cc
+ /home/shenyanyu/Desktop/Sylar/sylar/fd_manager.h
+ /home/shenyanyu/Desktop/Sylar/sylar/hook.h
+ /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+ /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
 CMakeFiles/sylar.dir/sylar/fiber.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/config.h
  /home/shenyanyu/Desktop/Sylar/sylar/fiber.cc
@@ -21,14 +27,18 @@ CMakeFiles/sylar.dir/sylar/fiber.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/thread.h
  /home/shenyanyu/Desktop/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/hook.cc.o
+ /home/shenyanyu/Desktop/Sylar/sylar/fd_manager.h
  /home/shenyanyu/Desktop/Sylar/sylar/fiber.h
  /home/shenyanyu/Desktop/Sylar/sylar/hook.cc
  /home/shenyanyu/Desktop/Sylar/sylar/hook.h
  /home/shenyanyu/Desktop/Sylar/sylar/iomanager.h
+ /home/shenyanyu/Desktop/Sylar/sylar/log.h
  /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
  /home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
+ /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
  /home/shenyanyu/Desktop/Sylar/sylar/thread.h
  /home/shenyanyu/Desktop/Sylar/sylar/timer.h
+ /home/shenyanyu/Desktop/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/iomanager.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/fiber.h
  /home/shenyanyu/Desktop/Sylar/sylar/iomanager.cc
