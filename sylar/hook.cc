@@ -123,7 +123,7 @@ retry:
         if (to != (uint64_t)-1) {   // 说明设置了超时时间
             timer = iom->addConditionTimer(to, [winfo, fd, iom, event]() {
                 auto t = winfo.lock();  // 检查条件是否还存在
-                if(!t || t->cancelled) {    // 如果不存在 或 被取消 cancelled ??? 在哪里???
+                if(!t || t->cancelled) {    // 如果条件不存在  或 已经到了超时时间 
                     return;
                 }
                 t->cancelled = ETIMEDOUT;       // 设置超时时间
@@ -151,7 +151,7 @@ retry:
                 return -1;
             }
 
-            goto retry;     // 说明是因为超时而返回，所以还需要继续等
+            goto retry;     // 说明此时是因为fd上有读事件，其实如果不考虑多线程抢占，下次n一定不是0了
         }
     }
 
@@ -244,8 +244,87 @@ int socket(int domain, int type, int protocol) {
 }
 
 
+int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen, uint64_t timeout_ms) {
+    if (!sylar::t_hook_enable) {
+        return connect_f(fd, addr , addrlen);
+    }
+
+    sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
+    if (!ctc || ctx->isClose()) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if (!ctx->isSocket()) {
+        return connect_f(fd, addr, addrlen);
+    }
+    
+    if (ctx->getUserNonblock()) {
+        return connect_f(fd, addr, addrlen);
+    }
+    
+    int n = connect_f(fd, addr, addrlen);
+    if (n == 0) {   // 调用成功
+        return 0;
+    } else if (n != -1 || errno != EINPROGRESS) { // 调用错误
+        reutrn n;   
+    }
+    // n == -1 && errno == EINPPROGRESS
+    // 没有conect成功，但是可能是因为非阻塞的原因返回
+    // 开始设置定时任务
+
+    sylar::IOManager* imo = sylar::IOManager::GetThis();
+    sylar::Timer::ptr timer;
+    std::shared_ptr<timer_info> tinfo(new timer_info);
+    std::weak_ptr<timer_info> winfo(tinfo);
+
+    if (timeout_ms != (uint64_t)-1) {
+        timer = iom->addConditionTimer(timeout_ms, [winfo, fd, iom](){
+            auto t = winfo.lock();
+            if (!t || t->cancelled) {
+                return;
+            }
+            t->cancelled = ETIMEDOUT;
+            iom->cancelEvent(fd, sylar:IOManager::WRITE);
+        }, winfo);
+    }
+
+    int rt = iom->addEvent(fd, sylar::IOManager::WRITE); // 写事件??  只要可以连接，就可写，将会触发
+    if (rt == 0) { // 事件添加成功
+        sylar::Fiber::YieldToHold();
+
+        if (timer) {
+            timer->cancel();
+        }
+        if (tinfo->canceled) {
+            errno = tinfo->cancelled;
+            return -1;
+        }
+    } else {
+        if (timer) {
+            timer->cancel();
+        }
+        SYLAR_LOG_ERROR(g_logger) << "connect addEvent(" << fd << ", WRITE) error";
+    }
+    
+    // 可以连接，然后去检查连接是否成功
+    int error = 0;
+    socklen_t len = sizeof(int);
+    if(-1 == getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len)) {
+        return -1;
+    }
+    
+    if(!error) {
+        return 0;
+    } else {
+        errno = error;
+        return -1;
+    }
+
+}
+// 最复杂的一个
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
-    // return connect_with_timeout(sockfd, addr, addrlen, sylar::s_connect_timeout);
+   
     return 0;
 }
 
@@ -319,20 +398,148 @@ int close(int fd) {
 }
 
 // hook fcntl有什么意义? 又不能做异步的?
+/// fcntl支持许多cmd,但是我们只需要Hook几个cmd，但是其他的cmd也需要处理
+/*
+int fcntl(int fd, int cmd); 
+int fcntl(int fd, int cmd, long arg); 
+int fcntl(int fd, int cmd, struct flock *lock);
+*/
 int fcntl(int fd, int cmd, ... /* arg */ )  {
-    // 设置non-blcok
+    va_list va;
+    va_start(va, cmd);
+    switch(cmd) {
+        case F_SETFL:       // 需要Hook的fctnl的cmd
+            {
+                int arg = va_arg(va, int);
+                va_end(va);
+                sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);   // 判断fd是否是文件描述符
+                if(!ctx || ctx->isClose() || !ctx->isSocket()) {
+                    return fcntl_f(fd, cmd, arg);
+                }     
+
+                ctx->setUserNonblock(arg & O_NONBLOCK);     // 判断是否用户已经设置为非阻塞
+
+                if(ctx->getSysNonblock()) {
+                    arg |= O_NONBLOCK;
+                } else {
+                    arg &= ~O_NONBLOCK;
+                }
+                
+                // 此时arg基本上一定会有O_NONBLOCK属性
+                return fcntl_f(fd, cmd, arg);          
+            }
+            break;
+        case F_GETFL: 
+            {
+                va_end(va);
+                int arg = fcntl_f(fd, cmd);
+                sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
+                if(!ctx || ctx->isClose() || !ctx->isSocket()) {
+                    return arg;
+                }
+
+                // 返回用户自己设置得到权限（可能没有设置O_NONBLOCK）
+                if(ctx->getUserNonblock()) {
+                    return arg | O_NONBLOCK;
+                } else {
+                    return arg & ~O_NONBLOCK;
+                }
+            }
+            break;
+        case F_DUPFD:
+        case F_DUPFD_CLOEXEC:
+        case F_SETFD:
+        case F_SETOWN:
+        case F_SETSIG:
+        case F_SETLEASE:
+        case F_NOTIFY:
+        case F_SETPIPE_SZ:
+            {
+                int fd = va_arg(va, int);
+                va_end(va);
+                return rt = fcntl_f(fd, cmd ,arg);
+            }
+        /// 上述命令(除F_GETFL）接受int参数
+            break;
+
+        case F_GETFD:
+        // case F_GETFL:
+        case F_GETOWN:
+        case F_GETSIG:
+        case F_GETLEASE:
+        case F_GETPIPE_SZ:
+            {
+                va_end(va);
+                return fcntl_f(fd, cmd);
+            }
+        /// 上述命令接受不接收参数
+            break;
+
+        case F_SETLK:
+        case F_SETLKW:
+        case F_SETLKW:
+        /// 上述命令接收flock参数
+            {
+                
+                struct flock* arg = va_arg(va, struct flock*);
+                va_end(va);
+                return fcntl_f(fd, cmd, arg);
+            }
+            break;
+
+        case F_GETOWN_EX:
+        case F_SETOWN_EX:
+        /// 上述命令接收f_owner_ex参数
+            {
+                struct f_owner_exlock* arg = va_arg(va, struct f_owner_exlock*);
+                va_end(va);
+                return fcntl_f(fd, cmd, arg);
+            }
+            break;
+        default:
+            va_end(va);
+            return fcntl_f(fd, cmd);
+    }
 }
 
 int ioctl(int d, unsigned long int request, ...) {
+    va_list va;
+    va_start(va, request);
+    void* arg = va_arg(va, void*);
+    va_end(va);
 
+    if(FIONBIO == request) {
+        bool user_nonblock = !!*(int*)arg;
+        sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(d);
+        if(!ctx || ctx->isClose() || !ctx->isSocket()) {
+            return ioctl_f(d, request, arg);
+        }
+        ctx->setUserNonblock(user_nonblock);
+    }
+    return ioctl_f(d, request, arg);
 }
 
 int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen) {
-
+    // 获取超时时间直接通过fd就行
+    return getsockopt_f(sockfd, level, optname, optval, optlen);
 }
 
 int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen) {
+    if(!sylar::t_hook_enable) {    
+        return setsockopt_f(sockfd, level, optname, optval, optlen);
+    }
 
+    if(level == SOL_SOCKET) {
+        /// 用户可能通过setsockopt设置超时时间，但是我们的超时时间是在Fdmgr中管理，所以需要额外更新
+        if(optname == SO_RCVTIMEO || optname == SO_SNDTIMEO) {
+            sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(sockfd);
+            if(ctx) {
+                const timeval* v = (const timeval*)optval;
+                ctx->setTimeout(optname, v->tv_sec * 1000 + v->tv_usec / 1000);
+            }
+        }
+    }
+    return setsockopt_f(sockfd, level, optname, optval, optlen);
 }
 
 

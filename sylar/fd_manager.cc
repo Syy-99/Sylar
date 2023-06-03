@@ -68,7 +68,7 @@ bool FdCtx::init() {
          m_sysNonblock = false;
     }
 
-    m_userNonblock = false;     // ??? 有啥用，这里不管怎样都是false
+    m_userNonblock = false;     // ??? 有啥用，这里不管怎样都是false -> 只是一个默认的值而已，并没有特殊含义
     m_isClosed = false;
     return m_isInit;      
 }

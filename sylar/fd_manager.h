@@ -55,7 +55,7 @@ private:
     bool m_isSocket;
     /// 是否hook非阻塞
     bool m_sysNonblock;
-    /// 是否用户主动设置非阻塞
+    /// 是否用户主动设置非阻塞 -> 框架中所有的套接字都是非阻塞的，但是用户可能本意使用的是阻塞的
     bool m_userNonblock;
     /// 是否关闭
     bool m_isClosed;
