@@ -18,10 +18,11 @@
 #include<pthread.h>
 
 #include "mutex.h"
+#include "noncopyable.h"
 
 namespace sylar {
 
-class Thread {
+class Thread : Noncopyable{
 public:
     typedef std::shared_ptr<Thread> ptr;
 

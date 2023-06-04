@@ -4,12 +4,16 @@
 #include "fd_manager.h"
 #include <dlfcn.h>
 #include "log.h"
-
+#include "config.h"
 sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 namespace sylar {
 
 static thread_local bool t_hook_enable = false;     // 线程局部变量，判断该线程是否执行Hook
+
+// connect的超时时间配置
+static sylar::ConfigVar<int>::ptr g_tcp_connect_timeout =
+        sylar::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout");
 
 #define HOOK_FUN(XX) \
     XX(sleep) \
@@ -45,16 +49,20 @@ void hook_init() {
 #undef XX    
 }
 
+
+static uint64_t s_connect_timeout = -1;
+
 struct _HookIniter {
     _HookIniter() {
         hook_init();       // 绑定hook
-        // s_connect_timeout = g_tcp_connect_timeout->getValue();
+        s_connect_timeout = g_tcp_connect_timeout->getValue();
 
-        // g_tcp_connect_timeout->addListener([](const int& old_value, const int& new_value){
-        //         SYLAR_LOG_INFO(g_logger) << "tcp connect timeout changed from "
-        //                                  << old_value << " to " << new_value;
-        //         s_connect_timeout = new_value;
-        // });
+        // 监听
+        g_tcp_connect_timeout->addListener([](const int& old_value, const int& new_value){
+                SYLAR_LOG_INFO(g_logger) << "tcp connect timeout changed from "
+                                        << old_value << " to " << new_value;
+                s_connect_timeout = new_value;
+        });
     }
 };
 static _HookIniter s_hook_initer;
@@ -84,6 +92,8 @@ static ssize_t do_io(int fd, OriginFun fun, const char* hook_fun_name,
     if (!sylar::t_hook_enable) {    // 判断是否hook
         return fun(fd, std::forward<Args>(args)...);
     }
+
+    SYLAR_LOG_INFO(g_logger) <<" do_io<< " << hook_fun_name << ">>";
 
     sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
     if(!ctx) {      // 如果不存在，就根本不是socket
@@ -141,7 +151,9 @@ retry:
             }
             return -1;
         } else {    // 事件添加成功
+       // SYLAR_LOG_INFO(g_logger) <<" !!!!!!begin do_io<< " << hook_fun_name << ">>";
             sylar::Fiber::YieldToHold();    // 放弃CPU, 可以执行其他任务
+    // SYLAR_LOG_INFO(g_logger) <<" !!!!!!!end yibu do_io<< " << hook_fun_name << ">>";
 
             if(timer) { // 如果提前唤醒，则取消timer
                 timer->cancel();
@@ -250,7 +262,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     }
 
     sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
-    if (!ctc || ctx->isClose()) {
+    if (!ctx || ctx->isClose()) {
         errno = EBADF;
         return -1;
     }
@@ -267,13 +279,13 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     if (n == 0) {   // 调用成功
         return 0;
     } else if (n != -1 || errno != EINPROGRESS) { // 调用错误
-        reutrn n;   
+        return n;   
     }
     // n == -1 && errno == EINPPROGRESS
     // 没有conect成功，但是可能是因为非阻塞的原因返回
     // 开始设置定时任务
 
-    sylar::IOManager* imo = sylar::IOManager::GetThis();
+    sylar::IOManager* iom = sylar::IOManager::GetThis();
     sylar::Timer::ptr timer;
     std::shared_ptr<timer_info> tinfo(new timer_info);
     std::weak_ptr<timer_info> winfo(tinfo);
@@ -285,7 +297,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
                 return;
             }
             t->cancelled = ETIMEDOUT;
-            iom->cancelEvent(fd, sylar:IOManager::WRITE);
+            iom->cancelEvent(fd, sylar::IOManager::WRITE);
         }, winfo);
     }
 
@@ -296,7 +308,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
         if (timer) {
             timer->cancel();
         }
-        if (tinfo->canceled) {
+        if (tinfo->cancelled) {
             errno = tinfo->cancelled;
             return -1;
         }
@@ -325,7 +337,8 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
 // 最复杂的一个
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
    
-    return 0;
+    return  connect_with_timeout(sockfd, addr, addrlen,s_connect_timeout);
+    // 注意到，实际上connect并没有给超时时间这个参数
 }
 
 
@@ -455,9 +468,9 @@ int fcntl(int fd, int cmd, ... /* arg */ )  {
         case F_NOTIFY:
         case F_SETPIPE_SZ:
             {
-                int fd = va_arg(va, int);
+                int arg = va_arg(va, int);
                 va_end(va);
-                return rt = fcntl_f(fd, cmd ,arg);
+                return fcntl_f(fd, cmd ,arg);
             }
         /// 上述命令(除F_GETFL）接受int参数
             break;
@@ -477,7 +490,7 @@ int fcntl(int fd, int cmd, ... /* arg */ )  {
 
         case F_SETLK:
         case F_SETLKW:
-        case F_SETLKW:
+        case F_GETLK:
         /// 上述命令接收flock参数
             {
                 

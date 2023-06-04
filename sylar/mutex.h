@@ -4,11 +4,11 @@
 #include <semaphore.h>
 #include <atomic>
 #include<pthread.h>
-
+#include "noncopyable.h"
 namespace sylar {
 
 /// 信号量封装, RAII思想
-class Semaphore {
+class Semaphore : Noncopyable {
 public:
     Semaphore(uint32_t count = 0);
     ~Semaphore();
@@ -171,7 +171,7 @@ public:
 };
 
 /// 互斥锁
-class Mutex {
+class Mutex : Noncopyable {
 public:
 
     /// 局部锁: 利用局部锁对象，确保锁一定被释放
@@ -235,7 +235,7 @@ public:
 };
 
 /// 读写锁
-class RWMutex {
+class RWMutex : Noncopyable {
 public:
 
     /// 局部读锁
@@ -273,7 +273,7 @@ private:
 /**
  * @brief 自旋锁
  */
-class Spinlock {
+class Spinlock : Noncopyable {
 public:
     /// 局部锁
     typedef ScopedLockImpl<Spinlock> Lock;

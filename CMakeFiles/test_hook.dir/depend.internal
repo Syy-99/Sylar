@@ -7,6 +7,7 @@ CMakeFiles/test_hook.dir/tests/test_hook.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/iomanager.h
  /home/shenyanyu/Desktop/Sylar/sylar/log.h
  /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+ /home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
  /home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
  /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
  /home/shenyanyu/Desktop/Sylar/sylar/thread.h

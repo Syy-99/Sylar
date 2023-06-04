@@ -8,6 +8,7 @@ CMakeFiles/test_iomanager.dir/tests/test_iomanager.cc.o
  /home/shenyanyu/Desktop/Sylar/sylar/log.h
  /home/shenyanyu/Desktop/Sylar/sylar/macro.h
  /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+ /home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
  /home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
  /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
  /home/shenyanyu/Desktop/Sylar/sylar/sylar.h

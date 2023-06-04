@@ -69,6 +69,10 @@ atomic
 -
 pthread.h
 -
+noncopyable.h
+/home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
+
+/home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/scheduler.h
 memory
@@ -99,6 +103,8 @@ pthread.h
 -
 mutex.h
 /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+noncopyable.h
+/home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/timer.h
 memory
@@ -137,4 +143,14 @@ string
 /home/shenyanyu/Desktop/Sylar/sylar/log.h
 ../sylar/iomanager.h
 /home/shenyanyu/Desktop/Sylar/sylar/iomanager.h
+sys/types.h
+-
+sys/socket.h
+-
+arpa/inet.h
+-
+unistd.h
+-
+string.h
+-
 

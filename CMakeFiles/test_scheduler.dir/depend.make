@@ -6,6 +6,7 @@ CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/fiber.h
 CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/log.h
 CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/macro.h
 CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/mutex.h
+CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/noncopyable.h
 CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/scheduler.h
 CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/singleton.h
 CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o: sylar/sylar.h

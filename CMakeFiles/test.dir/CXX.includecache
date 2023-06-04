@@ -39,6 +39,10 @@ atomic
 -
 pthread.h
 -
+noncopyable.h
+/home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
+
+/home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/singleton.h
 
@@ -55,6 +59,8 @@ pthread.h
 -
 mutex.h
 /home/shenyanyu/Desktop/Sylar/sylar/mutex.h
+noncopyable.h
+/home/shenyanyu/Desktop/Sylar/sylar/noncopyable.h
 
 /home/shenyanyu/Desktop/Sylar/sylar/util.h
 pthread.h
