@@ -2,9 +2,8 @@
 C++高性能服务器框架
 
 ## 项目配置
-boost
-yaml-cpp
-
+boost：  sudo apt-get install libboost-dev
+yaml-cpp ： sudo apt-get install libyaml-cpp-dev
 
 流程图-uml图
 
