@@ -327,8 +327,9 @@ std::enable_shared_from_this 有什么意义？ - https://www.zhihu.com/question
 - 但是目前处理的思路比较粗暴，简单
 
 为什们不用单调时间?  ->clock_gettime只能获得秒和纳秒
+## Socket相关
 
-## Socket IO HooK
+### Socket IO HooK
 
 Hook? https://www.midlane.top/wiki/pages/viewpage.action?pageId=16417219
 
@@ -354,3 +355,21 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
 
  - 只Hook Socket的文件描述符fd -> 创建一个类了管理FD
 
+### 网络模版Socket
+
+原始socket封装， 提供流式API
+
+- Address封装： IPV4, IPV6, UNIX
+
+  ```
+                             |--- IPV4
+      Address -- IPAddress --|
+        |                    |--- IPV65
+        |
+    UNIXAddress
+  ```
+
+    - 考虑全面
+    - API可以直接调用
+
+- Socket封装： TCP or UDP
