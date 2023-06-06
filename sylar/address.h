@@ -43,7 +43,7 @@ public:
     virtual IPAddress::ptr subnetMask(uint32_t prefix_len) = 0;
 
     virtual uint32_t getPort() const = 0;
-    virtual void setPort() const = 0;
+    virtual void setPort(uint32_t v) const = 0;
 };
 
 class IPv4Address : public IPAddress {
@@ -63,7 +63,7 @@ public:
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
 
     uint32_t getPort() const override;
-    void setPort() override;
+    void setPort(uint32_t v) override;
 private:
     sockaddr_in m_addr;
 };
@@ -71,7 +71,8 @@ private:
 class IPv6Address : public Address {
 public:
     typedef std::shared_ptr<IPv4Address> ptr;
-    IPv6Address(uint32_t address = INADDR_ANY, uint32_t port = 0);
+    IPv6Address();
+    IPv6Address(const char* address, uint32_t port = 0);
     
 
     const sockaddr* getAddr() const override;
@@ -83,7 +84,7 @@ public:
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
 
     uint32_t getPort() const override;
-    void setPort() override;
+    void setPort(uint32_t v) override;
 private:
     sockaddr_in6 m_addr;
 };
@@ -91,9 +92,9 @@ private:
 class UnixAddress : public Address {
 public:
     typedef std::shared_ptr<UnixAddress> ptr;
+    UnixAddress();
     UnixAddress(cosnt std::string& path);       // Unix套接字实际是一个文件
     
-
     const sockaddr* getAddr() const override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream&os ) const override;
@@ -110,7 +111,7 @@ private:
 class UnknownAddress : public Address {
 public:
     typedef std::shared_ptr<UnknownAddress> ptr;
-    UnknownAddress();
+    UnknownAddress(int family);
     UnknownAddress(const sockaddr& addr);
 
     const sockaddr* getAddr() const override;
