@@ -16,6 +16,7 @@ set(LIB_SRC
     sylar/timer.cc
     sylar/hook.cc
     sylar/fd_manager.cc
+    sylar/address.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件

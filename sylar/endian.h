@@ -9,9 +9,12 @@
 #define SYLAR_LITTLE_ENDIAN 1
 #define SYLAR_BIG_ENDIAN 2
 
+#include <byteswap.h>
+#include <stdint.h>
+
 /// 为什们不直接用hton()??
 /// 研究htonl()底层，实际也是通过bswap_64...实现的
-namespace syalr{
+namespace sylar {
 /**
  * @brief 8字节类型的字节序转化
  */

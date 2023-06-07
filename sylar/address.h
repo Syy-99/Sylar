@@ -3,13 +3,19 @@
 - @file address.h
 - @brief 网络地址的封装(IPv4,IPv6,Unix)
 */
- #ifndef SYLAR_ADDRESS_H
- #define SYLAR_ADDRESS_H
+#ifndef SYLAR_ADDRESS_H
+#define SYLAR_ADDRESS_H
 
 #include <memory>
 #include <string>
-#include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <iostream>
+#include <vector>
+#include <map>
 
 namespace sylar {
 
@@ -22,7 +28,7 @@ public:
     int getFamily() const;
 
     virtual const sockaddr* getAddr() const = 0;
-    virtual socklen_t getAddrLen() const = 0
+    virtual socklen_t getAddrLen() const = 0;
 
     virtual std::ostream& insert(std::ostream&os ) const = 0; 
     std::string toString();
@@ -43,7 +49,7 @@ public:
     virtual IPAddress::ptr subnetMask(uint32_t prefix_len) = 0;
 
     virtual uint32_t getPort() const = 0;
-    virtual void setPort(uint32_t v) const = 0;
+    virtual void setPort(uint32_t v) = 0;
 };
 
 class IPv4Address : public IPAddress {
@@ -53,6 +59,8 @@ public:
     /// IPv4地址初始化
     // 实际上ipv4的地址就是一个4字节的int
     IPv4Address(uint32_t address = INADDR_ANY, uint32_t port = 0);
+
+    IPv4Address(const sockaddr_in& address);
     
     const sockaddr* getAddr() const override;
     socklen_t getAddrLen() const override;
@@ -68,12 +76,12 @@ private:
     sockaddr_in m_addr;
 };
 
-class IPv6Address : public Address {
+class IPv6Address : public IPAddress {
 public:
-    typedef std::shared_ptr<IPv4Address> ptr;
+    typedef std::shared_ptr<IPv6Address> ptr;
     IPv6Address();
     IPv6Address(const char* address, uint32_t port = 0);
-    
+    IPv6Address(const sockaddr_in6& address);
 
     const sockaddr* getAddr() const override;
     socklen_t getAddrLen() const override;
@@ -93,14 +101,14 @@ class UnixAddress : public Address {
 public:
     typedef std::shared_ptr<UnixAddress> ptr;
     UnixAddress();
-    UnixAddress(cosnt std::string& path);       // Unix套接字实际是一个文件
+    UnixAddress(const std::string& path);       // Unix套接字实际是一个文件
     
     const sockaddr* getAddr() const override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream&os ) const override;
 
 private:
-    struct sockaddr_un m_addr;
+    sockaddr_un m_addr;
     socklen_t m_length;
 };
 
@@ -113,7 +121,7 @@ public:
     typedef std::shared_ptr<UnknownAddress> ptr;
     UnknownAddress(int family);
     UnknownAddress(const sockaddr& addr);
-
+    
     const sockaddr* getAddr() const override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
@@ -122,3 +130,5 @@ private:
 };
 
 } // sylar
+
+#endif
