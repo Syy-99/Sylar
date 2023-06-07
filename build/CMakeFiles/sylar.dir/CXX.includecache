@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/gaoxiaoyu/syy/Sylar/sylar/address.cc
+address.h
+/home/gaoxiaoyu/syy/Sylar/sylar/address.h
+sstream
+-
+endian.h
+/home/gaoxiaoyu/syy/Sylar/sylar/endian.h
+
+/home/gaoxiaoyu/syy/Sylar/sylar/address.h
+memory
+-
+string
+-
+sys/types.h
+-
+sys/socket.h
+-
+sys/un.h
+-
+arpa/inet.h
+-
+unistd.h
+-
+iostream
+-
+vector
+-
+map
+-
+
+/home/gaoxiaoyu/syy/Sylar/sylar/endian.h
+byteswap.h
+-
+stdint.h
+-
+

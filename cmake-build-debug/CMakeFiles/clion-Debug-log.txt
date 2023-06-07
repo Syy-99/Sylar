@@ -1,4 +1,0 @@
-无法生成至 /Users/shenyanyu/CLionProjects/Sylar
-它已用于项目 /home/shenyanyu/Desktop/Sylar
-
-请手动删除或选择其他生成目录

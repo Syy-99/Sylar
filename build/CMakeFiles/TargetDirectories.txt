@@ -1,0 +1,11 @@
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_iomanager.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_scheduler.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_fiber.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/rebuild_cache.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_util.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_config.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/edit_cache.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_thread.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/test_hook.dir
+/home/gaoxiaoyu/syy/Sylar/build/CMakeFiles/sylar.dir
