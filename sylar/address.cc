@@ -32,6 +32,13 @@ Address::ptr Address::Create(const sockaddr* addr, socklen_t addrlen) {
     return result;
 }
 
+/// 创建掩码
+template<class T>
+static T CreateMask(uint32_t bits) {
+    return (1 << (sizeof(T)*8 - bits)) - 1;
+} 
+
+
 int Address::getFamily() const {
     return getAddr()->sa_family;
 }

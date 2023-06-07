@@ -252,7 +252,11 @@ sylar/address.o: sylar/address.cc.o
 
 # target to build an object file
 sylar/address.cc.o:
+<<<<<<< HEAD:build/Makefile
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/address.cc.o
+=======
+	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/address.cc.o
+>>>>>>> 73ce12168b386f0dd0640365259c768c96990c66:Makefile
 .PHONY : sylar/address.cc.o
 
 sylar/address.i: sylar/address.cc.i
@@ -261,7 +265,11 @@ sylar/address.i: sylar/address.cc.i
 
 # target to preprocess a source file
 sylar/address.cc.i:
+<<<<<<< HEAD:build/Makefile
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/address.cc.i
+=======
+	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/address.cc.i
+>>>>>>> 73ce12168b386f0dd0640365259c768c96990c66:Makefile
 .PHONY : sylar/address.cc.i
 
 sylar/address.s: sylar/address.cc.s
@@ -270,7 +278,11 @@ sylar/address.s: sylar/address.cc.s
 
 # target to generate assembly for a file
 sylar/address.cc.s:
+<<<<<<< HEAD:build/Makefile
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/address.cc.s
+=======
+	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/address.cc.s
+>>>>>>> 73ce12168b386f0dd0640365259c768c96990c66:Makefile
 .PHONY : sylar/address.cc.s
 
 sylar/config.o: sylar/config.cc.o
@@ -799,10 +811,14 @@ help:
 	@echo "... test_config"
 	@echo "... test_fiber"
 	@echo "... test_hook"
+<<<<<<< HEAD:build/Makefile
 	@echo "... test_iomanager"
 	@echo "... test_scheduler"
 	@echo "... test_thread"
 	@echo "... test_util"
+=======
+	@echo "... sylar"
+>>>>>>> 73ce12168b386f0dd0640365259c768c96990c66:Makefile
 	@echo "... sylar/address.o"
 	@echo "... sylar/address.i"
 	@echo "... sylar/address.s"

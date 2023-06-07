@@ -1,6 +1,9 @@
 file(REMOVE_RECURSE
+<<<<<<< HEAD:build/CMakeFiles/sylar.dir/cmake_clean.cmake
   "../lib/libsylar.pdb"
   "../lib/libsylar.so"
+=======
+>>>>>>> 73ce12168b386f0dd0640365259c768c96990c66:CMakeFiles/sylar.dir/cmake_clean.cmake
   "CMakeFiles/sylar.dir/sylar/address.cc.o"
   "CMakeFiles/sylar.dir/sylar/config.cc.o"
   "CMakeFiles/sylar.dir/sylar/fd_manager.cc.o"
