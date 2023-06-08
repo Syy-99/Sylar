@@ -19,6 +19,7 @@
 
 namespace sylar {
 
+class IPAddress;
 class Address {
 public:
     typedef std::shared_ptr<Address> ptr;
@@ -67,7 +68,7 @@ public:
 
     
     /**
-     * @brief 返回本机所有网卡的<网卡名, 地址, 子网掩码位数>
+     * @brief 返回本机所有网卡的<网卡名, 地址, 子网掩码位数>  -> 参考命令if addr
      * @param[out] result 保存本机所有地址
      * @param[in] family 协议族(AF_INT, AF_INT6, AF_UNIX)
      * @return 是否获取成功

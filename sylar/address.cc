@@ -17,6 +17,7 @@ static T CreateMask(uint32_t bits) {
 } 
 
 /// 统计掩码长度， value通常是个IP地址
+/// uint32_t只能记录32位 
 /*
  * 假设value=12 -> 1110, 那么子网掩码长度应该是3，计算逻辑如下：
  * 1110 & 1101 = 1100; 1100 & 1011 = 1000; 1000 & 0111 = 0000;
@@ -26,7 +27,7 @@ template<class T>
 static uint32_t CountBytes(T value) {
     uint32_t result = 0;
     for(; value; ++result) {
-        value &= value - 1; 
+        value &= value - 1;     // 抹掉最右侧的1
     }
     return result;
 }
@@ -36,8 +37,8 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
     addrinfo hints, *results, *next;
     hints.ai_flags = 0;
     hints.ai_family = family;       // 限制
-    hints.ai_socktype = type;       // 限制
-    hints.ai_protocol = protocol;   // 限制
+    hints.ai_socktype = type;       // 限制,默认为0，无限制，支持三种套接字类型(一个端口支持三种类型)
+    hints.ai_protocol = protocol;   // 限制默认为0，无限制，对应上面三种套接字类型
     hints.ai_addrlen = 0;
     hints.ai_canonname = NULL;
     hints.ai_addr = NULL;
@@ -48,8 +49,8 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
     
     /// ??? 下面几个if逻辑是做什么的???
 
-    //检查 ipv6address serivce
-    if(!host.empty() && host[0] == '[') {   //???? host[0] == '[' -> ipv6方括号里面是0??
+    //[fe80::5a11:22ff:fea8:a11a]:0 形式
+    if(!host.empty() && host[0] == '[') {   //???? host[0] == '[' ?
         // 找到']'的指针
         const char* endipv6 = (const char*)memchr(host.c_str() + 1, ']', host.size() - 1);  
         if(endipv6) {
@@ -61,8 +62,8 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
         }
     }
 
-    //检查 node serivce
-    if(node.empty()) {  // ??为空??
+    // www.baidu.com:80
+    if(node.empty()) {  // node为空，说明没有经过上面的if处理
         service = (const char*)memchr(host.c_str(), ':', host.size());
         if(service) {
             if(!memchr(service + 1, ':', host.c_str() + host.size() - service - 1)) {
@@ -72,9 +73,8 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
         }
     }
 
-
-    /// ????
-    if(node.empty()) {
+    // www.baidu.com
+    if(node.empty()) {  // 说明没有经过上面的if处理，也就说没有:80
         node = host;
     }
 
@@ -224,12 +224,6 @@ Address::ptr Address::Create(const sockaddr* addr, socklen_t addrlen) {
     return result;
 }
 
-/// 创建掩码
-template<class T>
-static T CreateMask(uint32_t bits) {
-    return (1 << (sizeof(T)*8 - bits)) - 1;
-} 
-
 
 int Address::getFamily() const {
     return getAddr()->sa_family;
@@ -266,7 +260,7 @@ IPAddress::ptr IPAddress::Create(const char* address, uint16_t port) {
     addrinfo hints, *results;
     memset(&hints, 0, sizeof(addrinfo));
 
-    hints.ai_flags = AI_NUMERICHOST;    // ???
+    // hints.ai_flags = AI_NUMERICHOST;    // address只能是数字化的地址字符串，不能是域名
     hints.ai_family = AF_UNSPEC;        // 允许IPv4 or IPv6
 
     /// Pv6中引入了getaddrinfo()的新API，它是协议无关的，既可用于IPv4也可用于IPv6。
@@ -297,7 +291,7 @@ IPAddress::ptr IPAddress::Create(const char* address, uint16_t port) {
     }
 }
 
-IPv4Address::ptr IPv4Address::Create(const char* address, uint16_t port = 0) {
+IPv4Address::ptr IPv4Address::Create(const char* address, uint16_t port) {
     IPv4Address::ptr rt(new IPv4Address);
     rt->m_addr.sin_port = byteswapOnLittleEndian(port);
     int result = inet_pton(AF_INET, address, &rt->m_addr.sin_addr);
