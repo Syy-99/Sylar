@@ -76,12 +76,16 @@ void set_hook_enable(bool flag) {
     t_hook_enable = flag;
 }
 
+} // sylar
+
 /// 存放条件的结构体，为了条件定时器
 /// ??? 为什么要用结构体，直接用int类型变量不可以吗??
 struct timer_info {
     int cancelled = 0;
 };
 
+
+///!! 注意，下面的函数定义在全局namespace，所以才会覆盖原始的库函数
 
 /// 读写的Socket函数封装
 // fun: 原始的函数；hook_fun_name: 函数名； event: 事件类型；timeout_so： time_out的类型
@@ -171,6 +175,8 @@ retry:
     // 这个时候虽然对应的timer没有被手动释放，但是winfo是空，因此即使该timer到达时间触发执行，也不会做任何操作
     // 反而，如果到达超时时间还没有读到数据，则会执行其中的函数取消事件                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 }
+
+
 
 
 extern "C" {
@@ -283,8 +289,8 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     }
     // n == -1 && errno == EINPPROGRESS
     // 没有conect成功，但是可能是因为非阻塞的原因返回
+    
     // 开始设置定时任务
-
     sylar::IOManager* iom = sylar::IOManager::GetThis();
     sylar::Timer::ptr timer;
     std::shared_ptr<timer_info> tinfo(new timer_info);
@@ -557,5 +563,3 @@ int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t
 
 
 }   // extern "c"
-
-} // sylar

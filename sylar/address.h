@@ -139,7 +139,7 @@ public:
 
     /// IPv4地址初始化
     // 实际上ipv4的地址就是一个4字节的int,INADDR_ANY实际上是0,表示0.0.0.0的IP地址
-    IPv4Address(uint32_t address = INADDR_ANY, uint32_t port = 0);
+    IPv4Address(uint32_t address = INADDR_ANY, uint16_t port = 0);
 
     IPv4Address(const sockaddr_in& address);
     
@@ -151,7 +151,7 @@ public:
     IPAddress::ptr networdAddress(uint32_t prefix_len) override;
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
 
-    uint32_t getPort() const override;
+    uint16_t getPort() const override;
     void setPort(uint32_t v) override;
 private:
     sockaddr_in m_addr;
@@ -170,7 +170,7 @@ public:
 
 
     IPv6Address();
-    IPv6Address(const char* address, uint32_t port = 0);
+    IPv6Address(const char* address, uint16_t port = 0);
     IPv6Address(const sockaddr_in6& address);
 
     const sockaddr* getAddr() const override;
@@ -181,7 +181,7 @@ public:
     IPAddress::ptr networdAddress(uint32_t prefix_len) override;
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
 
-    uint32_t getPort() const override;
+    uint16_t getPort() const override;
     void setPort(uint32_t v) override;
 private:
     sockaddr_in6 m_addr;
@@ -195,6 +195,7 @@ public:
     
     const sockaddr* getAddr() const override;
     socklen_t getAddrLen() const override;
+    void setAddrLen(uint32_t v);
     std::ostream& insert(std::ostream&os ) const override;
 
 private:

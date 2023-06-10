@@ -21,9 +21,9 @@ cpu只能重新从内存中取出offset偏移处的指令。
 */
 #if defined __GNUC__ || defined __llvm__
 /// LIKCLY 宏的封装, 告诉编译器优化,条件大概率成立
-#   define SYLAR_LIKELY(x)       __builtin_expect(!!(x), 1)     // !!x==1的概念很大，CPU会优先取下面的指令
+#   define SYLAR_LIKELY(x)       __builtin_expect(!!(x), 1)     // x更有可能是真的
 /// LIKCLY 宏的封装, 告诉编译器优化,条件大概率不成立
-#   define SYLAR_UNLIKELY(x)     __builtin_expect(!!(x), 0)     //  x很可能是假
+#   define SYLAR_UNLIKELY(x)     __builtin_expect(!!(x), 0)     // x更有可能是假的
 #else
 #   define SYLAR_LIKELY(x)      (x)
 #   define SYLAR_UNLIKELY(x)      (x)

@@ -307,7 +307,7 @@ IPv4Address::ptr IPv4Address::Create(const char* address, uint16_t port) {
 IPv4Address::IPv4Address(const sockaddr_in& address) {
     m_addr = address;
 }
-IPv4Address::IPv4Address(uint32_t address, uint32_t port) {
+IPv4Address::IPv4Address(uint32_t address, uint16_t port) {
     memset(&m_addr, 0, sizeof(m_addr));
     m_addr.sin_family = AF_INET;
     m_addr.sin_port = byteswapOnLittleEndian(port);     // 只有小端序的主机需要转换
@@ -369,7 +369,7 @@ IPAddress::ptr IPv4Address::subnetMask(uint32_t prefix_len) {
     return IPv4Address::ptr(new IPv4Address(subnet));
 }
 
-uint32_t IPv4Address::getPort() const {
+uint16_t IPv4Address::getPort() const {
     return byteswapOnLittleEndian(m_addr.sin_port);
 
 }
@@ -399,7 +399,7 @@ IPv6Address::IPv6Address(const sockaddr_in6& address) {
     m_addr = address;
 }
 
-IPv6Address::IPv6Address(const char* address, uint32_t port) {
+IPv6Address::IPv6Address(const char* address, uint16_t port) {
     memset(&m_addr, 0, sizeof(m_addr));
     m_addr.sin6_family = AF_INET6;
     m_addr.sin6_port = byteswapOnLittleEndian(port);     // 只有小端序的主机需要转换
@@ -477,7 +477,7 @@ IPAddress::ptr IPv6Address::subnetMask(uint32_t prefix_len) {
     return IPv6Address::ptr(new IPv6Address(subnet));
 }
 
-uint32_t IPv6Address::getPort() const {
+uint16_t IPv6Address::getPort() const {
     return byteswapOnLittleEndian(m_addr.sin6_port);    // 我们希望转换为大端，所以只需要在小端机器上进行转换即可
 }
 void IPv6Address::setPort(uint32_t v) {
@@ -515,6 +515,9 @@ const sockaddr* UnixAddress::getAddr() const {
 }
 socklen_t UnixAddress::getAddrLen() const {
     return m_length;
+}
+void UnixAddress::setAddrLen(uint32_t v) {
+    m_length = v;
 }
 std::ostream& UnixAddress::insert(std::ostream&os ) const {
      if(m_length > offsetof(sockaddr_un, sun_path)
