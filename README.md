@@ -358,6 +358,8 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
 
 原始socket封装， 提供流式API
 
+  - 符合OOP思想，使用更方便
+
 - Address封装： IPV4, IPV6, UNIX
 
   ```
@@ -373,4 +375,9 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
 
     > syalr在实现时，有些函数其实标准库有提供，它自己又写了一个，后面可以
 
-- Socket封装： TCP or UDP
+- Socket：
+
+  - socket函数封装： connect accept read write close
+
+    > 这些不是hook了吗
+
