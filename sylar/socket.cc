@@ -1,9 +1,61 @@
 #include "socket.h"
+#include "iomanager.h"
 #include "fd_manager.h"
-#include "logger.h"
+#include "log.h"
 #include "macro.h"
-sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+#include "hook.h"
+
 namespace sylar {
+
+static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+
+Socket::ptr Socket::CreateTCP(sylar::Address::ptr address) {
+    Socket::ptr sock(new Socket(address->getFamily(), TCP, 0));
+    return sock;
+}
+
+Socket::ptr Socket::CreateUDP(sylar::Address::ptr address) {
+    Socket::ptr sock(new Socket(address->getFamily(), UDP, 0));
+    /// 如果是UDP套接字，则默认已连接
+    sock->newSock();    // ??? 为什们要提前创建socket套接字
+    sock->m_isConnected = true;
+    return sock;
+}
+
+Socket::ptr Socket::CreateTCPSocket() {
+    Socket::ptr sock(new Socket(IPv4, TCP, 0));
+    return sock;
+}
+
+Socket::ptr Socket::CreateUDPSocket() {
+    Socket::ptr sock(new Socket(IPv4, UDP, 0));
+    sock->newSock();
+    sock->m_isConnected = true;
+    return sock;
+}
+
+Socket::ptr Socket::CreateTCPSocket6() {
+    Socket::ptr sock(new Socket(IPv6, TCP, 0));
+    return sock;
+}
+
+Socket::ptr Socket::CreateUDPSocket6() {
+    Socket::ptr sock(new Socket(IPv6, UDP, 0));
+    sock->newSock();
+    sock->m_isConnected = true;
+    return sock;
+}
+
+Socket::ptr Socket::CreateUnixTCPSocket() {
+    Socket::ptr sock(new Socket(UNIX, TCP, 0));
+    return sock;
+}
+
+/// ???UNIX套接字创建了有什么用? 为什么它也需要分类呢??
+Socket::ptr Socket::CreateUnixUDPSocket() {
+    Socket::ptr sock(new Socket(UNIX, UDP, 0));
+    return sock;
+}
 
 Socket::Socket(int family, int type, int protocol) 
     :m_sock(-1)
@@ -25,7 +77,7 @@ int64_t Socket::getSendTimeout() {
     }
     return -1;
 }
-void Socket::setSendTimeout(int64_t, v) {
+void Socket::setSendTimeout(int64_t v) {
     // 毫秒级别
     struct timeval tv{int(v / 1000), int(v % 1000 * 1000)};
     setOption(SOL_SOCKET, SO_SNDTIMEO, tv);     // 调用成员函数setOption, 给套接字设置send超时时间
@@ -38,13 +90,13 @@ int64_t Socket::getRecvTimeout() {
     }
     return -1;
 }
-void Socket::setRecvTimeout(int64_t) {
+void Socket::setRecvTimeout(int64_t v) {
     // 毫秒级别
     struct timeval tv{int(v / 1000), int(v % 1000 * 1000)};
     setOption(SOL_SOCKET, SO_RCVTIMEO, tv);     // 调用成员函数setOption, 给套
 }
 
-bool Socket::getOption(int level, int option, void* result, size_t* len) {
+bool Socket::getOption(int level, int option, void* result, socklen_t* len) {
     /// 基于Hook的getSocketOption
    int rt = getsockopt(m_sock, level, option, result, (socklen_t*)len);
    if (rt) {
@@ -53,7 +105,7 @@ bool Socket::getOption(int level, int option, void* result, size_t* len) {
             << " errno=" << errno << " errstr=" << strerror(errno);
         return false;
    }
-   return true
+   return true;
 
 }
 
@@ -77,7 +129,7 @@ bool Socket::bind(const Address::ptr addr) {
     }
 
     // ?? 只需要判断family吗????
-    if (SYLAR_UNLIKELY(addr->getFamily != m_family)) {  // 绑定的地址不符合该socket的类型
+    if (SYLAR_UNLIKELY(addr->getFamily() != m_family)) {  // 绑定的地址不符合该socket的类型
         SYLAR_LOG_ERROR(g_logger) << "bind sock.family("
             << m_family << ") addr.family(" << addr->getFamily()
             << ") not equal, addr=" << addr->toString();
@@ -94,7 +146,7 @@ bool Socket::bind(const Address::ptr addr) {
 
 }
 
-Socket::ptr accept() {
+Socket::ptr Socket::accept() {
     Socket::ptr sock(new Socket(m_family, m_type, m_protocol));
 
     int newsock = ::accept(m_sock, nullptr, nullptr); 
@@ -110,29 +162,33 @@ Socket::ptr accept() {
     }
     return nullptr;
 }
-bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms = -1) {
+bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms) {
     if (!isValid()) {
         newSock();
         if(SYLAR_UNLIKELY(!isValid())) {
             return false;
         }
     }
-
+    // SYLAR_LOG_INFO(g_logger) << "???1" << m_sock;
     if(SYLAR_UNLIKELY(addr->getFamily() != m_family)) {
         SYLAR_LOG_ERROR(g_logger) << "connect sock.family("
             << m_family << ") addr.family(" << addr->getFamily()
             << ") not equal, addr=" << addr->toString();
         return false;
     }
+    // SYLAR_LOG_INFO(g_logger) << "???2";
 
     if (timeout_ms == (uint64_t)-1) {
+        SYLAR_LOG_INFO(g_logger) << "??? begin";
          if(::connect(m_sock, addr->getAddr(), addr->getAddrLen())) {
             SYLAR_LOG_ERROR(g_logger) << "sock=" << m_sock << " connect(" << addr->toString()
                 << ") error errno=" << errno << " errstr=" << strerror(errno);
             close();
             return false;
         }
+        SYLAR_LOG_INFO(g_logger) << "??? end";
     } else {
+        
         if(::connect_with_timeout(m_sock, addr->getAddr(), addr->getAddrLen(), timeout_ms)) {
             SYLAR_LOG_ERROR(g_logger) << "sock=" << m_sock << " connect(" << addr->toString()
                 << ") timeout=" << timeout_ms << " error errno="
@@ -141,7 +197,7 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms = -1) {
             return false;
         }
     }
-
+    SYLAR_LOG_INFO(g_logger) << "???3";
     m_isConnected = true;
     getLocalAddress();      
     getRemoteAddress();     // 连接地址就是远程地址
@@ -149,7 +205,7 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms = -1) {
 
 }
 
-bool Socket::listen(int backlog = SOMAXCONN) {   // SOMAXCONN宏
+bool Socket::listen(int backlog) {   // SOMAXCONN宏
     if(!isValid()) {
         SYLAR_LOG_ERROR(g_logger) << "listen error sock=-1";
         return false;
@@ -179,7 +235,7 @@ bool Socket::close() {
     return false;    // ?? 返回false???
 }
 
-int Socket::send(const void* buffer, size_t length, int flags = 0) {
+int Socket::send(const void* buffer, size_t length, int flags) {
     if(isConnected()) {
         return ::send(m_sock, buffer, length, flags);
     }
@@ -187,7 +243,7 @@ int Socket::send(const void* buffer, size_t length, int flags = 0) {
 }
 
 // 多个buffer一起发送
-int Socket::send(const iovec* buffers, size_t length, int flags = 0) {
+int Socket::send(const iovec* buffers, size_t length, int flags) {
     if(isConnected()) {
         msghdr msg;
         memset(&msg, 0, sizeof(msg));
@@ -198,19 +254,19 @@ int Socket::send(const iovec* buffers, size_t length, int flags = 0) {
     }
     return -1;
 }
-int Socket::sendTo(const void* buffer, size_t length, const Address::ptr to, int flags = 0) {
+int Socket::sendTo(const void* buffer, size_t length, const Address::ptr to, int flags) {
     if(isConnected()) {
         return ::sendto(m_sock, buffer, length, flags, to->getAddr(), to->getAddrLen());
     }
     return -1;
 }
-int Socket::sendTo(const iovec* buffers, size_t length, const Address::ptr to, int flags = 0) {
+int Socket::sendTo(const iovec* buffers, size_t length, const Address::ptr to, int flags) {
     if(isConnected()) {
         msghdr msg;
         memset(&msg, 0, sizeof(msg));
         msg.msg_iov = (iovec*)buffers;
         msg.msg_iovlen = length;
-        msg.msg_name = to->getAddr();       // UDP需要地址信息
+        msg.msg_name = to->getAddr();       // UDP需要地址信息 msg.msg_name非const的类型
         msg.msg_namelen = to->getAddrLen();
 
         return ::sendmsg(m_sock, &msg, flags);
@@ -218,13 +274,13 @@ int Socket::sendTo(const iovec* buffers, size_t length, const Address::ptr to, i
     return -1;
 }
 
-int Socket::recv(void* buffer, size_t length, int flags = 0) {
+int Socket::recv(void* buffer, size_t length, int flags ) {
     if(isConnected()) {
         return ::recv(m_sock, buffer, length, flags);
     }
     return -1;
 }
-int Socket::recv(iovec* buffers, size_t length, int flags = 0) {
+int Socket::recv(iovec* buffers, size_t length, int flags) {
     if(isConnected()) {
         msghdr msg;
         memset(&msg, 0, sizeof(msg));
@@ -234,14 +290,14 @@ int Socket::recv(iovec* buffers, size_t length, int flags = 0) {
     }
     return -1;
 }
-int Socket::recvFrom(void* buffer, size_t length, Address::ptr from, int flags = 0) {
+int Socket::recvFrom(void* buffer, size_t length, Address::ptr from, int flags) {
     if(isConnected()) {
         socklen_t len = from->getAddrLen();
         return ::recvfrom(m_sock, buffer, length, flags, from->getAddr(), &len);
     }
     return -1;
 }
-int Socket::recvFrom(iovec* buffers, size_t length, Address::ptr from, int flags = 0) {
+int Socket::recvFrom(iovec* buffers, size_t length, Address::ptr from, int flags) {
     if(isConnected()) {
         msghdr msg;
         memset(&msg, 0, sizeof(msg));
@@ -328,22 +384,58 @@ Address::ptr Socket::getLocalAddress() {
 }
 
 bool Socket::isValid() const {
-    return m_sock == -1;
+    return m_sock != -1;
 }
-int Socket::getError();
+
+int Socket::getError() {
+    int error = 0;
+    socklen_t len = sizeof(error);
+    /// SO_ERROR 当套接口发生错误时,
+    /// 套接口名为so_error的变量被设置为标准的UNIX Exxx值的一个,它称为套接字的待处理错误
+    if(!getOption(SOL_SOCKET, SO_ERROR, &error, &len)) {
+        error = errno;
+    }
+    return error;
+}
 
 /// 输出信息的流中
-std::ostream& Socket::dump(std::ostream& os) const;
+std::ostream& Socket::dump(std::ostream& os) const {
+    os << "[SSLSocket sock=" << m_sock
+       << " is_connected=" << m_isConnected
+       << " family=" << m_family
+       << " type=" << m_type
+       << " protocol=" << m_protocol;
 
-/// 返回socket句柄
-int Socket::getSocket() const { return m_sock;}
+    if(m_localAddress) {
+        os << " local_address=" << m_localAddress->toString();
+    }
+
+    if(m_remoteAddress) {
+        os << " remote_address=" << m_remoteAddress->toString();
+    }
+
+    os << "]";
+    return os;
+}
 
 // socket上的事件管理
-bool Socket::cancelRead();
-bool Socket::cancelWrite();
-bool Socket::cancelAccept();
-bool Socket::cancelAll();
+bool Socket::cancelRead() {
+    // 取消m_sock上的读事件
+    /// 所有的事件都会添加到IOManager中，根据m_sock管理
+    return IOManager::GetThis()->cancelEvent(m_sock, sylar::IOManager::READ);
+}
 
+bool Socket::cancelWrite() {
+    return IOManager::GetThis()->cancelEvent(m_sock, sylar::IOManager::WRITE);
+}
+
+bool Socket::cancelAccept() {
+    return IOManager::GetThis()->cancelEvent(m_sock, sylar::IOManager::READ);
+}
+
+bool Socket::cancelAll() {
+    return IOManager::GetThis()->cancelAll(m_sock);
+}
 
 
 void Socket::initSock() {
@@ -352,12 +444,14 @@ void Socket::initSock() {
     setOption(SOL_SOCKET, SO_REUSEADDR, val);      // SO_REUSEADDR 设置端口可以立刻重用
     if(m_type == SOCK_STREAM) {
         setOption(IPPROTO_TCP, TCP_NODELAY, val);   //   设置TCP_NODELAY 属性，禁用 Nagle 算法
+        // 禁止合并缓存，但是为了降低延迟就得必须发
     }    
 }
 
 void Socket::newSock() {
     /// 生成一个socket
     m_sock = socket(m_family, m_type, m_protocol);
+    // SYLAR_LOG_ERROR(g_logger) << "new " <<m_sock;
     if(SYLAR_LIKELY(m_sock != -1)) {        // m_sock != -1大概率是真的
         initSock();
     } else {

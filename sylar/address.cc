@@ -318,6 +318,9 @@ const sockaddr* IPv4Address::getAddr() const {
     return (sockaddr*)&m_addr;
 
 }
+sockaddr* IPv4Address::getAddr() {
+    return (sockaddr*)&m_addr;
+}
 socklen_t IPv4Address::getAddrLen() const {
     return sizeof(m_addr);
 
@@ -408,6 +411,9 @@ IPv6Address::IPv6Address(const char* address, uint16_t port) {
 }
 
 const sockaddr* IPv6Address::getAddr() const {
+    return (sockaddr*)&m_addr;
+}
+sockaddr* IPv6Address::getAddr() {
     return (sockaddr*)&m_addr;
 }
 socklen_t IPv6Address::getAddrLen() const {
@@ -513,6 +519,9 @@ UnixAddress::UnixAddress(const std::string& path){       // Unix套接字实际�
 const sockaddr* UnixAddress::getAddr() const {
     return (sockaddr*)&m_addr;
 }
+sockaddr* UnixAddress::getAddr() {
+    return (sockaddr*)&m_addr;
+}
 socklen_t UnixAddress::getAddrLen() const {
     return m_length;
 }
@@ -540,6 +549,9 @@ UnknownAddress::UnknownAddress(int family) {
 }
 
 const sockaddr* UnknownAddress::getAddr() const {
+    return &m_addr;
+}
+sockaddr* UnknownAddress::getAddr() {
     return &m_addr;
 }
 socklen_t UnknownAddress::getAddrLen() const {

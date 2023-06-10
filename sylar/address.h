@@ -91,6 +91,7 @@ public:
     int getFamily() const;
 
     virtual const sockaddr* getAddr() const = 0;
+    virtual sockaddr* getAddr()= 0;
     virtual socklen_t getAddrLen() const = 0;
 
     virtual std::ostream& insert(std::ostream&os ) const = 0; 
@@ -120,7 +121,7 @@ public:
     virtual IPAddress::ptr networdAddress(uint32_t prefix_len) = 0;
     virtual IPAddress::ptr subnetMask(uint32_t prefix_len) = 0;
 
-    virtual uint32_t getPort() const = 0;
+    virtual uint16_t getPort() const = 0;
     virtual void setPort(uint32_t v) = 0;
 };
 
@@ -144,6 +145,7 @@ public:
     IPv4Address(const sockaddr_in& address);
     
     const sockaddr* getAddr() const override;
+    sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream&os ) const override;
 
@@ -174,6 +176,7 @@ public:
     IPv6Address(const sockaddr_in6& address);
 
     const sockaddr* getAddr() const override;
+    sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream&os ) const override;
 
@@ -194,6 +197,7 @@ public:
     UnixAddress(const std::string& path);       // Unix套接字实际是一个文件
     
     const sockaddr* getAddr() const override;
+    sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     void setAddrLen(uint32_t v);
     std::ostream& insert(std::ostream&os ) const override;
@@ -214,6 +218,7 @@ public:
     UnknownAddress(const sockaddr& addr);
     
     const sockaddr* getAddr() const override;
+    sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
 private:

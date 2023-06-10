@@ -266,7 +266,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     if (!sylar::t_hook_enable) {
         return connect_f(fd, addr , addrlen);
     }
-
+    // SYLAR_LOG_INFO(g_logger) << "???"<<fd;
     sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
     if (!ctx || ctx->isClose()) {
         errno = EBADF;
@@ -280,8 +280,9 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     if (ctx->getUserNonblock()) {
         return connect_f(fd, addr, addrlen);
     }
-    
+    SYLAR_LOG_DEBUG(g_logger) <<"begin";
     int n = connect_f(fd, addr, addrlen);
+     SYLAR_LOG_DEBUG(g_logger) <<"end";
     if (n == 0) {   // 调用成功
         return 0;
     } else if (n != -1 || errno != EINPROGRESS) { // 调用错误
@@ -340,10 +341,11 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     }
 
 }
+
 // 最复杂的一个
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
-   
-    return  connect_with_timeout(sockfd, addr, addrlen,s_connect_timeout);
+    // SYLAR_LOG_INFO(g_logger) << "???5";
+    return  connect_with_timeout(sockfd, addr, addrlen, sylar::s_connect_timeout);
     // 注意到，实际上connect并没有给超时时间这个参数
 }
 

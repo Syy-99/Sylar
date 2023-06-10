@@ -6,6 +6,7 @@
 #define __SYLAR_SOCKET_H__
 
 #include <memory>
+#include <netinet/tcp.h>
 #include "address.h" 
 #include "noncopyable.h"
 namespace sylar {
@@ -15,16 +16,81 @@ public:
     typedef std::shared_ptr<Socket> ptr;
     typedef std::weak_ptr<Socket> weak_ptr;     // 为啥要这个?
 
+    /**
+     * @brief Socket类型
+     */
+    enum Type {
+        /// TCP类型
+        TCP = SOCK_STREAM,
+        /// UDP类型
+        UDP = SOCK_DGRAM
+    };
+    /**
+     * @brief Socket协议簇
+     */
+    enum Family {
+        /// IPv4 socket
+        IPv4 = AF_INET,
+        /// IPv6 socket
+        IPv6 = AF_INET6,
+        /// Unix socket
+        UNIX = AF_UNIX,
+    };
+
+    /**
+     * @brief 创建TCP Socket(满足地址类型)
+     * @param[in] address 地址
+     */
+     /// 因为地址对象本身就保存了它的family
+    static Socket::ptr CreateTCP(sylar::Address::ptr address);
+
+    /**
+     * @brief 创建UDP Socket(满足地址类型)
+     * @param[in] address 地址
+     */
+    static Socket::ptr CreateUDP(sylar::Address::ptr address);
+
+    /**
+     * @brief 创建IPv4的TCP Socket
+     */
+    static Socket::ptr CreateTCPSocket();
+
+    /**
+     * @brief 创建IPv4的UDP Socket
+     */
+    static Socket::ptr CreateUDPSocket();
+
+    /**
+     * @brief 创建IPv6的TCP Socket
+     */
+    static Socket::ptr CreateTCPSocket6();
+
+    /**
+     * @brief 创建IPv6的UDP Socket
+     */
+    static Socket::ptr CreateUDPSocket6();
+
+    /**
+     * @brief 创建Unix的TCP Socket
+     */
+    static Socket::ptr CreateUnixTCPSocket();
+
+    /**
+     * @brief 创建Unix的UDP Socket
+     */
+    static Socket::ptr CreateUnixUDPSocket();
+
+
     Socket(int family, int type, int protocol);
     ~Socket();
 
     int64_t getSendTimeout();
-    void setSendTimeout(int64_t, v);
+    void setSendTimeout(int64_t v);
 
     int64_t getRecvTimeout();
     void setRecvTimeout(int64_t);
 
-    bool getOption(int level, int option, void* result, size_t* len);
+    bool getOption(int level, int option, void* result, socklen_t* len);
     template<class T>   // T类型支持哪些
     bool getOption(int level, int option, T& result) {
         socklen_t length = sizeof(T);

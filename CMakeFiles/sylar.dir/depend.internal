@@ -47,6 +47,7 @@ CMakeFiles/sylar.dir/sylar/hook.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/hook.h
  /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.h
  /home/gaoxiaoyu/syy/Sylar/sylar/log.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/macro.h
  /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
  /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
  /home/gaoxiaoyu/syy/Sylar/sylar/scheduler.h
@@ -91,6 +92,23 @@ CMakeFiles/sylar.dir/sylar/scheduler.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/scheduler.h
  /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
  /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/util.h
+CMakeFiles/sylar.dir/sylar/socket.cc.o
+ /home/gaoxiaoyu/syy/Sylar/sylar/address.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/fd_manager.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/fiber.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/hook.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/log.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/macro.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/scheduler.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/socket.cc
+ /home/gaoxiaoyu/syy/Sylar/sylar/socket.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/timer.h
  /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/thread.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/log.h
