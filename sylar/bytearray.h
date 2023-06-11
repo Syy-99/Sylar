@@ -19,6 +19,7 @@ public:
 
     /**
      * @brief ByteArray的存储节点,使用链表管理
+     * 注意：并不是一个结点一个数据，结点也是连续管理的
      */
     struct Node {
         Node(size_t s);
@@ -39,23 +40,23 @@ public:
 
     // 提供两种格式的写： 不压缩 of 压缩
     // 写固定长度的数据
-    void writeFint8(const int8_t value);
-    void writeFuint8(const uint8_t value);
-    void writeFint16(const int16_t value);
-    void writeFuint16(const uint16_t value);
-    void writeFint32(const int32_t value);
-    void writeFuint32(const uint32_t value);
-    void writeFint64(const int64_t value);
-    void writeFuint64(const uint64_t value);
+    void writeFint8(int8_t value);
+    void writeFuint8(uint8_t value);
+    void writeFint16(int16_t value);
+    void writeFuint16(uint16_t value);
+    void writeFint32(int32_t value);
+    void writeFuint32(uint32_t value);
+    void writeFint64(int64_t value);
+    void writeFuint64(uint64_t value);
 
     // void writeInt8(const int8_t value);
     // void writeUint8(const uint8_t value);  一个字节无意义
     // void writeInt16(const int16_t value);
     // void writeUint16(const uint16_t value);  两个字节为什么也无意义???
-    void writeInt32(const int32_t value);
-    void writeUint32(const uint32_t value);
-    void writeInt64(const int64_t value);
-    void writeUint64(const uint64_t value);
+    void writeInt32(int32_t value);
+    void writeUint32(uint32_t value);
+    void writeInt64(int64_t value);
+    void writeUint64(uint64_t value);
 
     void writeFloat(float value);
     void writeDouble(double value)
@@ -72,7 +73,8 @@ public:
 
     // read
     int8_t  readFint8();
-    uint8_t readFuint16();
+    uint8_t readFuint8();
+
     int16_t readFint16();
     int16_t readFuint16();
     int32_t readFint32();
@@ -97,8 +99,8 @@ public:
     // 内部操作
     void clear();
 
-    void write(cosnt void* buf, size_t size);
-    void read(char* buf, size_t size);
+    void write(const void* buf, size_t size);
+    void read(void* buf, size_t size);
 
     size_t getPosition() const { retunr m_position;}
     void setPosition(size_t v);
