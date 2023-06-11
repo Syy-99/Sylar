@@ -280,9 +280,8 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     if (ctx->getUserNonblock()) {
         return connect_f(fd, addr, addrlen);
     }
-    SYLAR_LOG_DEBUG(g_logger) <<"begin";
+    
     int n = connect_f(fd, addr, addrlen);
-     SYLAR_LOG_DEBUG(g_logger) <<"end";
     if (n == 0) {   // 调用成功
         return 0;
     } else if (n != -1 || errno != EINPROGRESS) { // 调用错误

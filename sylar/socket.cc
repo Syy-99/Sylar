@@ -179,14 +179,14 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms) {
     // SYLAR_LOG_INFO(g_logger) << "???2";
 
     if (timeout_ms == (uint64_t)-1) {
-        SYLAR_LOG_INFO(g_logger) << "??? begin";
+        // SYLAR_LOG_INFO(g_logger) << "??? begin";
          if(::connect(m_sock, addr->getAddr(), addr->getAddrLen())) {
             SYLAR_LOG_ERROR(g_logger) << "sock=" << m_sock << " connect(" << addr->toString()
                 << ") error errno=" << errno << " errstr=" << strerror(errno);
             close();
             return false;
         }
-        SYLAR_LOG_INFO(g_logger) << "??? end";
+        // SYLAR_LOG_INFO(g_logger) << "??? end";
     } else {
         
         if(::connect_with_timeout(m_sock, addr->getAddr(), addr->getAddrLen(), timeout_ms)) {
@@ -197,7 +197,7 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms) {
             return false;
         }
     }
-    SYLAR_LOG_INFO(g_logger) << "???3";
+    // SYLAR_LOG_INFO(g_logger) << "???3";
     m_isConnected = true;
     getLocalAddress();      
     getRemoteAddress();     // 连接地址就是远程地址
