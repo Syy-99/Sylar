@@ -46,7 +46,6 @@ CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/hook.cc
 CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/hook.h
 CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/iomanager.h
 CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/log.h
-CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/macro.h
 CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/mutex.h
 CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/noncopyable.h
 CMakeFiles/sylar.dir/sylar/hook.cc.o: sylar/scheduler.h

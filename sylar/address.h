@@ -122,7 +122,7 @@ public:
     virtual IPAddress::ptr subnetMask(uint32_t prefix_len) = 0;
 
     virtual uint16_t getPort() const = 0;
-    virtual void setPort(uint32_t v) = 0;
+    virtual void setPort(uint16_t v) = 0;
 };
 
 class IPv4Address : public IPAddress {
@@ -154,7 +154,7 @@ public:
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
 
     uint16_t getPort() const override;
-    void setPort(uint32_t v) override;
+    void setPort(uint16_t v) override;
 private:
     sockaddr_in m_addr;
 };
@@ -172,7 +172,7 @@ public:
 
 
     IPv6Address();
-    IPv6Address(const char* address, uint16_t port = 0);
+    IPv6Address(const uint8_t address[16], uint16_t port = 0);
     IPv6Address(const sockaddr_in6& address);
 
     const sockaddr* getAddr() const override;
@@ -185,7 +185,7 @@ public:
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
 
     uint16_t getPort() const override;
-    void setPort(uint32_t v) override;
+    void setPort(uint16_t v) override;
 private:
     sockaddr_in6 m_addr;
 };

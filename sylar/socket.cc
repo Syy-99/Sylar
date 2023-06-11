@@ -96,7 +96,7 @@ void Socket::setRecvTimeout(int64_t v) {
     setOption(SOL_SOCKET, SO_RCVTIMEO, tv);     // 调用成员函数setOption, 给套
 }
 
-bool Socket::getOption(int level, int option, void* result, socklen_t* len) {
+bool Socket::getOption(int level, int option, void* result, size_t* len) {
     /// 基于Hook的getSocketOption
    int rt = getsockopt(m_sock, level, option, result, (socklen_t*)len);
    if (rt) {
@@ -109,7 +109,7 @@ bool Socket::getOption(int level, int option, void* result, socklen_t* len) {
 
 }
 
-bool Socket::setOption(int level, int option, const void* result, socklen_t len) {
+bool Socket::setOption(int level, int option, const void* result, size_t len) {
     if(setsockopt(m_sock, level, option, result, (socklen_t)len)) {
         SYLAR_LOG_DEBUG(g_logger) << "setOption sock=" << m_sock
             << " level=" << level << " option=" << option
@@ -389,7 +389,7 @@ bool Socket::isValid() const {
 
 int Socket::getError() {
     int error = 0;
-    socklen_t len = sizeof(error);
+    size_t len = sizeof(error);
     /// SO_ERROR 当套接口发生错误时,
     /// 套接口名为so_error的变量被设置为标准的UNIX Exxx值的一个,它称为套接字的待处理错误
     if(!getOption(SOL_SOCKET, SO_ERROR, &error, &len)) {

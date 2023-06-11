@@ -90,13 +90,13 @@ public:
     int64_t getRecvTimeout();
     void setRecvTimeout(int64_t);
 
-    bool getOption(int level, int option, void* result, socklen_t* len);
+    bool getOption(int level, int option, void* result, size_t* len);
     template<class T>   // T类型支持哪些
     bool getOption(int level, int option, T& result) {
         socklen_t length = sizeof(T);
         return getOption(level, option, &result, &length);
     }
-    bool setOption(int level, int option, const void* result, socklen_t len);
+    bool setOption(int level, int option, const void* result, size_t len);
     template<class T>
     bool setOption(int level, int option, const T& value) {
         return setOption(level, option, &value, sizeof(T));
