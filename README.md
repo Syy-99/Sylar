@@ -402,3 +402,12 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
     -  https://blog.csdn.net/zgwangbo/article/details/51590186
 
   - 使用链表，而不是连续的空间保存写入的数据，减少内存重分配的情况
+
+- 注意：
+
+  - 字节序的问题
+
+  ## 相关知识
+
+  c++宏：https://www.cnblogs.com/fnlingnzb-learner/p/6903966.html
+  

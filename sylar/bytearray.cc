@@ -1,6 +1,10 @@
 #include "bytearray.h"
-
+#include "log.h"
+#include <fstream>
+#include <sstream>
 namespace sylar {
+
+static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 ByteArray::Node::Node(size_t s) : ptr(new char[s]), size(s), next(nullptr){}
 ByteArray::Node::Node() : ptr(nullptr), size(0), next(nullptr) {}
@@ -369,6 +373,8 @@ void ByteArray::write(cosnt void* buf, size_t size) {
 
 
 }
+
+/// 读是按字节读
 void ByteArray::read(void* buf, size_t size) {
     if(size > getReadSize()) {  // 要读的比我们size还大
         throw std::out_of_range("not enough len");
@@ -397,19 +403,173 @@ void ByteArray::read(void* buf, size_t size) {
             npos = 0;
         }
         // 读完的结点不就可以释放了???
+    }
+}
+
+void ByteArray::read(void* buf, size_t size, size_t position) const {
+    if(size > getReadSize()) {  // 要读的比我们size还大
+        throw std::out_of_range("not enough len");
+    }
+
+    size_t npos = position % m_baseSize;
+    size_t ncap = m_cur->size - npos;
+    size_t bpos = 0;
+    Node* cur = m_cur;
+    while(size > 0) {
+        if(ncap >= size) {
+            memcpy((char*)buf + bpos, cur->ptr + npos, size);
+            if(cur->size == (npos + size)) {
+                m_cur = cur->next;
+            }
+            position += size;
+            bpos += size;
+            size = 0;
+        } else {
+            memcpy((char*)buf + bpos, cur->ptr + npos, ncap);
+            position += ncap;
+            bpos += ncap;
+            size -= ncap;
+            m_cur = cur->next;   // ???这里怎么是继续next呢? 
+            ncap = cur->size;
+            npos = 0;
+        }
+        // 读完的结点不就可以释放了???
+    }
 }
 
 void ByteArray::setPosition(size_t v) {
+    if(v > m_capacity) {
+        throw std::out_of_range("set_position out of range");
+    }
 
+    m_position = v;
+    if(m_position > m_size) {
+        m_size = m_position;
+    }
+
+    m_cur = m_root;
+    while(v > m_cur->size) {    // m_cur->size是结点的容量
+        v -= m_cur->size;
+        m_cur = m_cur->next;   
+    }
+    // 如果上面while(v>=m_cur->size), 那么下次m_cur就是Null, 然后进入while循环就会报错
+    // 所以这里将v==m_cur->size的条件单独判断 
+    if(v == m_cur->size) { 
+        m_cur = m_cur->next;      
+    }
 }
 
+
+bool ByteArray::writeToFile(const std::string& name) const {
+    std::ofstream ofs;
+    ofs.open(name, std::ios::trunc | std::ios::binary); // 打开文件，清空+写二进制
+    if(!ofs) {
+        SYLAR_LOG_ERROR(g_logger) << "writeToFile name=" << name
+            << " error , errno=" << errno << " errstr=" << strerror(errno);
+        return false;
+    }
+
+    int64_t read_size = getReadSize();      // 获得可读的数据大小
+    int64_t pos = m_position;               // 当前位置信息
+    Node* cur = m_cur;                      // 当前位置所属的结点
+    
+    while(read_size > 0) {      
+        /// 从当前位置写到最后
+        int diff = pos % m_baseSize;        // 当前位置在所属结点的偏移
+        int64_t len = (read_size > (int64_t)m_baseSize ? m_baseSize : read_size) - diff;    // 当前结点可读的数据长度
+        ofs.write(cur->ptr + diff, len);        // 将当前结点的内容写入文件
+
+        cur = cur->next;        // 下一个结点
+        pos += len;             // 改变pos
+        read_size -= len;
+    }
+
+    return true;
+
+
+
+}
 bool ByteArray::readFromFile(const std::string& name) {
+    std::ifstream ifs;
+    ifs.open(name, std::ios::binary)
+    if(!ifs) {
+        SYLAR_LOG_ERROR(g_logger) << "readFromFile name=" << name
+            << " error, errno=" << errno << " errstr=" << strerror(errno);
+        return false;
+    }
+    // new char[m_baseSize], 相对于是 char (*ptr)[m_baseSize], 
+    std::shared_ptr<char> buff(new char[m_baseSize], [](char* ptr) { delete[] ptr;});
+    while(!ifs.eof()) {
+        ifs.read(buff.get(), m_baseSize);       // ?? 读到原先的一半会怎么样呢??
+        write(buff.get(), ifs.gcount());        // gcount() 实际读取的字符数, 这个write调用的是内部函数吗?? 有问题
+    }
+    return true;    
 
 }
 
 
-void ByteArray::addCapacity(size_t size) {
+void ByteArray::addCapacity(size_t size) {      // size是新的容量
+    if (size == 0) {
+        return 0;
+    }
 
+    size_t old_cap = getCapacity();
+    if(old_cap >= size) {       // 原本可以可以容纳,则不变
+        return;
+    }
+
+    size = size - old_cap;      // 实际需要扩容的字节
+    size_t count = ceil(1.0 * size / m_baseSize);   // 需要加多少个节点，有余数会多增加一个结点
+    Node* tmp = m_root;
+    while(tmp->next) {
+        tmp = tmp->next;
+    }
+
+
+    Node* first = NULL;
+    for(size_t i = 0; i < count; ++i) {
+        tmp->next = new Node(m_baseSize);  // 增加结点
+
+        if(first == NULL) {
+            first = tmp->next;      // 记录新增结点的起始结点
+        }
+        tmp = tmp->next;
+
+        m_capacity += m_baseSize;
+    }
+    if(old_cap == 0) { 
+        // 只有在原始为空的情况下，才需要设置m_cur, 否则不需要
+        m_cur = first;
+    }
+    
+}
+
+std::string ByteArray::toString() const {
+    std::string str;
+    str.resize(getReadSize());
+    if(str.empty()) {
+        return str;
+    }
+    /// 我们的内容不是经过压缩了吗，那读不就显示和原本的意思不一样?
+    /// 而且如果按之前的逻辑，int的二进制解析成buf会有问题吧?????
+    /// 所以这里显示的就是二进制吧???
+    read(&str[0], str.size(), m_position);      // 读，但是不影响m_postion;
+    return str;
+}
+std::string ByteArray::toHexString() const {
+    std::string str = toString();
+
+    std::stringstream ss;   
+    for(size_t i = 0; i < str.size(); ++i) {
+        if(i > 0 && i % 32 == 0) {      // 1行显示32个字符
+            ss << std::endl;
+        }
+        ss << std::setw(2) << std::setfill('0') << std::hex
+           << (int)(uint8_t)str[i] << " ";
+        /// str[i]->8位 -> int解释 -> 16进制
+    } 
+
+    return ss.str();
 }
 
 }

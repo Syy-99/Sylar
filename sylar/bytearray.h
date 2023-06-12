@@ -35,7 +35,7 @@ public:
      * @brief 使用指定长度的内存块构造ByteArray
      * @param[in] base_size 内存块大小
      */
-    ByteArray(size_t base_size = 4096);     // base_size: 每个链表的长度
+    ByteArray(size_t base_size = 4096);     // base_size: 每个链表的长度 4KB
     ~ByteArray();
 
     // 提供两种格式的写： 不压缩 of 压缩
@@ -101,6 +101,7 @@ public:
 
     void write(const void* buf, size_t size);
     void read(void* buf, size_t size);
+    void read(void* buf, size_t size, size_t position) const;   // position不变
 
     size_t getPosition() const { retunr m_position;}
     void setPosition(size_t v);
@@ -117,6 +118,9 @@ public:
 
     bool isLittleEndian() const;
     void setIsLittleEndian(bool val);
+
+    std::string toString() const;
+    std::string toHexString() const;
 private:
 
     /**
@@ -137,7 +141,7 @@ private:
     /// 当前的总容量
     size_t m_capacity;
     /// 当前真实数据的大小
-    size_t m_size;
+    size_t m_size;      // size or  容量是指结点的个数，还是字节数?? 目前来看是字节
 
     /// 字节序,默认大端
     int8_t m_endian;
