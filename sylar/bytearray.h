@@ -8,6 +8,9 @@
 #include <memory>
 #include <string>
 #include <stdint.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <vector>
 namespace sylar {
 
 /**
@@ -59,7 +62,7 @@ public:
     void writeUint64(uint64_t value);
 
     void writeFloat(float value);
-    void writeDouble(double value)
+    void writeDouble(double value);
 
     // 写入string类型，需要写长度,F16表示长度的位
     void writeStringF16(const std::string& value);
@@ -103,7 +106,7 @@ public:
     void read(void* buf, size_t size);
     void read(void* buf, size_t size, size_t position) const;   // position不变
 
-    size_t getPosition() const { retunr m_position;}
+    size_t getPosition() const { return m_position;}
     void setPosition(size_t v);
 
     bool writeToFile(const std::string& name) const;
@@ -121,6 +124,18 @@ public:
 
     std::string toString() const;
     std::string toHexString() const;
+
+    /// 获取可读取的缓存,保存成iovec数组, 方便使用sendmsg
+    int32_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len = ~0ull);
+    uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len, uint64_t position) const;
+    // 获取可写入的缓存,保存成iovec数组 (所以不一定需要立刻释放内存是这个原因吗??)
+    int64_t getWriteBuffers(std::vector<iovec>& buffers, uint64_t len);
+
+
+    /**
+     * @brief 返回数据的长度
+     */
+    size_t getSize() const { return m_size;}
 private:
 
     /**
@@ -149,7 +164,7 @@ private:
     /// 第一个内存块指针
     Node* m_root;
     /// 当前操作的内存块指针
-    Node* m_cur;
+    Node* m_cur;        // 这个执行的内存块应该是有保存内容的最后一个吧???
 
 };
 

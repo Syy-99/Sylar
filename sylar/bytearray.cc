@@ -2,12 +2,16 @@
 #include "log.h"
 #include <fstream>
 #include <sstream>
+#include <iomanip>
+#include <cstring>
+#include "endian.h"
+#include <cmath>
 namespace sylar {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
-ByteArray::Node::Node(size_t s) : ptr(new char[s]), size(s), next(nullptr){}
-ByteArray::Node::Node() : ptr(nullptr), size(0), next(nullptr) {}
+ByteArray::Node::Node(size_t s) : ptr(new char[s]), next(nullptr), size(s){}
+ByteArray::Node::Node() : ptr(nullptr), next(nullptr), size(0) {}
 
 ByteArray::Node::~Node() {
     if (ptr)
@@ -16,14 +20,13 @@ ByteArray::Node::~Node() {
 
 
 ByteArray::ByteArray(size_t base_size)
-    : m_baseSize(base_size)
-    , m_position(0)
-    , m_capacity(base_size)
-    , m_size(0)
-    , m_root(new Node(base_size))
-    , m_cur(m_root)
-    , m_endian(SYLAR_BIG_ENDIAN) {
-
+    :m_baseSize(base_size)
+    ,m_position(0)
+    ,m_capacity(base_size)
+    ,m_size(0)
+    ,m_endian(SYLAR_BIG_ENDIAN)
+    ,m_root(new Node(base_size))
+    ,m_cur(m_root) {
 }
 ByteArray::~ByteArray() {
     /// 释放链表
@@ -35,10 +38,10 @@ ByteArray::~ByteArray() {
     } 
 }
 
-bool isLittleEndian() const {
+bool ByteArray::isLittleEndian() const {
     return m_endian == SYLAR_LITTLE_ENDIAN;
 }
-void setIsLittleEndian(bool val) {
+void ByteArray::setIsLittleEndian(bool val) {
     if(val) {
         m_endian = SYLAR_LITTLE_ENDIAN;
     } else {
@@ -133,7 +136,7 @@ void ByteArray::writeUint32(uint32_t value) {
     uint8_t i = 0;
     while(value >= 0x80) {    // >=0x80,说明value的高7位的二进制肯定有1，则需要压缩
         tmp[i++] = (value & 0x7f) | 0x80;  // 1 + 低7位，构成一个记录
-        value >> 7;     // 右
+        value >>= 7;     // 右
     }
     tmp[i++] = value;
     /// write（const char* str,int n), n 用来表示输出显示字符串中字符的个数。
@@ -206,7 +209,7 @@ uint8_t ByteArray::readFuint8() {
 #define XX(type) \
     type v; \
     read(&v, sizeof(v)); \
-    if(m_endian == SYLAR_BYTE_ORDER) { \        // 判断字节序
+    if(m_endian == SYLAR_BYTE_ORDER) { \
         return v; \
     } else { \
         return byteswap(v); \
@@ -245,7 +248,7 @@ uint32_t    ByteArray::readUint32() {
     for(int i = 0; i < 32; i += 7) {
         uint8_t b = readFuint8();   // 先读一个字节
         if (b < 0x80) {  // 没有最后一个字节
-            result |= ((uint32_t)) << i;
+            result |= ((uint32_t)b) << i;
             break;
         } else {
             result |= (((uint32_t)(b & 0x7f)) << i);    // 先读的在低位
@@ -333,9 +336,9 @@ void ByteArray::clear() {
 }
 
 // 注意buf是void，支持任何类型
-void ByteArray::write(cosnt void* buf, size_t size) {
+void ByteArray::write(const void* buf, size_t size) {
     if (size == 0) {
-        return 0;
+        return;
     }
     addCapacity(size);  // 确保容量足够
 
@@ -360,7 +363,7 @@ void ByteArray::write(cosnt void* buf, size_t size) {
             bpos += ncap;
             size -= ncap;   // 还要写入的数量
             m_cur = m_cur->next;
-            n_cap = m_cur->size;
+            ncap = m_cur->size;
             npos = 0;
         }
     }
@@ -419,7 +422,7 @@ void ByteArray::read(void* buf, size_t size, size_t position) const {
         if(ncap >= size) {
             memcpy((char*)buf + bpos, cur->ptr + npos, size);
             if(cur->size == (npos + size)) {
-                m_cur = cur->next;
+                cur = cur->next;
             }
             position += size;
             bpos += size;
@@ -429,7 +432,7 @@ void ByteArray::read(void* buf, size_t size, size_t position) const {
             position += ncap;
             bpos += ncap;
             size -= ncap;
-            m_cur = cur->next;   // ???这里怎么是继续next呢? 
+            cur = cur->next;   // ???这里怎么是继续next呢? 
             ncap = cur->size;
             npos = 0;
         }
@@ -463,6 +466,7 @@ void ByteArray::setPosition(size_t v) {
 bool ByteArray::writeToFile(const std::string& name) const {
     std::ofstream ofs;
     ofs.open(name, std::ios::trunc | std::ios::binary); // 打开文件，清空+写二进制
+    SYLAR_LOG_ERROR(g_logger) << name;
     if(!ofs) {
         SYLAR_LOG_ERROR(g_logger) << "writeToFile name=" << name
             << " error , errno=" << errno << " errstr=" << strerror(errno);
@@ -485,13 +489,10 @@ bool ByteArray::writeToFile(const std::string& name) const {
     }
 
     return true;
-
-
-
 }
 bool ByteArray::readFromFile(const std::string& name) {
     std::ifstream ifs;
-    ifs.open(name, std::ios::binary)
+    ifs.open(name, std::ios::binary);
     if(!ifs) {
         SYLAR_LOG_ERROR(g_logger) << "readFromFile name=" << name
             << " error, errno=" << errno << " errstr=" << strerror(errno);
@@ -510,7 +511,7 @@ bool ByteArray::readFromFile(const std::string& name) {
 
 void ByteArray::addCapacity(size_t size) {      // size是新的容量
     if (size == 0) {
-        return 0;
+        return;
     }
 
     size_t old_cap = getCapacity();
@@ -550,9 +551,10 @@ std::string ByteArray::toString() const {
     if(str.empty()) {
         return str;
     }
-    /// 我们的内容不是经过压缩了吗，那读不就显示和原本的意思不一样?
-    /// 而且如果按之前的逻辑，int的二进制解析成buf会有问题吧?????
-    /// 所以这里显示的就是二进制吧???
+
+    // 这里需要注意以下几点：
+    // 1. read结点时，因为传递的是char, 所以实际是按1个字节读，然后转换为ASCII值
+    // 2. 结点保存的二进制可能是经过压缩编码的
     read(&str[0], str.size(), m_position);      // 读，但是不影响m_postion;
     return str;
 }
@@ -570,6 +572,105 @@ std::string ByteArray::toHexString() const {
     } 
 
     return ss.str();
+}
+
+
+int32_t ByteArray::getReadBuffers(std::vector<iovec>& buffers, uint64_t len) {
+    len = len > getReadSize() ? getReadSize() : len;  
+    if (len == 0) {
+        return 0;
+    }
+
+    uint64_t size = len;
+
+    size_t npos = m_position % m_baseSize;
+    size_t ncap = m_cur->size - npos;
+    Node* cur = m_cur;
+    struct iovec iov;
+
+    while(len > 0) {
+        if(ncap >= len) {
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = len;
+            len = 0;
+        } else {
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = ncap;
+            len -= ncap;
+            cur = cur->next;
+            ncap = cur->size;
+            npos = 0;
+        }
+        buffers.push_back(iov);
+    }
+    return size;        // 返回实际的大小(字节)
+}
+
+// 从指定位置position中读
+uint64_t ByteArray::getReadBuffers(std::vector<iovec>& buffers, uint64_t len, uint64_t position) const {
+     len = len > getReadSize() ? getReadSize() : len;
+    if(len == 0) {
+        return 0;
+    }
+
+    uint64_t size = len;
+
+    size_t npos = position % m_baseSize;
+    size_t count = position / m_baseSize;
+    Node* cur = m_root;
+    while(count > 0) {
+        cur = cur->next;
+        --count;
+    }
+
+    size_t ncap = cur->size - npos;
+    struct iovec iov;
+    while(len > 0) {
+        if(ncap >= len) {
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = len;
+            len = 0;
+        } else {
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = ncap;
+            len -= ncap;
+            cur = cur->next;
+            ncap = cur->size;
+            npos = 0;
+        }
+        buffers.push_back(iov);
+    }
+    return size;
+}
+int64_t ByteArray::getWriteBuffers(std::vector<iovec>& buffers, uint64_t len) {
+    if(len == 0) {
+        return 0;
+    }
+    addCapacity(len);   // 多了一个分配空间
+    uint64_t size = len;
+
+    size_t npos = m_position % m_baseSize;
+    size_t ncap = m_cur->size - npos;
+    struct iovec iov;
+    Node* cur = m_cur;
+
+    while(len > 0) {
+        if(ncap >= len) {
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = len;
+            len = 0;
+        } else {
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = ncap;
+
+            len -= ncap;
+            cur = cur->next;
+            ncap = cur->size;
+            npos = 0;
+        }
+        buffers.push_back(iov);
+    }
+    return size;
 }
 
 }
