@@ -19,6 +19,7 @@ set(LIB_SRC
     sylar/address.cc
     sylar/socket.cc
     sylar/bytearray.cc
+    sylar/http/http.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件

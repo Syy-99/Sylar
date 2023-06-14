@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gaoxiaoyu/syy/Sylar/sylar/fd_manager.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/fd_manager.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/fiber.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/fiber.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/hook.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/hook.cc.o"
+  "/home/gaoxiaoyu/syy/Sylar/sylar/http/http.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/iomanager.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/iomanager.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/log.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/log.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/mutex.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/mutex.cc.o"

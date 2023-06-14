@@ -64,6 +64,9 @@ CMakeFiles/sylar.dir/sylar/hook.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
  /home/gaoxiaoyu/syy/Sylar/sylar/timer.h
  /home/gaoxiaoyu/syy/Sylar/sylar/util.h
+CMakeFiles/sylar.dir/sylar/http/http.cc.o
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/http.cc
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/http.h
 CMakeFiles/sylar.dir/sylar/iomanager.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/fiber.h
  /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.cc
