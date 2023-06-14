@@ -156,6 +156,36 @@ struct CaseInsensitiveLess {
     bool operator() (const std::string& lhs, const std::string& rhs) const ;
 };
 
+// 获取Map中的key值,并转成对应类型,返回是否成功
+template<class MapType, class T>
+bool checkGetAs(const MapType& m, const std::string& key, T& val, const T& def = T()) {
+    auto it = m.find(key);
+    if (it == m.end()) {
+        val = def;
+        return false;
+    }
+    try {
+        val = boost::lexical_cast<T>(it->second);
+        return true;
+    } catch (...) {
+        val = def;
+    }
+    return false;
+}
+// 获取Map中的key值,并转成对应类型
+template<class MapType, class T>
+T getAs(const MapType& m, const std::string& key, const T& def = T()) {
+    auto it = m.find(key);
+    if(it == m.end()) {
+        return def;
+    }
+    try {
+        return boost::lexical_cast<T>(it->second);
+    } catch (...) {
+    }
+    return def;
+}
+
 class HttpRequest {
 public:
     typedef std::shared_ptr<HttpRequest> ptr;
@@ -186,6 +216,9 @@ public:
     void setFragment(const std::string& v) { m_fragment = v;}
     void setBody(const std::string& v) { m_body = v;}
     
+    bool isClose() const { return m_close;}
+    void setClose(bool v) { m_close = v;}
+
     void setHeaders(const MapType& v) { m_headers = v;}
     void setParams(const MapType& v) { m_params = v;}
     void setCookies(const MapType& v) { m_cookies = v;}
@@ -234,36 +267,6 @@ public:
 
     /// 转化为HTTP请求报文
     std::ostream& dump(std::ostream& os) const;
-private:
-    // 获取Map中的key值,并转成对应类型,返回是否成功
-    template<class T>
-    bool checkGetAs(const MapType& m, const std::string& key, T& val, const T& def = T()) {
-        auto it = m.find(key);
-        if (it == m.end()) {
-            val = def;
-            return false;
-        }
-        try {
-            val = boost::lexical_cast<T>(it->second);
-            return true;
-        } catch (...) {
-            val = def;
-        }
-        return false;
-    }
-    // 获取Map中的key值,并转成对应类型
-    template<class MapType, class T>
-    T getAs(const MapType& m, const std::string& key, const T& def = T()) {
-        auto it = m.find(key);
-        if(it == m.end()) {
-            return def;
-        }
-        try {
-            return boost::lexical_cast<T>(it->second);
-        } catch (...) {
-        }
-        return def;
-    }
     
 private:
     HttpMethod m_method;
@@ -286,7 +289,60 @@ private:
     std::string m_body;
 };
 
+class HttpResponse {
+public:
+    typedef std::shared_ptr<HttpResponse> ptr;
+    typedef std::map<std::string, std::string, CaseInsensitiveLess> MapType;
+    
+    HttpResponse(uint8_t version = 0x11, bool close = true);
 
+    HttpStatus getStatus() const { return m_status;}
+    uint8_t getVersion() const { return m_version;}
+    const std::string& getBody() const { return m_body;}
+    const std::string& getReason() const { return m_reason;}
+    const MapType& getHeaders() const { return m_headers;}
+
+    void setStatus(HttpStatus v) { m_status = v;}
+    void setVersion(uint8_t v) { m_version = v;}
+    void setBody(const std::string& v) { m_body = v;}
+    void setReason(const std::string& v) { m_reason = v;}
+    void setHeaders(const MapType& v) { m_headers = v;}
+
+    bool isClose() const { return m_close;}
+    void setClose(bool v) { m_close = v;}
+
+
+    std::string getHeader(const std::string& key, const std::string& def = "") const;
+    void setHeader(const std::string& key, const std::string& val);
+    void delHeader(const std::string& key);
+
+    template<class T>
+    bool checkGetHeaderAs(const std::string& key, T& val, const T& def = T()) {
+        return checkGetAs(m_headers, key, val, def);
+    }
+    template<class T>
+    T GetHeaderAs(const std::string& key, const T& def = T()) {
+        return checkGetAs(m_headers, key, def);
+    }
+
+    std::ostream& dump(std::ostream& os) const;
+private:
+    /// 响应状态
+    HttpStatus m_status;
+    /// 版本
+    uint8_t m_version;
+    /// 是否自动关闭
+    bool m_close;
+
+    /// 响应消息体
+    std::string m_body;
+
+    /// 响应短语
+    std::string m_reason;
+
+    /// 响应头部MAP
+    MapType m_headers;
+};
 
 }
 }

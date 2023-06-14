@@ -85,5 +85,10 @@ add_executable(test_bytearray tests/test_bytearray.cc)
 add_dependencies(test_bytearray sylar)
 target_link_libraries(test_bytearray ${LIB_LIB})
 
+
+add_executable(test_http tests/test_http.cc)
+add_dependencies(test_http sylar)
+target_link_libraries(test_http ${LIB_LIB})
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

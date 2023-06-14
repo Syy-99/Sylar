@@ -1,8 +1,8 @@
+/home/gaoxiaoyu/syy/Sylar/CMakeFiles/rebuild_cache.dir
+/home/gaoxiaoyu/syy/Sylar/CMakeFiles/edit_cache.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_hook.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_thread.dir
-/home/gaoxiaoyu/syy/Sylar/CMakeFiles/rebuild_cache.dir
-/home/gaoxiaoyu/syy/Sylar/CMakeFiles/edit_cache.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_config.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_bytearray.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir
@@ -12,3 +12,4 @@
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_scheduler.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_iomanager.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_socket.dir
+/home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_http.dir
