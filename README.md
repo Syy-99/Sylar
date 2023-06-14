@@ -407,7 +407,24 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
 
   - 字节序的问题
 
-  ## 相关知识
+## HTTP协议封装
+
+服务器框架需要提供一些协议的支持
+
+服务器运行时，可能需要知道服务器的状态，因此给每个服务器提供一个HTTP接口，通过这个接口可以获得这个服务器当前运行的状态，并且通过HTTP接口修改这个服务器的状态
+
+HTTP/1.1 - API
+
+HttpRequest & HttpResponse;
+
+- 参考： https://github.com/nodejs/http-parser/blob/main/http_parser.h
+
+  - 因为我们需要解析到自己的结构体中，所以需要重写
+
+
+
+
+## 相关知识
 
   c++宏：https://www.cnblogs.com/fnlingnzb-learner/p/6903966.html
   
