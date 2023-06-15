@@ -14,6 +14,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/sylar.dir/sylar/mutex.cc.o"
   "CMakeFiles/sylar.dir/sylar/scheduler.cc.o"
   "CMakeFiles/sylar.dir/sylar/socket.cc.o"
+  "CMakeFiles/sylar.dir/sylar/tcp_server.cc.o"
   "CMakeFiles/sylar.dir/sylar/thread.cc.o"
   "CMakeFiles/sylar.dir/sylar/timer.cc.o"
   "CMakeFiles/sylar.dir/sylar/util.cc.o"

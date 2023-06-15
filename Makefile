@@ -716,6 +716,33 @@ sylar/socket.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/socket.cc.s
 .PHONY : sylar/socket.cc.s
 
+sylar/tcp_server.o: sylar/tcp_server.cc.o
+
+.PHONY : sylar/tcp_server.o
+
+# target to build an object file
+sylar/tcp_server.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/tcp_server.cc.o
+.PHONY : sylar/tcp_server.cc.o
+
+sylar/tcp_server.i: sylar/tcp_server.cc.i
+
+.PHONY : sylar/tcp_server.i
+
+# target to preprocess a source file
+sylar/tcp_server.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/tcp_server.cc.i
+.PHONY : sylar/tcp_server.cc.i
+
+sylar/tcp_server.s: sylar/tcp_server.cc.s
+
+.PHONY : sylar/tcp_server.s
+
+# target to generate assembly for a file
+sylar/tcp_server.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/tcp_server.cc.s
+.PHONY : sylar/tcp_server.cc.s
+
 sylar/thread.o: sylar/thread.cc.o
 
 .PHONY : sylar/thread.o
@@ -1215,6 +1242,9 @@ help:
 	@echo "... sylar/socket.o"
 	@echo "... sylar/socket.i"
 	@echo "... sylar/socket.s"
+	@echo "... sylar/tcp_server.o"
+	@echo "... sylar/tcp_server.i"
+	@echo "... sylar/tcp_server.s"
 	@echo "... sylar/thread.o"
 	@echo "... sylar/thread.i"
 	@echo "... sylar/thread.s"

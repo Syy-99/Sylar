@@ -477,5 +477,8 @@ bool Socket::init(int sock) {
     return false;
 }
 
+std::ostream& operator<<(std::ostream& os, const Socket& sock) {
+    return sock.dump(os);
+}
 
 }
