@@ -72,12 +72,19 @@ CMakeFiles/sylar.dir/sylar/http/http11_parser.rl.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http11_parser.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http11_parser.rl.cc
 CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o
+ /home/gaoxiaoyu/syy/Sylar/sylar/config.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http11_common.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http11_parser.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http_parser.cc
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http_parser.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/httpclient_parser.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/log.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/http/httpclient_parser.rl.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http11_common.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/httpclient_parser.h
