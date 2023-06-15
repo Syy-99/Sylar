@@ -26,6 +26,8 @@ public:
 
     void setError(int v) { m_error = v;}
 
+    uint64_t getContentLength();
+
 private:
     /// http_parser
     http_parser m_parser;
@@ -45,13 +47,15 @@ public:
     typedef std::shared_ptr<HttpResponseParser> ptr;
     HttpResponseParser();
 
-    size_t execute(const char *data, size_t len, size_t off);
+    size_t execute(char *data, size_t len);
     int isFinished();
     int hasError();
 
     HttpResponse::ptr getData() const { return m_data;}
 
     void setError(int v) { m_error = v;}
+
+    uint64_t getContentLength();
 private:
     /// http_parser
     httpclient_parser m_parser;

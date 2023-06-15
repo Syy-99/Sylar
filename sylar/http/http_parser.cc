@@ -27,7 +27,7 @@ static sylar::ConfigVar<uint64_t>::ptr g_http_response_max_body_size =
     sylar::Config::Lookup("http.response.max_body_size"
                 ,(uint64_t)(64 * 1024 * 1024), "http response max body size");
 
-// 记录
+// 记录  ??? 在哪里使用???
 static uint64_t s_http_request_buffer_size = 0;
 static uint64_t s_http_request_max_body_size = 0;
 static uint64_t s_http_response_buffer_size = 0;
@@ -68,6 +68,7 @@ static _RequestSizeIniter _init;
 
 
 void on_request_method(void *data, const char *at, size_t length) {
+    // 解析出method就会回调该函数，让我们处理
     HttpRequestParser* parser = static_cast<HttpRequestParser*>(data);
 
     // at中指向的是保存HTTP Method方法的字符串
@@ -132,7 +133,8 @@ void on_request_http_field(void *data, const char *field, size_t flen
         parser->setError(1002);
         return;
     }
-
+    SYLAR_LOG_WARN(g_logger) << "filed " << std::string(field, flen) << " " << std::string(value, vlen);
+    SYLAR_LOG_WARN(g_logger) << "===========";
     parser->getData()->setHeader(std::string(field, flen)
                                 ,std::string(value, vlen));
 }
@@ -154,9 +156,7 @@ HttpRequestParser::HttpRequestParser() : m_error(0) {
     
 }
 
-//1: 解析成功
-//-1: 有错误
-
+//-1: 执行有错误
 //>0: 已处理的字节数，且data有效数据为len -这个值;????（说明HTTP报文还没有解析完) 
 // 为什么会出现这种情况??
 
@@ -165,7 +165,7 @@ size_t HttpRequestParser::execute(char *data, size_t len) {
     /// execute可能需要多次执行才能解析到一个完整的TTP报文
     /// 每次解析需要返回一个状态，来判断是否需要继续解析（可以参考TinyWebServer里的有限状态机实现）
     
-    // data应该是接受到的HTTP请求报文
+    // data应该是接受到的HTTP请求报文的部分
     size_t offset = http_parser_execute(&m_parser, data, len, 0);   // 0 data的开头始终是未处理的
     
     memmove(data, data + offset, (len - offset));   // 将解析过的内存移走，腾出缓存空间
@@ -180,14 +180,20 @@ int HttpRequestParser::hasError() {
     return m_error || http_parser_has_error(&m_parser);  
 }   
 
+uint64_t HttpRequestParser::getContentLength() {
+    return m_data->getHeaderAs<uint64_t>("Content-length", 0);
+}
 
 
 void on_response_reason(void *data, const char *at, size_t length) {
-
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    parser->getData()->setReason(std::string(at, length));
 }
 
 void on_response_status(void *data, const char *at, size_t length) {
-    
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    HttpStatus status = (HttpStatus)(atoi(at));     
+    parser->getData()->setStatus(status);    
 }
 
 void on_response_chunk(void *data, const char *at, size_t length) {
@@ -195,7 +201,20 @@ void on_response_chunk(void *data, const char *at, size_t length) {
 }
 
 void on_response_version(void *data, const char *at, size_t length) {
-    
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    uint8_t v = 0;
+    if(strncmp(at, "HTTP/1.1", length) == 0) {
+        v = 0x11;
+    } else if(strncmp(at, "HTTP/1.0", length) == 0) {
+        v = 0x10;
+    } else {
+        SYLAR_LOG_WARN(g_logger) << "invalid http response version: "
+            << std::string(at, length);
+        parser->setError(1001);
+        return;
+    }
+
+    parser->getData()->setVersion(v);    
 }
 
 void on_response_header_done(void *data, const char *at, size_t length) {
@@ -208,10 +227,17 @@ void on_response_last_chunk(void *data, const char *at, size_t length) {
 
 void on_response_http_field(void *data, const char *field, size_t flen
                            ,const char *value, size_t vlen) {
-
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    if(flen == 0) {
+        SYLAR_LOG_WARN(g_logger) << "invalid http response field length == 0";
+        parser->setError(1002);
+        return;
+    }
+    parser->getData()->setHeader(std::string(field, flen)
+                                ,std::string(value, vlen));
 }
 
-HttpResponseParser::HttpResponseParser() {
+HttpResponseParser::HttpResponseParser() : m_error(0){
     m_data.reset(new sylar::http::HttpResponse);
 
     httpclient_parser_init(&m_parser);
@@ -227,15 +253,26 @@ HttpResponseParser::HttpResponseParser() {
     m_parser.data = this; 
 }
 
-size_t HttpResponseParser::execute(const char *data, size_t len, size_t off) {
+/// ?? 这里函数咋使用的???
+size_t HttpResponseParser::execute(char *data, size_t len) {
+
+    size_t offset = httpclient_parser_execute(&m_parser, data, len, 0);
+    memmove(data, data + offset, (len - offset));   // 将处理过的数据移走，剩下的数据放在缓存的前面
+
+    return offset;
     return 0;
 }
 int HttpResponseParser::isFinished() {
-    return 0;
+    return httpclient_parser_finish(&m_parser);
 }
 int HttpResponseParser::hasError() {
-    return 0;
+    return m_error || httpclient_parser_has_error(&m_parser);
 }
+
+uint64_t HttpResponseParser::getContentLength() {
+    return m_data->getHeaderAs<uint64_t>("content-length", 0);
+}
+
 
 }
 }

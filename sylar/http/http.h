@@ -243,8 +243,8 @@ public:
         return checkGetAs(m_headers, key, val, def);
     }
     template<class T>
-    T GetHeaderAs(const std::string& key, const T& def = T()) {
-        return checkGetAs(m_headers, key, def);
+    T getHeaderAs(const std::string& key, const T& def = T()) {
+        return getAs(m_headers, key, def);
     }
 
     template<class T>
@@ -252,8 +252,8 @@ public:
         return checkGetAs(m_params, key, val, def);
     }
     template<class T>
-    T GetParamAs(const std::string& key, const T& def = T()) {
-        return checkGetAs(m_params, key, def);
+    T getParamAs(const std::string& key, const T& def = T()) {
+        return getAs(m_params, key, def);
     }
 
     template<class T>
@@ -261,12 +261,14 @@ public:
         return checkGetAs(m_cookies, key, val, def);
     }
     template<class T>
-    T GetCooieAs(const std::string& key, const T& def = T()) {
-        return checkGetAs(m_cookies, key, def);
+    T getCookieAs(const std::string& key, const T& def = T()) {
+        return getAs(m_cookies, key, def);
     }
 
     /// 转化为HTTP请求报文
     std::ostream& dump(std::ostream& os) const;
+
+    std::string toString() const;
     
 private:
     HttpMethod m_method;
@@ -321,11 +323,13 @@ public:
         return checkGetAs(m_headers, key, val, def);
     }
     template<class T>
-    T GetHeaderAs(const std::string& key, const T& def = T()) {
-        return checkGetAs(m_headers, key, def);
+    T getHeaderAs(const std::string& key, const T& def = T()) {
+        return getAs(m_headers, key, def);
     }
 
     std::ostream& dump(std::ostream& os) const;
+
+    std::string toString() const;
 private:
     /// 响应状态
     HttpStatus m_status;

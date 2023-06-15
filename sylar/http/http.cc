@@ -54,7 +54,7 @@ const char* HttpStatusToString(const HttpStatus& s) {
 
 bool CaseInsensitiveLess::operator() (const std::string& lhs
                                      ,const std::string& rhs) const {
-    return strcasecmp(lhs.c_str(), rhs.c_str());  // 忽略大小写的比较
+    return strcasecmp(lhs.c_str(), rhs.c_str()) < 0;  // 忽略大小写的比较
 }
 
 HttpRequest::HttpRequest(uint8_t version, bool close)
@@ -175,6 +175,12 @@ std::ostream& HttpRequest::dump(std::ostream& os) const {
 }
 
 
+std::string HttpRequest::toString() const {
+    std::stringstream ss;
+    dump(ss);
+    return ss.str();
+}
+
 
 HttpResponse::HttpResponse(uint8_t version, bool close)
     :m_status(HttpStatus::OK)
@@ -229,6 +235,12 @@ std::ostream& HttpResponse::dump(std::ostream& os) const {
     }
 
     return os;
+}
+
+std::string HttpResponse::toString() const {
+    std::stringstream ss;
+    dump(ss);
+    return ss.str();
 }
 
 }

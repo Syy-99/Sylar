@@ -72,6 +72,7 @@ CMAKE_BINARY_DIR = /home/gaoxiaoyu/syy/Sylar
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/test_http_parser.dir/all
 all: CMakeFiles/test_hook.dir/all
 all: CMakeFiles/test.dir/all
 all: CMakeFiles/test_thread.dir/all
@@ -94,6 +95,7 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/test_http_parser.dir/clean
 clean: CMakeFiles/test_hook.dir/clean
 clean: CMakeFiles/test.dir/clean
 clean: CMakeFiles/test_thread.dir/clean
@@ -109,6 +111,33 @@ clean: CMakeFiles/test_socket.dir/clean
 clean: CMakeFiles/test_http.dir/clean
 
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_http_parser.dir
+
+# All Build rule for target.
+CMakeFiles/test_http_parser.dir/all: CMakeFiles/sylar.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=34,35 "Built target test_http_parser"
+.PHONY : CMakeFiles/test_http_parser.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_http_parser.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gaoxiaoyu/syy/Sylar/CMakeFiles 21
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_http_parser.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gaoxiaoyu/syy/Sylar/CMakeFiles 0
+.PHONY : CMakeFiles/test_http_parser.dir/rule
+
+# Convenience name for target.
+test_http_parser: CMakeFiles/test_http_parser.dir/rule
+
+.PHONY : test_http_parser
+
+# clean rule for target.
+CMakeFiles/test_http_parser.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_http_parser.dir/build.make CMakeFiles/test_http_parser.dir/clean
+.PHONY : CMakeFiles/test_http_parser.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/test_hook.dir
@@ -171,7 +200,7 @@ CMakeFiles/test.dir/clean:
 CMakeFiles/test_thread.dir/all: CMakeFiles/sylar.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_thread.dir/build.make CMakeFiles/test_thread.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=40,41 "Built target test_thread"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=42,43 "Built target test_thread"
 .PHONY : CMakeFiles/test_thread.dir/all
 
 # Build rule for subdir invocation for target.
@@ -279,7 +308,7 @@ CMakeFiles/sylar.dir/clean:
 CMakeFiles/test_util.dir/all: CMakeFiles/sylar.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_util.dir/build.make CMakeFiles/test_util.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_util.dir/build.make CMakeFiles/test_util.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=42,43 "Built target test_util"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=44,45 "Built target test_util"
 .PHONY : CMakeFiles/test_util.dir/all
 
 # Build rule for subdir invocation for target.
@@ -360,7 +389,7 @@ CMakeFiles/test_address.dir/clean:
 CMakeFiles/test_scheduler.dir/all: CMakeFiles/sylar.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_scheduler.dir/build.make CMakeFiles/test_scheduler.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_scheduler.dir/build.make CMakeFiles/test_scheduler.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=36,37 "Built target test_scheduler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=38,39 "Built target test_scheduler"
 .PHONY : CMakeFiles/test_scheduler.dir/all
 
 # Build rule for subdir invocation for target.
@@ -387,7 +416,7 @@ CMakeFiles/test_scheduler.dir/clean:
 CMakeFiles/test_iomanager.dir/all: CMakeFiles/sylar.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_iomanager.dir/build.make CMakeFiles/test_iomanager.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_iomanager.dir/build.make CMakeFiles/test_iomanager.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=34,35 "Built target test_iomanager"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=36,37 "Built target test_iomanager"
 .PHONY : CMakeFiles/test_iomanager.dir/all
 
 # Build rule for subdir invocation for target.
@@ -414,7 +443,7 @@ CMakeFiles/test_iomanager.dir/clean:
 CMakeFiles/test_socket.dir/all: CMakeFiles/sylar.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_socket.dir/build.make CMakeFiles/test_socket.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=38,39 "Built target test_socket"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gaoxiaoyu/syy/Sylar/CMakeFiles --progress-num=40,41 "Built target test_socket"
 .PHONY : CMakeFiles/test_socket.dir/all
 
 # Build rule for subdir invocation for target.

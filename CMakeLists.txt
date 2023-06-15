@@ -88,10 +88,16 @@ add_executable(test_bytearray tests/test_bytearray.cc)
 add_dependencies(test_bytearray sylar)
 target_link_libraries(test_bytearray ${LIB_LIB})
 
-
+# 测试HTTP数据结构
 add_executable(test_http tests/test_http.cc)
 add_dependencies(test_http sylar)
 target_link_libraries(test_http ${LIB_LIB})
+
+
+# 测试HTTP报文解析
+add_executable(test_http_parser tests/test_http_parser.cc)
+add_dependencies(test_http_parser sylar)
+target_link_libraries(test_http_parser ${LIB_LIB})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
