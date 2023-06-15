@@ -646,7 +646,7 @@ int64_t ByteArray::getWriteBuffers(std::vector<iovec>& buffers, uint64_t len) {
     if(len == 0) {
         return 0;
     }
-    addCapacity(len);   // 多了一个分配空间
+    addCapacity(len);   // 分配空间
     uint64_t size = len;
 
     size_t npos = m_position % m_baseSize;

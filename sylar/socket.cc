@@ -284,7 +284,7 @@ int Socket::recv(iovec* buffers, size_t length, int flags) {
     if(isConnected()) {
         msghdr msg;
         memset(&msg, 0, sizeof(msg));
-        msg.msg_iov = (iovec*)buffers;
+        msg.msg_iov = (iovec*)buffers;      /// 保存一个iovec数组，用来接受数据
         msg.msg_iovlen = length;
         return ::recvmsg(m_sock, &msg, flags);
     }
@@ -400,7 +400,7 @@ int Socket::getError() {
 
 /// 输出信息的流中
 std::ostream& Socket::dump(std::ostream& os) const {
-    os << "[SSLSocket sock=" << m_sock
+    os << "[Socket sock=" << m_sock
        << " is_connected=" << m_isConnected
        << " family=" << m_family
        << " type=" << m_type

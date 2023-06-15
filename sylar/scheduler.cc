@@ -95,7 +95,6 @@ void Scheduler::stop() {
     m_stopping = true;
     for(size_t i = 0; i < m_threadCount; ++i) {
         tickle();       // 结合IO协程调度，那么这里的tickle有什么用，又没有事件发生??
-        SYLAR_LOG_INFO(g_logger) << " m_threadCount";
     }
 
     if(m_rootFiber) {

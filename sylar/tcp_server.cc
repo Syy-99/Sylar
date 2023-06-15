@@ -74,7 +74,7 @@ void TcpServer::startAccept(Socket::ptr sock) {
     while(!m_isStop) {
         Socket::ptr client = sock->accept();    // accept最终调用hook过的accept, 默认没有超时时间，即-1
         if(client) {    // 成功连接
-            client->setRecvTimeout(m_recvTimeout);      // 设置连接的活跃时间
+            client->setRecvTimeout(m_recvTimeout);      // 设置连接套接字的的读超时时间，即在一段时间没有读事件就关闭
             // 并且将这个连接加入调度，以管理其中的读写事件(通过TcpServer::handleClient函数处理)
             m_worker->schedule(std::bind(&TcpServer::handleClient,
                         shared_from_this(), client));
@@ -117,8 +117,9 @@ void TcpServer::stop() {
     // stop怎么使用???
 }
 
-/// 处理用户连接
+/// 当用户连接上来，就会执行该函数
 void TcpServer::handleClient(Socket::ptr client) {
+    // 具体怎么处理用户连接由使用该框架的程序员使用
     SYLAR_LOG_INFO(g_logger) << "handleClient: " << *client;
 } 
 }

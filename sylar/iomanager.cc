@@ -435,7 +435,7 @@ void IOManager::idle() {
 }
 
 void IOManager::onTimerInsertedAtFront() {
-    SYLAR_LOG_INFO(g_logger) << "?";
+    SYLAR_LOG_INFO(g_logger) << "onTimerInsertedAtFront()";
     // 一旦调用该函数，就应该重新设定epoll_wait的等待时间
     tickle();   // 唤醒epoll_wite的线程
 }
