@@ -422,7 +422,25 @@ HttpRequest & HttpResponse;
   - 因为我们需要解析到自己的结构体中，所以需要重写
 
 
+- 需要将HTTP报文解析到我们自己的的结构体中
 
+  - 使用ragel做HTTP解析, 可以从正规表达式生成可执行有限状态机,它可以生成C,C++,Object-C,D,Java和Ruby可执行代码
+
+      https://github.com/mongrel2/mongrel2
+
+      ```
+      int http_parser_init(http_parser *parser);
+      int http_parser_finish(http_parser *parser);
+      size_t http_parser_execute(http_parser *parser, const char *data, size_t len, size_t off);
+      int http_parser_has_error(http_parser *parser);
+      int http_parser_is_finished(http_parser *parser);
+    ```
+
+- 优势：
+
+  - 支持cookie, session
+
+  - 使用ragel做HTTP解析，速度更快
 
 ## 相关知识
 
