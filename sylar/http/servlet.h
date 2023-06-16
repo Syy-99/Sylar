@@ -68,7 +68,7 @@ private:
 };
 
 /**
- * @brief Servlet分发器
+ * @brief Servlet分发器, 特殊的Servlet负责管理其他的Servlet
  */
 class ServletDispatch : public Servlet {
  public:
@@ -118,6 +118,29 @@ private:
     /// 默认servlet，所有路径都没匹配到时使用
     Servlet::ptr m_default;
 };
+
+
+/**
+ * @brief NotFoundServlet(默认返回404)
+    访问的uri根本不存在
+ */
+class NotFoundServlet : public Servlet {
+public:
+    /// 智能指针类型定义
+    typedef std::shared_ptr<NotFoundServlet> ptr;
+    /**
+     * @brief 构造函数
+     */
+    NotFoundServlet(const std::string& name);
+    virtual int32_t handle(sylar::http::HttpRequest::ptr request
+                   , sylar::http::HttpResponse::ptr response
+                   , sylar::http::HttpSession::ptr session) override;
+
+private:
+    std::string m_name;
+    std::string m_content;     // not found返回的html
+};
+
 
 }
 }

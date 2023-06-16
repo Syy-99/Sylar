@@ -9,6 +9,7 @@
 
 #include "../tcp_server.h"
 #include "http_session.h"
+#include "servlet.h"
 
 namespace sylar {
 namespace http {
@@ -24,12 +25,16 @@ public:
                sylar::IOManager* worker = sylar::IOManager::GetThis(),
                sylar::IOManager* accept_worker = sylar::IOManager::GetThis());
 
+    ServletDispatch::ptr getServletDispatch() const { return m_dispatch;}
+    void setServletDispatch(ServletDispatch::ptr v) { m_dispatch = v;}
+
 protected:
     virtual void handleClient(Socket::ptr client) override;
 private:
     /// 是否支持长连接
     bool m_isKeepalive;
-
+    /// Servlet分发器
+    ServletDispatch::ptr m_dispatch;
 };
 }
 }

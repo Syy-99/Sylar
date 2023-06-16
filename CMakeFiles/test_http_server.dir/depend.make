@@ -7,6 +7,7 @@ CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/fiber.h
 CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/http/http.h
 CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/http/http_server.h
 CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/http/http_session.h
+CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/http/servlet.h
 CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/iomanager.h
 CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/log.h
 CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o: sylar/mutex.h

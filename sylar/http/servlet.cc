@@ -1,9 +1,142 @@
 #include "servlet.h"
-
+#include <fnmatch.h>
 namespace sylar {
 namespace http {
 
+FunctionServlet::FunctionServlet(callback cb)
+    :Servlet("FunctionServlet")
+    ,m_cb(cb) {
+}
 
+int32_t FunctionServlet::handle(sylar::http::HttpRequest::ptr request
+                    , sylar::http::HttpResponse::ptr response
+                    , sylar::http::HttpSession::ptr session) {
+    // 执行指定的回调函数
+    return m_cb(request, response, session);
+}
+
+
+ServletDispatch::ServletDispatch()
+    :Servlet("ServletDispatch") {
+
+    m_default.reset(new NotFoundServlet("sylar/1.0"));
+}
+
+int32_t ServletDispatch::handle(sylar::http::HttpRequest::ptr request
+                , sylar::http::HttpResponse::ptr response
+                , sylar::http::HttpSession::ptr session) {
+    auto slt = getMatchedServlet(request->getPath());   // 获得对应的Servlet
+    if(slt) {
+        slt->handle(request, response, session);
+    }
+    return 0;
+}
+
+
+
+// 添加精准匹配Servlet
+void ServletDispatch::addServlet(const std::string& uri, Servlet::ptr slt) {
+    RWMutexType::ReadLock lock(m_mutex);
+    m_datas[uri] = slt;
+}
+
+void ServletDispatch::addServlet(const std::string& uri, FunctionServlet::callback cb) {
+    RWMutexType::ReadLock lock(m_mutex);
+    m_datas[uri].reset(new FunctionServlet(cb));
+}
+
+// 添加模糊匹配Servlet
+void ServletDispatch::addGlobServlet(const std::string& uri, Servlet::ptr slt) {
+    RWMutexType::WriteLock lock(m_mutex);
+    for(auto it = m_globs.begin();
+            it != m_globs.end(); ++it) {
+        if (it->first == uri) {
+           m_globs.erase(it);       // 删除已经存在的
+           break;
+        }
+    }
+    m_globs.push_back(std::make_pair(uri, slt));
+}
+
+void ServletDispatch::addGlobServlet(const std::string& uri, FunctionServlet::callback cb) {
+   return addGlobServlet(uri, std::make_shared<FunctionServlet>(cb));
+}
+
+
+/// 删除
+void ServletDispatch::delServlet(const std::string& uri) {
+    RWMutexType::WriteLock lock(m_mutex);
+    m_datas.erase(uri);
+}
+
+void ServletDispatch::delGlobServlet(const std::string& uri) {
+    RWMutexType::WriteLock lock(m_mutex);
+    for(auto it = m_globs.begin();
+            it != m_globs.end(); ++it) {
+        if(it->first == uri) {
+            m_globs.erase(it);
+            break;
+        }
+    }
+}
+
+
+/// 根据uri匹配
+Servlet::ptr ServletDispatch::getServlet(const std::string& uri) {
+    RWMutexType::ReadLock lock(m_mutex);
+    auto it = m_datas.find(uri);
+    return it == m_datas.end() ? nullptr : it->second;
+}
+
+Servlet::ptr ServletDispatch::getGlobServlet(const std::string& uri) {
+    RWMutexType::ReadLock lock(m_mutex);
+    for(auto it = m_globs.begin();
+            it != m_globs.end(); ++it) {
+        if(it->first == uri) {
+            return it->second;
+        }
+    }
+    return nullptr;
+}
+
+/// 优先精准匹配,其次模糊匹配,最后返回默认
+Servlet::ptr ServletDispatch::getMatchedServlet(const std::string& uri) {
+    RWMutexType::ReadLock lock(m_mutex);
+    auto mit = m_datas.find(uri);
+    if(mit != m_datas.end()) {
+        return mit->second;
+    }
+
+    for(auto it = m_globs.begin();
+            it != m_globs.end(); ++it) {
+        if(!fnmatch(it->first.c_str(), uri.c_str(), 0)) {
+            return it->second;
+        }
+    }
+    return m_default;
+}
+
+
+
+NotFoundServlet::NotFoundServlet(const std::string& name)
+    :Servlet("NotFoundServlet")
+    ,m_name(name) {
+    m_content = "<html><head><title>404 Not Found"
+        "</title></head><body><center><h1>404 Not Found</h1></center>"
+        "<hr><center>" + name + "</center></body></html>";
+
+}
+
+int32_t NotFoundServlet::handle(sylar::http::HttpRequest::ptr request
+                   , sylar::http::HttpResponse::ptr response
+                   , sylar::http::HttpSession::ptr session) {
+    /// 当访问一个不存在的网页时，会构造404响应报文
+    response->setStatus(sylar::http::HttpStatus::NOT_FOUND);
+    response->setHeader("Server", "sylar/1.0.0");
+    response->setHeader("Content-Type", "text/html");
+    response->setBody(m_content);       // 设置返回报文HTTP的消息体
+    return 0;
+}
 
 }
 }

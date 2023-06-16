@@ -13,6 +13,21 @@ void run () {
     while(!server->bind(addr)) {
         sleep(2);
     }
+    // 添加针对url的Servlet
+    auto sd = server->getServletDispatch();
+    sd->addServlet("/sylar/xx" , [] (sylar::http::HttpRequest::ptr req
+                ,sylar::http::HttpResponse::ptr rsp
+                ,sylar::http::HttpSession::ptr session){
+        rsp->setBody(req->toString());
+        return 0;
+    });
+
+    sd->addGlobServlet("/sylar/*", [](sylar::http::HttpRequest::ptr req
+                ,sylar::http::HttpResponse::ptr rsp
+                ,sylar::http::HttpSession::ptr session) {
+            rsp->setBody("Glob:\r\n" + req->toString());
+            return 0;
+    });
     server->start();        // 启动服务器
     
 }

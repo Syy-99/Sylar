@@ -8,6 +8,7 @@ CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http_server.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http_session.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/servlet.h
  /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.h
  /home/gaoxiaoyu/syy/Sylar/sylar/log.h
  /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h

@@ -467,7 +467,9 @@ Servlet?? 参考Java
 
 函数式Sevlet & ServletDispatch
 
-- 一个请求进来会落到某个Servlet中处理
+- 一个请求进来会落到某个Servlet中处理, Server负责提供处理动作
+
+  - 实际上就是HTTPServe在收到对某个uri的请求时,它的handleClient()就会执行它对应的Servlet中保存的方法（回调）
 
 - HTTPServer需要注册一个url, 来设定这个url可以响应那些，以及动作
 
