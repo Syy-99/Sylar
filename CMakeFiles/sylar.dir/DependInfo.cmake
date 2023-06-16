@@ -19,6 +19,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gaoxiaoyu/syy/Sylar/sylar/mutex.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/mutex.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/scheduler.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/scheduler.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/socket.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/socket.cc.o"
+  "/home/gaoxiaoyu/syy/Sylar/sylar/socket_stream.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/socket_stream.cc.o"
+  "/home/gaoxiaoyu/syy/Sylar/sylar/stream.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/stream.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/tcp_server.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/tcp_server.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/thread.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/thread.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/timer.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/timer.cc.o"
