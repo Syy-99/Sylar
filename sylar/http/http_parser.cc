@@ -145,12 +145,12 @@ void on_request_header_done(void *data, const char *at, size_t length) {
 void on_request_http_field(void *data, const char *field, size_t flen
                            ,const char *value, size_t vlen) {
     /// 每解析出一个头部字段，就会调用这个函数
-    
+
     HttpRequestParser* parser = static_cast<HttpRequestParser*>(data);
 
     if(flen == 0) {
         SYLAR_LOG_WARN(g_logger) << "invalid http request field length == 0" << field;
-        parser->setError(1002);
+        // parser->setError(1002);
         return;
     }
     SYLAR_LOG_WARN(g_logger) << "filed " << std::string(field, flen) << " " << std::string(value, vlen);
@@ -249,7 +249,7 @@ void on_response_http_field(void *data, const char *field, size_t flen
     HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
     if(flen == 0) {
         SYLAR_LOG_WARN(g_logger) << "invalid http response field length == 0";
-        parser->setError(1002);
+        // parser->setError(1002); 这里先不设置，否则无法返回response
         return;
     }
     parser->getData()->setHeader(std::string(field, flen)

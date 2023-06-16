@@ -461,6 +461,18 @@ clinet.connect的socket -> connection - Client端连接套接字
 
 HttpServer : TcpServer
 
+## HTTPServlet封装
+
+Servlet?? 参考Java 
+
+函数式Sevlet & ServletDispatch
+
+- 一个请求进来会落到某个Servlet中处理
+
+- HTTPServer需要注册一个url, 来设定这个url可以响应那些，以及动作
+
+- Servlet是一个虚拟接口
+
 ## 相关知识
 
   c++宏：https://www.cnblogs.com/fnlingnzb-learner/p/6903966.html

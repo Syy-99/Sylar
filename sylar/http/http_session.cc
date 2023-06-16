@@ -21,7 +21,7 @@ HttpRequest::ptr HttpSession::recvRequest() {
     uint64_t buff_size = HttpRequestParser::GetHttpRequestBufferSize();  
 
     // 模拟小buffer
-    // uint64_t buff_size = 100;     // 会出错,
+    // uint64_t buff_size = 100;     // 会出错, 截断了
     // 在on_request_http_field()中，
     // 读取User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
     // 时错误
@@ -40,7 +40,7 @@ HttpRequest::ptr HttpSession::recvRequest() {
     User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
     解析出来Insecure-Requests(本来就有问题)， User-Agent:无法解析，但是nparse仍然=100, data又从0开始保存数据
     第3次读：
-    L, like Gecko) Chrome/114.0.0.0 Safari/537.36\r\n   -> 解析不出来一个field，所以解析错误，但是解析的长度还是100
+    L, like Gecko) Chrome/114.0.0.0 Safari/537.36\r\n   -> 这一行解析不出来一个field，所以解析错误，但是解析的长度还是100
     Accept: text/html,application/xhtml+xml,application/x
     */
     std::shared_ptr<char> buffer(new char[buff_size], [](char* ptr){
