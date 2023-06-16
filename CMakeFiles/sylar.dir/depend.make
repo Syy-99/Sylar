@@ -85,6 +85,20 @@ CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o: sylar/singleton.h
 CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o: sylar/thread.h
 CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o: sylar/util.h
 
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/address.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/bytearray.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/http.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/http11_common.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/http11_parser.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/http_parser.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/http_session.cc
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/http_session.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/http/httpclient_parser.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/noncopyable.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/socket.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/socket_stream.h
+CMakeFiles/sylar.dir/sylar/http/http_session.cc.o: sylar/stream.h
+
 CMakeFiles/sylar.dir/sylar/http/httpclient_parser.rl.cc.o: sylar/http/http11_common.h
 CMakeFiles/sylar.dir/sylar/http/httpclient_parser.rl.cc.o: sylar/http/httpclient_parser.h
 CMakeFiles/sylar.dir/sylar/http/httpclient_parser.rl.cc.o: sylar/http/httpclient_parser.rl.cc

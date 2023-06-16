@@ -9,6 +9,7 @@ namespace http {
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 // 设置HTTP的缓存大小
+/// g_http_request_buffer_size实际是限制（请求行+消息头）的大小，因为http_parser将它和消息体分开的
 static sylar::ConfigVar<uint64_t>::ptr g_http_request_buffer_size =
     sylar::Config::Lookup("http.request.buffer_size"
                 ,(uint64_t)(4 * 1024), "http request buffer size");
@@ -27,12 +28,29 @@ static sylar::ConfigVar<uint64_t>::ptr g_http_response_max_body_size =
     sylar::Config::Lookup("http.response.max_body_size"
                 ,(uint64_t)(64 * 1024 * 1024), "http response max body size");
 
-// 记录  ??? 在哪里使用???
+// 记录  在哪里使用??? -> http_sessiont中使用，用来存放HTTP请求
 static uint64_t s_http_request_buffer_size = 0;
 static uint64_t s_http_request_max_body_size = 0;
 static uint64_t s_http_response_buffer_size = 0;
 static uint64_t s_http_response_max_body_size = 0;
 
+uint64_t HttpRequestParser::GetHttpRequestBufferSize() {
+    return s_http_request_buffer_size;
+}
+
+uint64_t HttpRequestParser::GetHttpRequestMaxBodySize() {
+    return s_http_request_max_body_size;
+}
+
+uint64_t HttpResponseParser::GetHttpResponseBufferSize() {
+    return s_http_response_buffer_size;
+}
+
+uint64_t HttpResponseParser::GetHttpResponseMaxBodySize() {
+    return s_http_response_max_body_size;
+}
+
+namespace {
 struct _RequestSizeIniter {     // 做变量初始化
       _RequestSizeIniter() {
         s_http_request_buffer_size = g_http_request_buffer_size->getValue();
@@ -65,7 +83,7 @@ struct _RequestSizeIniter {     // 做变量初始化
 
 };
 static _RequestSizeIniter _init;
-
+}
 
 void on_request_method(void *data, const char *at, size_t length) {
     // 解析出method就会回调该函数，让我们处理

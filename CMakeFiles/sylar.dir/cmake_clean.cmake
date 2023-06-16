@@ -8,6 +8,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/sylar.dir/sylar/http/http.cc.o"
   "CMakeFiles/sylar.dir/sylar/http/http11_parser.rl.cc.o"
   "CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o"
+  "CMakeFiles/sylar.dir/sylar/http/http_session.cc.o"
   "CMakeFiles/sylar.dir/sylar/http/httpclient_parser.rl.cc.o"
   "CMakeFiles/sylar.dir/sylar/iomanager.cc.o"
   "CMakeFiles/sylar.dir/sylar/log.cc.o"

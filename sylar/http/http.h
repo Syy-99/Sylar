@@ -348,6 +348,23 @@ private:
     MapType m_headers;
 };
 
+/**
+ * @brief 流式输出HttpRequest
+ * @param[in, out] os 输出流
+ * @param[in] req HTTP请求
+ * @return 输出流
+ */
+std::ostream& operator<<(std::ostream& os, const HttpRequest& req);
+
+/**
+ * @brief 流式输出HttpResponse
+ * @param[in, out] os 输出流
+ * @param[in] rsp HTTP响应
+ * @return 输出流
+ */
+std::ostream& operator<<(std::ostream& os, const HttpResponse& rsp);
+
+
 }
 }
 

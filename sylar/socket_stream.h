@@ -1,7 +1,7 @@
 /**
  * @file socket_stream.h
  * @brief Socket流式接口封装
- ???? 这个封装有啥用呀???
+    使用这个封装，使得Socket的读写对象可以是byteArray, 而不需要是一个字符串缓存
  */
 #ifndef __SYLAR_SOCKET_STREAM_H__
 #define __SYLAR_SOCKET_STREAM_H__

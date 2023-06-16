@@ -12,7 +12,7 @@ int Stream::readFixSize(void* buffer, size_t length) {
         }
         // 继续读
         offset += len;
-        left -= len;   // 可能读超过这个length字节吧? -> 外面用的时候可以限制使用的字节
+        left -= len;  
     }
 
     return length;

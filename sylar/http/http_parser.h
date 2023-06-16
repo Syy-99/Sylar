@@ -27,7 +27,17 @@ public:
     void setError(int v) { m_error = v;}
 
     uint64_t getContentLength();
+    
+public:
+    /**
+     * @brief 返回HttpRequest协议解析的缓存大小
+     */
+    static uint64_t GetHttpRequestBufferSize();
 
+    /**
+     * @brief 返回HttpRequest协议的最大消息体大小
+     */
+    static uint64_t GetHttpRequestMaxBodySize();
 private:
     /// http_parser
     http_parser m_parser;
@@ -56,6 +66,14 @@ public:
     void setError(int v) { m_error = v;}
 
     uint64_t getContentLength();
+
+public:
+
+/// 返回HTTP响应解析缓存大小
+static uint64_t GetHttpResponseBufferSize();
+/// 返回HTTP响应最大消息体大小
+static uint64_t GetHttpResponseMaxBodySize();
+
 private:
     /// http_parser
     httpclient_parser m_parser;

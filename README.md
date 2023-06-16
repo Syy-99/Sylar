@@ -448,11 +448,19 @@ HttpRequest & HttpResponse;
 
 ## Stream封装
 
-封装流式的统一接口。将文件，socket封装成统一的接口。使用的时候，采用统一的风格操作。基于统一的风格，可以提供更灵活的扩展
+封装流式bytearray的统一接口。将文件，socket封装成统一的接口。使用的时候，采用统一的风格操作。基于统一的风格，可以提供更灵活的扩展
 
 - 针对文件/Socket进行的一层封装, 屏蔽两者的差异
 
 read/write/readFixSize/WriteFixSize
+
+## HttpSession
+
+HttpSession/HttpConnection
+
+Server.accept 的sokcet -> seesion  - Server端连接套接字
+clinet.connect的socket -> connection - Client端连接套接字
+
 
 ## 相关知识
 
