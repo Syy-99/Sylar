@@ -85,6 +85,27 @@ CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
  /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
  /home/gaoxiaoyu/syy/Sylar/sylar/util.h
+CMakeFiles/sylar.dir/sylar/http/http_server.cc.o
+ /home/gaoxiaoyu/syy/Sylar/sylar/address.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/bytearray.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/fiber.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/http.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/http_server.cc
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/http_server.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/http/http_session.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/log.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/scheduler.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/socket.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/socket_stream.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/stream.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/tcp_server.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/timer.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/http/http_session.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/address.h
  /home/gaoxiaoyu/syy/Sylar/sylar/bytearray.h
@@ -95,10 +116,15 @@ CMakeFiles/sylar.dir/sylar/http/http_session.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http_session.cc
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http_session.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/httpclient_parser.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/log.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
  /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
  /home/gaoxiaoyu/syy/Sylar/sylar/socket.h
  /home/gaoxiaoyu/syy/Sylar/sylar/socket_stream.h
  /home/gaoxiaoyu/syy/Sylar/sylar/stream.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/http/httpclient_parser.rl.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/http/http11_common.h
  /home/gaoxiaoyu/syy/Sylar/sylar/http/httpclient_parser.h

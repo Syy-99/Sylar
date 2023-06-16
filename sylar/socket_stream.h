@@ -26,7 +26,7 @@ public:
     virtual int write(ByteArray::ptr ba, size_t length) override;
 
     // 关闭流
-    virtual void close() = 0;
+    virtual void close() override;
 
     Socket::ptr getSocket() const { return m_socket;}
 

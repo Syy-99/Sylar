@@ -11,6 +11,7 @@
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_util.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_fiber.dir
+/home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_http_server.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_address.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_scheduler.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_iomanager.dir

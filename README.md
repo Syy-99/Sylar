@@ -435,7 +435,7 @@ HttpRequest & HttpResponse;
       int http_parser_has_error(http_parser *parser);
       int http_parser_is_finished(http_parser *parser);
       ```
-
+  - 难点： 需要修改一下它的rl文件，以符合我们的设计，每次解析都从data从头开始，以支持当缓存较小时可能需要分段解析
 - 优势：
 
   - 支持cookie, session
@@ -454,13 +454,12 @@ HttpRequest & HttpResponse;
 
 read/write/readFixSize/WriteFixSize
 
-## HttpSession
-
-HttpSession/HttpConnection
+## HttpSession/HttpConnection
 
 Server.accept 的sokcet -> seesion  - Server端连接套接字
 clinet.connect的socket -> connection - Client端连接套接字
 
+HttpServer : TcpServer
 
 ## 相关知识
 

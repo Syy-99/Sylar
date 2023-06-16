@@ -19,6 +19,11 @@ const char test_request_data[] = "GET / HTTP/1.1\r\n"
 //                                 "Host: www.sylar.top\r\n"
 //                                 "Content-Length: 10\r\n";
 // 如果解析这个，parser.isFinished()=0, 表示还没有结束
+
+
+// const char test_request_data[] = "GET / HTTP/1.1\r\n"
+//                                 "Host: www.sylar.top......(非常长).....\r\n"
+//                                 "Content-Length: 10\r\n";
 void test_request() {
     sylar::http::HttpRequestParser parser;
     std::string tmp = test_request_data;

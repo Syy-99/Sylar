@@ -31,7 +31,8 @@ static sylar::ConfigVar<uint64_t>::ptr g_http_response_max_body_size =
 // 记录  在哪里使用??? -> http_sessiont中使用，用来存放HTTP请求
 static uint64_t s_http_request_buffer_size = 0;
 static uint64_t s_http_request_max_body_size = 0;
-static uint64_t s_http_response_buffer_size = 0;
+
+static uint64_t s_http_response_buffer_size = 0;    // ??? 这个没有用上把????
 static uint64_t s_http_response_max_body_size = 0;
 
 uint64_t HttpRequestParser::GetHttpRequestBufferSize() {
@@ -144,15 +145,15 @@ void on_request_header_done(void *data, const char *at, size_t length) {
 void on_request_http_field(void *data, const char *field, size_t flen
                            ,const char *value, size_t vlen) {
     /// 每解析出一个头部字段，就会调用这个函数
+    
     HttpRequestParser* parser = static_cast<HttpRequestParser*>(data);
 
     if(flen == 0) {
-        SYLAR_LOG_WARN(g_logger) << "invalid http request field length == 0";
+        SYLAR_LOG_WARN(g_logger) << "invalid http request field length == 0" << field;
         parser->setError(1002);
         return;
     }
     SYLAR_LOG_WARN(g_logger) << "filed " << std::string(field, flen) << " " << std::string(value, vlen);
-    SYLAR_LOG_WARN(g_logger) << "===========";
     parser->getData()->setHeader(std::string(field, flen)
                                 ,std::string(value, vlen));
 }
