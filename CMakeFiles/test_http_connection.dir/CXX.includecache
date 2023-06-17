@@ -71,6 +71,8 @@ boost/lexical_cast.hpp
 /home/gaoxiaoyu/syy/Sylar/sylar/socket_stream.h
 http.h
 /home/gaoxiaoyu/syy/Sylar/sylar/http/http.h
+../uri.h
+/home/gaoxiaoyu/syy/Sylar/sylar/uri.h
 
 /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.h
 scheduler.h
@@ -181,6 +183,16 @@ set
 -
 mutex.h
 /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+
+/home/gaoxiaoyu/syy/Sylar/sylar/uri.h
+memory
+-
+string
+-
+stdint.h
+-
+address.h
+/home/gaoxiaoyu/syy/Sylar/sylar/address.h
 
 /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 pthread.h

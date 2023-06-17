@@ -446,7 +446,7 @@ HttpRequest & HttpResponse;
 
   - 使用ragel做HTTP解析，速度更快
 
-  - 支持chunk编码格式
+  - 支持chunk发送形式
 
 ## TCPServer封装
 
@@ -464,6 +464,10 @@ read/write/readFixSize/WriteFixSize
 
 Server.accept 的sokcet -> seesion  - Server端连接套接字
 clinet.connect的socket -> connection - Client端连接套接字
+
+- 优势： 提供封装，简化使用方式
+
+  - 只用几行代码就可以发送HTTP请求了
 
 HttpServer : TcpServer
 

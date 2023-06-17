@@ -17,6 +17,7 @@ CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: sylar/socke
 CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: sylar/stream.h
 CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: sylar/thread.h
 CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: sylar/timer.h
+CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: sylar/uri.h
 CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: sylar/util.h
 CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o: tests/test_http_connection.cc
 

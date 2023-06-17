@@ -88,6 +88,7 @@ CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o: sylar/socket.h
 CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o: sylar/socket_stream.h
 CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o: sylar/stream.h
 CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o: sylar/thread.h
+CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o: sylar/uri.h
 CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o: sylar/util.h
 
 CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o: sylar/config.h

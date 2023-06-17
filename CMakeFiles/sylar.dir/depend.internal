@@ -89,6 +89,7 @@ CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/socket_stream.h
  /home/gaoxiaoyu/syy/Sylar/sylar/stream.h
  /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/uri.h
  /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/config.h

@@ -42,6 +42,15 @@ void run() {
     }
     SYLAR_LOG_INFO(g_logger) << "rsp:" << std::endl
         << *rsp;   
+
+    SYLAR_LOG_INFO(g_logger) << "=========================";
+    // 调用封装好的方法，更简单
+    auto r = sylar::http::HttpConnection::DoGet("http://www.sylar.top/blog/", 300);
+    SYLAR_LOG_INFO(g_logger) << "result=" << r->result
+    << " error=" << r->error
+    << " rsp=" << (r->response ? r->response->toString() : "");
+
+    SYLAR_LOG_INFO(g_logger) << "=========================";
 }
 
 int main() {

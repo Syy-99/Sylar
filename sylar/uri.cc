@@ -10889,7 +10889,9 @@ bool Uri::isDefaultPort() const {
 }
 
 const std::string& Uri::getPath() const {
-    static std::string s_default_path = "/";
+	// 处理 www.baidu.com的时候，只提供主机，怎么提供path的情况
+	// 默认访问根路径
+    static std::string s_default_path = "/";		
     return m_path.empty() ? s_default_path : m_path;
 }
 

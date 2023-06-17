@@ -7,6 +7,152 @@ namespace http {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
+HttpResult::ptr HttpConnection::DoRequest(HttpMethod method
+                , const std::string& url
+                , uint64_t timeout_ms       // 表示超时
+                , const std::map<std::string, std::string>& headers
+                , const std::string& body) {
+    Uri::ptr uri = Uri::Create(url);
+    if(!uri) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::INVALID_URL
+                , nullptr, "invalid url: " + url);
+    }
+    return DoRequest(method, uri, timeout_ms, headers, body);
+}
+
+HttpResult::ptr HttpConnection::DoRequest(HttpMethod method
+                , Uri::ptr uri
+                , uint64_t timeout_ms
+                , const std::map<std::string, std::string>& headers
+                , const std::string& body) {
+    // 最终实现
+
+    // 构造HTTP请求报文
+    HttpRequest::ptr req = std::make_shared<HttpRequest>();
+    req->setPath(uri->getPath());
+    req->setQuery(uri->getQuery());
+    req->setFragment(uri->getFragment());
+    req->setMethod(method);
+
+    bool has_host = false;
+    for(auto& i : headers) {
+         if(strcasecmp(i.first.c_str(), "connection") == 0) {
+            if(strcasecmp(i.second.c_str(), "keep-alive") == 0) {
+                req->setClose(false);       // 给服务器设置长连接
+                // 设不设置keep-live对连接有什么影响??? 在代码上的处理区别体现在哪里???
+            }
+            continue;
+         }
+
+        if(!has_host && strcasecmp(i.first.c_str(), "host") == 0) {
+            has_host = !i.second.empty();       // 确定有host字段
+        }
+
+        req->setHeader(i.first, i.second);
+    }
+
+    if(!has_host) {
+        // 默认给host
+        req->setHeader("Host", uri->getHost());
+    }
+
+    req->setBody(body);
+
+    return DoRequest(req, uri, timeout_ms);
+}
+
+HttpResult::ptr HttpConnection::DoRequest(HttpRequest::ptr req
+                , Uri::ptr uri
+                , uint64_t timeout_ms) {
+    // 这个函数基本就是封装了一个整体的流程
+    Address::ptr addr = uri->createAddress();       // 从uri中获得socket地址
+    if(!addr) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::INVALID_HOST
+                , nullptr, "invalid host: " + uri->getHost());
+    }
+
+    Socket::ptr sock =  Socket::CreateTCP(addr);    // 根据地址创建套接字
+    if(!sock) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::CREATE_SOCKET_ERROR
+                , nullptr, "create socket fail: " + addr->toString()
+                        + " errno=" + std::to_string(errno)
+                        + " errstr=" + std::string(strerror(errno)));
+    }
+
+    // 开始连接
+    if(!sock->connect(addr)) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::CONNECT_FAIL
+                , nullptr, "connect fail: " + addr->toString());
+    }
+
+    // 发送HTTP报文
+    sock->setRecvTimeout(timeout_ms);   // 设置超时时间 ??? 这个超时是针对哪些方法的??
+
+    // 创建HttpConnection
+    HttpConnection::ptr conn = std::make_shared<HttpConnection>(sock);
+    int rt = conn->sendRequest(req);    // 通过HttpConnection发送请求
+    if(rt == 0) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::SEND_CLOSE_BY_PEER
+                , nullptr, "send request closed by peer: " + addr->toString());
+    }
+    if(rt < 0) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::SEND_SOCKET_ERROR
+                    , nullptr, "send request socket error errno=" + std::to_string(errno)
+                    + " errstr=" + std::string(strerror(errno)));
+    }
+
+    auto rsp = conn->recvResponse();
+    if(!rsp) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::TIMEOUT
+                    , nullptr, "recv response timeout: " + addr->toString()
+                    + " timeout_ms:" + std::to_string(timeout_ms));
+    }
+
+    // 将rsp返回
+    return std::make_shared<HttpResult>((int)HttpResult::Error::OK, rsp, "ok");
+}
+
+HttpResult::ptr HttpConnection::DoGet(const std::string& url
+                , uint64_t timeout_ms
+                , const std::map<std::string, std::string>& headers
+                , const std::string& body) {
+    Uri::ptr uri = Uri::Create(url);    // 解析url
+    if (!uri) {
+        return std::make_shared<HttpResult>((int)HttpResult::Error::INVALID_URL
+                , nullptr, "invalid url: " + url);
+    }
+
+    return DoGet(uri, timeout_ms, headers, body);           
+}
+
+HttpResult::ptr HttpConnection::DoGet(Uri::ptr uri
+                , uint64_t timeout_ms
+                , const std::map<std::string, std::string>& headers
+                , const std::string& body) {
+    return DoRequest(HttpMethod::GET, uri, timeout_ms, headers, body);
+}
+
+HttpResult::ptr HttpConnection::DoPost(const std::string& url
+                    , uint64_t timeout_ms
+                    , const std::map<std::string, std::string>& headers 
+                    , const std::string& body) {
+    Uri::ptr uri = Uri::Create(url);    // 解析url
+    if (!uri) {
+        // HTTP请求的uri都有问题，则直接返回错误信息
+        return std::make_shared<HttpResult>((int)HttpResult::Error::INVALID_URL
+                , nullptr, "invalid url: " + url);
+    }
+
+    return DoPost(uri, timeout_ms, headers, body);  
+}
+
+HttpResult::ptr HttpConnection::DoPost(Uri::ptr uri
+                    , uint64_t timeout_ms
+                    , const std::map<std::string, std::string>& headers
+                    , const std::string& body) {
+    return DoRequest(HttpMethod::POST, uri, timeout_ms, headers, body);
+}
+
 
 HttpConnection::HttpConnection(Socket::ptr sock, bool owner)
     :SocketStream(sock, owner) {
