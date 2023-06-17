@@ -1,5 +1,6 @@
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/rebuild_cache.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/edit_cache.dir
+/home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_http_connection.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/echo_server.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_tcp_server.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_http_parser.dir

@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gaoxiaoyu/syy/Sylar/sylar/hook.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/hook.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/http/http.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/http/http11_parser.rl.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http11_parser.rl.cc.o"
+  "/home/gaoxiaoyu/syy/Sylar/sylar/http/http_connection.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/http/http_parser.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/http/http_server.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http_server.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/http/http_session.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/http/http_session.cc.o"

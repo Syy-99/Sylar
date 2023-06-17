@@ -272,14 +272,15 @@ HttpResponseParser::HttpResponseParser() : m_error(0){
     m_parser.data = this; 
 }
 
-/// ?? 这里函数咋使用的???
-size_t HttpResponseParser::execute(char *data, size_t len) {
+size_t HttpResponseParser::execute(char* data, size_t len, bool chunck) {
+    if(chunck) {
+        httpclient_parser_init(&m_parser);      // 重新解析
+    }
 
     size_t offset = httpclient_parser_execute(&m_parser, data, len, 0);
     memmove(data, data + offset, (len - offset));   // 将处理过的数据移走，剩下的数据放在缓存的前面
 
     return offset;
-    return 0;
 }
 int HttpResponseParser::isFinished() {
     return httpclient_parser_finish(&m_parser);

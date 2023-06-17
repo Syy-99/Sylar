@@ -442,6 +442,8 @@ HttpRequest & HttpResponse;
 
   - 使用ragel做HTTP解析，速度更快
 
+  - 支持chunk编码格式
+
 ## TCPServer封装
 
 - 封装TCPServer, 并基于它实现了一个EchoServer
@@ -471,9 +473,13 @@ Servlet?? 参考Java
 
   - 实际上就是HTTPServe在收到对某个uri的请求时,它的handleClient()就会执行它对应的Servlet中保存的方法（回调）
 
+  - 目前只做了页面返回，实际应该也可以做文件下载之类的
+
 - HTTPServer需要注册一个url, 来设定这个url可以响应那些，以及动作
 
 - Servlet是一个虚拟接口
+
+- 使用PostMan来调试HTTP服务器，模拟HTTP请求
 
 ## 相关知识
 

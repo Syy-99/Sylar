@@ -38,6 +38,9 @@ public:
      * @brief 返回HttpRequest协议的最大消息体大小
      */
     static uint64_t GetHttpRequestMaxBodySize();
+
+    const http_parser& getParser() const { return m_parser;}
+    
 private:
     /// http_parser
     http_parser m_parser;
@@ -57,7 +60,14 @@ public:
     typedef std::shared_ptr<HttpResponseParser> ptr;
     HttpResponseParser();
 
-    size_t execute(char *data, size_t len);
+    /**
+     * @brief 解析HTTP响应协议
+     * @param[in, out] data 协议数据内存
+     * @param[in] len 协议数据内存大小
+     * @param[in] chunck 是否在解析chunck
+     * @return 返回实际解析的长度,并且移除已解析的数据
+     */
+    size_t execute(char* data, size_t len, bool chunck);
     int isFinished();
     int hasError();
 
@@ -73,6 +83,8 @@ public:
 static uint64_t GetHttpResponseBufferSize();
 /// 返回HTTP响应最大消息体大小
 static uint64_t GetHttpResponseMaxBodySize();
+
+const httpclient_parser& getParser() const { return m_parser;}
 
 private:
     /// http_parser
