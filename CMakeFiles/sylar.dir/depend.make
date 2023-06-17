@@ -258,6 +258,10 @@ CMakeFiles/sylar.dir/sylar/timer.cc.o: sylar/timer.cc
 CMakeFiles/sylar.dir/sylar/timer.cc.o: sylar/timer.h
 CMakeFiles/sylar.dir/sylar/timer.cc.o: sylar/util.h
 
+CMakeFiles/sylar.dir/sylar/uri.cc.o: sylar/address.h
+CMakeFiles/sylar.dir/sylar/uri.cc.o: sylar/uri.cc
+CMakeFiles/sylar.dir/sylar/uri.cc.o: sylar/uri.h
+
 CMakeFiles/sylar.dir/sylar/util.cc.o: sylar/fiber.h
 CMakeFiles/sylar.dir/sylar/util.cc.o: sylar/log.h
 CMakeFiles/sylar.dir/sylar/util.cc.o: sylar/mutex.h

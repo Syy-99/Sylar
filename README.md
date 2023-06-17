@@ -426,6 +426,10 @@ HttpRequest & HttpResponse;
 
   - 使用ragel做HTTP解析, 可以从正规表达式生成可执行有限状态机,它可以生成C,C++,Object-C,D,Java和Ruby可执行代码
 
+      https://blog.csdn.net/stayneckwind2/article/details/89285762 - 学习
+      https://www.cnblogs.com/shanpow/p/4183215.html
+
+      
       https://github.com/mongrel2/mongrel2
 
       ```

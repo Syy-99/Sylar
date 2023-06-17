@@ -30,6 +30,7 @@ set(LIB_SRC
     sylar/http/http_server.cc
     sylar/http/servlet.cc
     sylar/http/http_connection.cc
+    sylar/uri.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件
@@ -126,6 +127,10 @@ target_link_libraries(test_http_server ${LIB_LIB})
 add_executable(test_http_connection tests/test_http_connection.cc)
 add_dependencies(test_http_connection sylar)
 target_link_libraries(test_http_connection ${LIB_LIB})
+
+add_executable(test_uri tests/test_uri.cc)
+add_dependencies(test_uri sylar)
+target_link_libraries(test_uri ${LIB_LIB})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

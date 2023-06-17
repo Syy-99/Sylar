@@ -28,6 +28,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gaoxiaoyu/syy/Sylar/sylar/tcp_server.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/tcp_server.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/thread.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/thread.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/timer.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/timer.cc.o"
+  "/home/gaoxiaoyu/syy/Sylar/sylar/uri.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/uri.cc.o"
   "/home/gaoxiaoyu/syy/Sylar/sylar/util.cc" "/home/gaoxiaoyu/syy/Sylar/CMakeFiles/sylar.dir/sylar/util.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

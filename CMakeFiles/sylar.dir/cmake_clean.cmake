@@ -23,6 +23,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/sylar.dir/sylar/tcp_server.cc.o"
   "CMakeFiles/sylar.dir/sylar/thread.cc.o"
   "CMakeFiles/sylar.dir/sylar/timer.cc.o"
+  "CMakeFiles/sylar.dir/sylar/uri.cc.o"
   "CMakeFiles/sylar.dir/sylar/util.cc.o"
   "lib/libsylar.pdb"
   "lib/libsylar.so"
