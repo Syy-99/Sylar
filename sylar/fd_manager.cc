@@ -80,6 +80,10 @@ FdManager::FdManager() {
 /// 获取/创建文件句柄类FdCtx 
 /// auto_create: 是否自动创建
 FdCtx::ptr FdManager::get(int fd, bool auto_create) {
+    if (fd == -1) {
+        return nullptr;
+    }
+    
     RWMutexType::ReadLock lock(m_mutex);
     if((int)m_datas.size() <= fd) {
         if(auto_create == false) {  // 找不到，且不需要自动创建

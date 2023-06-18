@@ -471,6 +471,9 @@ clinet.connect的socket -> connection - Client端连接套接字
 
 HttpServer : TcpServer
 
+
+HttpConnection 连接池 -> 管理长连接
+
 ## HTTPServlet封装
 
 Servlet?? 参考Java 

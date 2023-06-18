@@ -71,8 +71,12 @@ boost/lexical_cast.hpp
 /home/gaoxiaoyu/syy/Sylar/sylar/socket_stream.h
 http.h
 /home/gaoxiaoyu/syy/Sylar/sylar/http/http.h
+list
+-
 ../uri.h
 /home/gaoxiaoyu/syy/Sylar/sylar/uri.h
+../mutex.h
+/home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
 
 /home/gaoxiaoyu/syy/Sylar/sylar/iomanager.h
 scheduler.h
