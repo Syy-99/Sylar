@@ -368,7 +368,7 @@ HttpResponse::ptr HttpConnection::recvResponse() {
             } while(!parser->isFinished());
             // len -= 2;
             
-            SYLAR_LOG_INFO(g_logger) << "content_len=" << client_parser.content_len;
+            SYLAR_LOG_INFO(g_logger) << "content_len=" << client_parser.content_len <<" len=" << len;
             if(client_parser.content_len + 2  <= len) {
                 body.append(data, client_parser.content_len);
                 memmove(data, data + client_parser.content_len + 2 

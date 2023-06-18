@@ -28,9 +28,15 @@ void HttpServer::handleClient(Socket::ptr client) {
         }
 
         HttpResponse::ptr rsp(new HttpResponse(req->getVersion(), req->isClose() || !m_isKeepalive));
-
+        rsp->setHeader("Server", getName());
         // 改用Servlet处理
         m_dispatch->handle(req, rsp, session);
+        session->sendResponse(rsp);   
+
+
+        if(!m_isKeepalive || req->isClose()) {  // 如果不是长连接，则收到就break,关闭连接
+            break;
+        }
         // // 先做简单的响应报文
         // rsp->setBody("hello Syalr");
 
@@ -38,9 +44,9 @@ void HttpServer::handleClient(Socket::ptr client) {
         //     << *req;
 
         // SYLAR_LOG_INFO(g_logger) << "response: " << std::endl
-        //     << *rsp;
-        session->sendResponse(rsp);    
+        //     << *rsp; 
     } while(m_isKeepalive);
+    
     session->close();     // 关闭套接字
 }
 

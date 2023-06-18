@@ -26,6 +26,8 @@ yaml-cpp ： sudo apt-get install libyaml-cpp-dev
 
 Config -> Yaml
 
+- 优点：
+
 - 支持复杂类型的Yaml， 配置的值可以允许vector,map<string, T>,set，自定义class
 
     - 简单类型： 用boost:lexical_cast内置转换方式
@@ -123,7 +125,7 @@ Thread: 封装线程类
 - 为什们不用C++ std::thread?
 
   - 优点： 跨平台，提供更多高级功能,比如future的
-  - 缺点： 没有提供读写锁，读写没有分离
+  - 缺点： 没有提供读写锁，spinglock
     - 高并发场景中，写少读多,如果只有普通的锁，导致性能下降
 
 - 局部锁ScopedLock：
@@ -198,6 +200,8 @@ m_ctx.uc_link = nullptr;
 - 导致问题，工作协程结束后，需要手动切换到主协程
 
 ## 协程调度模块
+
+人为的方式实现协程调度器 —> 类比系统的线程调度器
 
 - 线程池, 每个线程有多个协程：N个线程运行M个协程
 
@@ -290,7 +294,9 @@ run()
 
 ### IO协程调度器
 
-基于协程调度器+epoll，支持**异步IO**(???在哪体现??)
+基于协程调度器+epoll，支持**异步IO**
+
+- epoll有事件才会进行调度
 
 
 ```
@@ -332,6 +338,10 @@ std::enable_shared_from_this 有什么意义？ - https://www.zhihu.com/question
 
 Hook? https://www.midlane.top/wiki/pages/viewpage.action?pageId=16417219
 
+- 同步的方式写代码，但是底层异步实现，有异步的性能
+
+- 当执行recv时，并不阻塞线程，而是阻塞协程，线程可以执行其他协程，即线程不会阻塞
+
 hook是一个编程机制，与语言无关
 
 hook实际上就是对**系统调用API**进行一次封装，将其封装成一个与原始的系统调用API同名的接口，应用在调用这个接口时，会先执行封装中的操作，再执行原始的系统调用API。
@@ -353,6 +363,7 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
  - 在程序运行起来之前（即main)之前, Hook操作就应该初始化完成; -> 通过全局变量初始化：写一个类，在类的构造函数中运行需要在main之前运行的代码
 
  - 只Hook Socket的文件描述符fd -> 创建一个类了管理FD
+
 
 ### 网络模版Socket
 
@@ -383,9 +394,11 @@ hook实际上就是对**系统调用API**进行一次封装，将其封装成一
 
   - 问题：port应该设置为16位，而不是32位，否则在进行大小端转换时会出现问题
 
+Addresss是Socke的地址，Socket对应实际的套接字以及封装套接字API
+
 ## 序列化byteArray
 
-网络编程涉及到数据传输，数据传输涉及序列化和反序列化
+网络编程涉及到二进制数据传输，数据传输涉及序列化和反序列化
 
 需要一个数据结构来存储序列化和反序列化的数据结构
 
@@ -452,6 +465,8 @@ HttpRequest & HttpResponse;
 
 - 封装TCPServer, 并基于它实现了一个EchoServer
 
+- 针对sock使用??
+
 ## Stream封装
 
 封装流式bytearray的统一接口。将文件，socket封装成统一的接口。使用的时候，采用统一的风格操作。基于统一的风格，可以提供更灵活的扩展
@@ -472,7 +487,7 @@ clinet.connect的socket -> connection - Client端连接套接字
 HttpServer : TcpServer
 
 
-HttpConnection 连接池 -> 管理长连接
+HttpConnection 连接池 -> 管理长连接, 必须通过连接池获得的连接才可能是长连接
 
 ## HTTPServlet封装
 
@@ -491,6 +506,20 @@ Servlet?? 参考Java
 - Servlet是一个虚拟接口
 
 - 使用PostMan来调试HTTP服务器，模拟HTTP请求
+
+## 性能测试
+
+AB(apache bench)  <-- httpd-tools
+
+同一个虚拟机性能比较, 返回相同404界面
+
+- vs nginx: 17826 vs 17864  1000 Qps
+- vs nginx  47    vs 43122  keep-live
+- vs libevent 8900 vs 7000 vs 9000(nginx)
+
+性能和nginx差不多，比libevent要好
+
+- 压测还取决于物理机性能，在我的虚拟机上跑不稳定
 
 ## 相关知识
 

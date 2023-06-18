@@ -110,6 +110,10 @@ HttpRequest::ptr HttpSession::recvRequest() {
     }
 
     // parser->getData()->init();
+    std::string keep_alive = parser->getData()->getHeader("Connection");
+    if (!strcasecmp(keep_alive.c_str(), "keep-alive")) {
+        parser->getData()->setClose(false);     // 是否keep-alive取决于对象的m_close的参数
+    }
     return parser->getData();
 }
 
