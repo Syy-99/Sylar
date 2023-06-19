@@ -61,6 +61,8 @@ noncopyable.h
 /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
 
 /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+memory
+-
 
 /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
 thread
@@ -94,6 +96,8 @@ stdint.h
 vector
 -
 string
+-
+cstring
 -
 
 /home/gaoxiaoyu/syy/Sylar/tests/test_http.cc

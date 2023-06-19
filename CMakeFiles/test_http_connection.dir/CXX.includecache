@@ -137,6 +137,8 @@ iostream
 -
 
 /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+memory
+-
 
 /home/gaoxiaoyu/syy/Sylar/sylar/socket.h
 memory
@@ -214,6 +216,8 @@ stdint.h
 vector
 -
 string
+-
+cstring
 -
 
 /home/gaoxiaoyu/syy/Sylar/tests/test_http_connection.cc

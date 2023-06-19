@@ -517,9 +517,36 @@ AB(apache bench)  <-- httpd-tools
 - vs nginx  47    vs 43122  keep-live
 - vs libevent 8900 vs 7000 vs 9000(nginx)
 
-性能和nginx差不多，比libevent要好
+性能和nginx/libevent差不多
 
 - 压测还取决于物理机性能，在我的虚拟机上跑不稳定
+
+## 系统篇
+
+### 守护进程
+
+服务器程序出错也可以将程序重新拉起
+
+deamon
+
+fork() - 子进程：真正执行server的进程
+         父进程： wati(pid), 如果子进程出现问题，则重新fork()
+
+### 输入参数解析
+
+int argc, char **argv
+
+./sylar -d  -c conf 
+
+- 守护进程 & 配置文件
+
+### 配置文件加载
+
+配置的文件夹路径, 底下有一段yaml文件， log.yaml, tcp.yaml ....
+
+- 启动时会将该文件夹下的yaml文件加载进来
+
+- 定时任务：没过一定周期就扫描文件是否变化，变化就重新加载，以实现实时加载
 
 ## 相关知识
 

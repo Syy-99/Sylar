@@ -130,6 +130,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named test_daemon
+
+# Build rule for target.
+test_daemon: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_daemon
+.PHONY : test_daemon
+
+# fast build rule for target.
+test_daemon/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_daemon.dir/build.make CMakeFiles/test_daemon.dir/build
+.PHONY : test_daemon/fast
+
+#=============================================================================
 # Target rules for targets named test_uri
 
 # Build rule for target.
@@ -483,6 +496,33 @@ sylar/config.s: sylar/config.cc.s
 sylar/config.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/config.cc.s
 .PHONY : sylar/config.cc.s
+
+sylar/daemon.o: sylar/daemon.cc.o
+
+.PHONY : sylar/daemon.o
+
+# target to build an object file
+sylar/daemon.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/daemon.cc.o
+.PHONY : sylar/daemon.cc.o
+
+sylar/daemon.i: sylar/daemon.cc.i
+
+.PHONY : sylar/daemon.i
+
+# target to preprocess a source file
+sylar/daemon.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/daemon.cc.i
+.PHONY : sylar/daemon.cc.i
+
+sylar/daemon.s: sylar/daemon.cc.s
+
+.PHONY : sylar/daemon.s
+
+# target to generate assembly for a file
+sylar/daemon.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/daemon.cc.s
+.PHONY : sylar/daemon.cc.s
 
 sylar/fd_manager.o: sylar/fd_manager.cc.o
 
@@ -1213,6 +1253,33 @@ tests/test_config.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cc.s
 .PHONY : tests/test_config.cc.s
 
+tests/test_daemon.o: tests/test_daemon.cc.o
+
+.PHONY : tests/test_daemon.o
+
+# target to build an object file
+tests/test_daemon.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_daemon.dir/build.make CMakeFiles/test_daemon.dir/tests/test_daemon.cc.o
+.PHONY : tests/test_daemon.cc.o
+
+tests/test_daemon.i: tests/test_daemon.cc.i
+
+.PHONY : tests/test_daemon.i
+
+# target to preprocess a source file
+tests/test_daemon.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_daemon.dir/build.make CMakeFiles/test_daemon.dir/tests/test_daemon.cc.i
+.PHONY : tests/test_daemon.cc.i
+
+tests/test_daemon.s: tests/test_daemon.cc.s
+
+.PHONY : tests/test_daemon.s
+
+# target to generate assembly for a file
+tests/test_daemon.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_daemon.dir/build.make CMakeFiles/test_daemon.dir/tests/test_daemon.cc.s
+.PHONY : tests/test_daemon.cc.s
+
 tests/test_fiber.o: tests/test_fiber.cc.o
 
 .PHONY : tests/test_fiber.o
@@ -1578,6 +1645,7 @@ help:
 	@echo "... test_address"
 	@echo "... test_bytearray"
 	@echo "... test_config"
+	@echo "... test_daemon"
 	@echo "... test_fiber"
 	@echo "... test_hook"
 	@echo "... test_http"
@@ -1603,6 +1671,9 @@ help:
 	@echo "... sylar/config.o"
 	@echo "... sylar/config.i"
 	@echo "... sylar/config.s"
+	@echo "... sylar/daemon.o"
+	@echo "... sylar/daemon.i"
+	@echo "... sylar/daemon.s"
 	@echo "... sylar/fd_manager.o"
 	@echo "... sylar/fd_manager.i"
 	@echo "... sylar/fd_manager.s"
@@ -1684,6 +1755,9 @@ help:
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
+	@echo "... tests/test_daemon.o"
+	@echo "... tests/test_daemon.i"
+	@echo "... tests/test_daemon.s"
 	@echo "... tests/test_fiber.o"
 	@echo "... tests/test_fiber.i"
 	@echo "... tests/test_fiber.s"

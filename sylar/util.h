@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+#include <cstring>
 
 namespace sylar {
 
@@ -42,6 +43,11 @@ std::string BacktraceToString(int size = 64, int skip = 2, const std::string& pr
 // 时间ms
 uint64_t GetCurrentMS();
 uint64_t GetCurrentUS();
+
+
+std::string Time2Str(time_t ts = time(0), const std::string& format = "%Y-%m-%d %H:%M:%S");
+time_t Str2Time(const char* str, const char* format = "%Y-%m-%d %H:%M:%S");
+
 }
 
 

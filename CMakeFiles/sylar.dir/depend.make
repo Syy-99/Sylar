@@ -30,6 +30,16 @@ CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/singleton.h
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/thread.h
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/util.h
 
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/config.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/daemon.cc
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/daemon.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/log.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/mutex.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/noncopyable.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/singleton.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/thread.h
+CMakeFiles/sylar.dir/sylar/daemon.cc.o: sylar/util.h
+
 CMakeFiles/sylar.dir/sylar/fd_manager.cc.o: sylar/fd_manager.cc
 CMakeFiles/sylar.dir/sylar/fd_manager.cc.o: sylar/fd_manager.h
 CMakeFiles/sylar.dir/sylar/fd_manager.cc.o: sylar/hook.h

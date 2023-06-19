@@ -109,6 +109,8 @@ iostream
 -
 
 /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+memory
+-
 
 /home/gaoxiaoyu/syy/Sylar/sylar/sylar.h
 ../sylar/config.h
@@ -158,6 +160,8 @@ stdint.h
 vector
 -
 string
+-
+cstring
 -
 
 /home/gaoxiaoyu/syy/Sylar/tests/test_thread.cc
