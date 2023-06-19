@@ -27,6 +27,14 @@ public:
     void addHelp(const std::string& key, const std::string& desc);  //增加help信息
     void removeHelp(const std::string& key);    // 删除help信息
     void printHelp();   // 打印help信息
+
+    const std::string& getExe() const { return m_exe;}
+    const std::string& getCwd() const { return m_cwd;}
+
+    // 环境变量
+    bool setEnv(const std::string& key, const std::string& val);
+    std::string getEnv(const std::string& key, const std::string& default_value = "");
+
 private:
     RWMutexType m_mutex; 
 
@@ -38,8 +46,8 @@ private:
 
     // // 上下文相关参数
     std::string m_program;  // 表示当前应用名称
-    // std::string m_exe;
-    // std::string m_cwd;
+    std::string m_exe;      // 可执行文件的绝对路径
+    std::string m_cwd;      // 可执行文件所在的绝对目录
 };
 
 typedef sylar::Singleton<Env> EnvMgr;

@@ -1,13 +1,24 @@
 #include "env.h"
 #include "log.h"
+#include <unistd.h>
 #include <iostream>
 #include <iomanip>
+#include <stdlib.h>
 namespace sylar {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 
 bool Env::init(int argc, char** argv) {
+    char link[1024] = {0};
+    char path[1024] = {0};
+    sprintf(link, "/proc/%d/exe", getpid());
+    readlink(link, path, sizeof(path));     // readlink - print resolved symbolic links or canonical file names
+    m_exe = path;
+
+    auto pos = m_exe.find_last_of("/");     // 倒着找第一个'/'
+    m_cwd = m_exe.substr(0, pos) + "/";
+    
     // 外面传参的的形式 -config /path/to/config -file xxxx -d
     m_program = argv[0];
     const char* now_key = nullptr;
@@ -86,5 +97,21 @@ void Env::printHelp() {
     for(auto& i : m_helps) {
         std::cout << std::setw(5) << "-" << i.first << " : " << i.second << std::endl;
     }
-}   
+}
+
+bool Env::setEnv(const std::string& key, const std::string& val) {
+    return !setenv(key.c_str(), val.c_str(), 1);        // 1：允许覆盖
+    /// 只会改变自己的环境变量
+}
+
+std::string Env::getEnv(const std::string& key, const std::string& default_value) {
+    const char* v = getenv(key.c_str());    //  get an environment variable
+    //  The strings in the environment list are of the form name=value.
+    if(v == nullptr) {
+        return default_value;
+    }
+    return v;
+}
+
+
 }
