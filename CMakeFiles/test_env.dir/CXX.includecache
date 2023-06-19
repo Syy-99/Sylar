@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/gaoxiaoyu/syy/Sylar/sylar/env.h
+singleton.h
+/home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+mutex.h
+/home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+map
+-
+vector
+-
+iostream
+-
+
+/home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+semaphore.h
+-
+atomic
+-
+pthread.h
+-
+noncopyable.h
+/home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+
+/home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+
+/home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+memory
+-
+
+/home/gaoxiaoyu/syy/Sylar/tests/test_env.cc
+../sylar/env.h
+/home/gaoxiaoyu/syy/Sylar/sylar/env.h
+iostream
+-
+

@@ -40,6 +40,15 @@ CMakeFiles/sylar.dir/sylar/daemon.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
  /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
  /home/gaoxiaoyu/syy/Sylar/sylar/util.h
+CMakeFiles/sylar.dir/sylar/env.cc.o
+ /home/gaoxiaoyu/syy/Sylar/sylar/env.cc
+ /home/gaoxiaoyu/syy/Sylar/sylar/env.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/log.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/singleton.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/thread.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/util.h
 CMakeFiles/sylar.dir/sylar/fd_manager.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/fd_manager.cc
  /home/gaoxiaoyu/syy/Sylar/sylar/fd_manager.h

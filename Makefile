@@ -273,6 +273,19 @@ test_bytearray/fast:
 .PHONY : test_bytearray/fast
 
 #=============================================================================
+# Target rules for targets named test_env
+
+# Build rule for target.
+test_env: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_env
+.PHONY : test_env
+
+# fast build rule for target.
+test_env/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_env.dir/build.make CMakeFiles/test_env.dir/build
+.PHONY : test_env/fast
+
+#=============================================================================
 # Target rules for targets named sylar
 
 # Build rule for target.
@@ -523,6 +536,33 @@ sylar/daemon.s: sylar/daemon.cc.s
 sylar/daemon.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/daemon.cc.s
 .PHONY : sylar/daemon.cc.s
+
+sylar/env.o: sylar/env.cc.o
+
+.PHONY : sylar/env.o
+
+# target to build an object file
+sylar/env.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/env.cc.o
+.PHONY : sylar/env.cc.o
+
+sylar/env.i: sylar/env.cc.i
+
+.PHONY : sylar/env.i
+
+# target to preprocess a source file
+sylar/env.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/env.cc.i
+.PHONY : sylar/env.cc.i
+
+sylar/env.s: sylar/env.cc.s
+
+.PHONY : sylar/env.s
+
+# target to generate assembly for a file
+sylar/env.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/env.cc.s
+.PHONY : sylar/env.cc.s
 
 sylar/fd_manager.o: sylar/fd_manager.cc.o
 
@@ -1280,6 +1320,33 @@ tests/test_daemon.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_daemon.dir/build.make CMakeFiles/test_daemon.dir/tests/test_daemon.cc.s
 .PHONY : tests/test_daemon.cc.s
 
+tests/test_env.o: tests/test_env.cc.o
+
+.PHONY : tests/test_env.o
+
+# target to build an object file
+tests/test_env.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_env.dir/build.make CMakeFiles/test_env.dir/tests/test_env.cc.o
+.PHONY : tests/test_env.cc.o
+
+tests/test_env.i: tests/test_env.cc.i
+
+.PHONY : tests/test_env.i
+
+# target to preprocess a source file
+tests/test_env.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_env.dir/build.make CMakeFiles/test_env.dir/tests/test_env.cc.i
+.PHONY : tests/test_env.cc.i
+
+tests/test_env.s: tests/test_env.cc.s
+
+.PHONY : tests/test_env.s
+
+# target to generate assembly for a file
+tests/test_env.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_env.dir/build.make CMakeFiles/test_env.dir/tests/test_env.cc.s
+.PHONY : tests/test_env.cc.s
+
 tests/test_fiber.o: tests/test_fiber.cc.o
 
 .PHONY : tests/test_fiber.o
@@ -1646,6 +1713,7 @@ help:
 	@echo "... test_bytearray"
 	@echo "... test_config"
 	@echo "... test_daemon"
+	@echo "... test_env"
 	@echo "... test_fiber"
 	@echo "... test_hook"
 	@echo "... test_http"
@@ -1674,6 +1742,9 @@ help:
 	@echo "... sylar/daemon.o"
 	@echo "... sylar/daemon.i"
 	@echo "... sylar/daemon.s"
+	@echo "... sylar/env.o"
+	@echo "... sylar/env.i"
+	@echo "... sylar/env.s"
 	@echo "... sylar/fd_manager.o"
 	@echo "... sylar/fd_manager.i"
 	@echo "... sylar/fd_manager.s"
@@ -1758,6 +1829,9 @@ help:
 	@echo "... tests/test_daemon.o"
 	@echo "... tests/test_daemon.i"
 	@echo "... tests/test_daemon.s"
+	@echo "... tests/test_env.o"
+	@echo "... tests/test_env.i"
+	@echo "... tests/test_env.s"
 	@echo "... tests/test_fiber.o"
 	@echo "... tests/test_fiber.i"
 	@echo "... tests/test_fiber.s"
