@@ -24,6 +24,7 @@ CMakeFiles/sylar.dir/sylar/bytearray.cc.o
 CMakeFiles/sylar.dir/sylar/config.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/config.cc
  /home/gaoxiaoyu/syy/Sylar/sylar/config.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/env.h
  /home/gaoxiaoyu/syy/Sylar/sylar/log.h
  /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
  /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h

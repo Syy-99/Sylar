@@ -1,5 +1,6 @@
 #include "../sylar/config.h"
 #include "../sylar/log.h"
+#include "../sylar/env.cc"
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
@@ -236,7 +237,12 @@ void test_log() {
     SYLAR_LOG_INFO(system_log) << "hello system" << std::endl;
 }
 
-int main() {
+/// 测试从文件中加载yaml
+void test_loadconf() {
+    sylar::Config::LoadFromConfDir("conf");
+}
+
+int main(int argc, char** argv) {
     // SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << g_int_value_config->getValue();
     // SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << g_int_value_config->toString();
 
@@ -246,7 +252,11 @@ int main() {
 
    // test_class();
 
-    test_log();
+    // test_log();
+    sylar::EnvMgr::GetInstance()->init(argc, argv);     // 获得绝对路径
+    test_loadconf();
+    std::cout << " ==== " << std::endl;
+    test_loadconf();
 
     // 测试Config::Visit  
     // ??? 还是有点迷糊，这个配置文件的加载过程

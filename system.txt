@@ -1,2 +1,1 @@
-2023-05-18 20:57:29	hello system
-
+2023-06-20 09:31:16	LoadConfFile file=/home/gaoxiaoyu/syy/Sylar/bin/conf/log.yml ok

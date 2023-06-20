@@ -3,6 +3,8 @@
 
 CMakeFiles/test_config.dir/tests/test_config.cc.o
  /home/gaoxiaoyu/syy/Sylar/sylar/config.h
+ /home/gaoxiaoyu/syy/Sylar/sylar/env.cc
+ /home/gaoxiaoyu/syy/Sylar/sylar/env.h
  /home/gaoxiaoyu/syy/Sylar/sylar/log.h
  /home/gaoxiaoyu/syy/Sylar/sylar/mutex.h
  /home/gaoxiaoyu/syy/Sylar/sylar/noncopyable.h

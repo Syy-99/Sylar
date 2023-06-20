@@ -1,6 +1,8 @@
 #include "util.h"
 #include <execinfo.h>
 #include <sys/time.h>
+#include <dirent.h>
+#include <unistd.h>
 
 #include "log.h"
 #include "fiber.h"
@@ -47,7 +49,6 @@ std::string BacktraceToString(int size, int skip, const std::string& prefix) {
     return ss.str();
 }
 
-
 uint64_t GetCurrentMS() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -78,6 +79,51 @@ time_t Str2Time(const char* str, const char* format) {
         return 0;
     }
     return mktime(&t);
+}
+
+
+void FSUtil::ListAllFile(std::vector<std::string>& files
+                            ,const std::string& path
+                            ,const std::string& subfix) {
+    // 尝试访问这个路径，以确保这个路径存在
+    if(access(path.c_str(), 0) != 0) {
+        return;
+    }
+    
+    // 打开这个路径
+    DIR* dir = opendir(path.c_str());
+    if(dir == nullptr) {
+        return;
+    }
+
+    // 读这个路径下的文件
+    struct dirent* dp = nullptr;
+    while((dp = readdir(dir)) != nullptr) {
+        if(dp->d_type == DT_DIR) {  // 如果是文件夹
+            if(!strcmp(dp->d_name, ".")
+                || !strcmp(dp->d_name, "..")) {
+                continue;
+            }
+            // 继续往下读
+            ListAllFile(files, path + "/" + dp->d_name, subfix);
+        } else if (dp->d_type == DT_REG) {  // 如果是普通文件
+            std::string filename(dp->d_name);   // 获得这个文件的名字
+            if(subfix.empty()) {
+                files.push_back(path + "/" + filename);     // 构造这个文件的绝对路径
+            } else {
+                // 检查后缀是否满足
+                if(filename.size() < subfix.size()) {
+                    continue;
+                }
+                if(filename.substr(filename.length() - subfix.size()) == subfix) {
+                    files.push_back(path + "/" + filename);
+                }
+            }
+        }
+    }
+    
+    // 读完了需要关闭这个路径
+    closedir(dir);                             
 }
 
 }

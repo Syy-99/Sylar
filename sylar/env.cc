@@ -19,6 +19,7 @@ bool Env::init(int argc, char** argv) {
     auto pos = m_exe.find_last_of("/");     // 倒着找第一个'/'
     m_cwd = m_exe.substr(0, pos) + "/";
     
+    SYLAR_LOG_INFO(g_logger) << "m_cwd: " << m_cwd;
     // 外面传参的的形式 -config /path/to/config -file xxxx -d
     m_program = argv[0];
     const char* now_key = nullptr;
@@ -112,6 +113,18 @@ std::string Env::getEnv(const std::string& key, const std::string& default_value
     }
     return v;
 }
+
+std::string Env::getAbsolutePath(const std::string& path) const {
+    if(path.empty()) {  // 如果是空，则返回根路径
+        return "/";
+    }
+    if(path[0] == '/') {    // 如果path本身就是绝对路径
+        return path;
+    }
+    // 否则，path就是一个相对路径，则直接拼接
+    return m_cwd + path;
+}
+
 
 
 }

@@ -485,6 +485,13 @@ public:
     /// 使用YAML::Node初始化配置模块
     static void LoadFromYaml(const YAML::Node& root);
 
+    /**
+     * @brief 加载path文件夹里面的配置文件
+     * force：是否强制加载
+     */
+    static void LoadFromConfDir(const std::string& path, bool force = false);
+
+
     /// 查找配置参数,返回配置参数的基类
     static ConfigVarBase::ptr LookupBase(const std::string& name);
 

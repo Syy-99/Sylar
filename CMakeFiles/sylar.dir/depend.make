@@ -23,6 +23,7 @@ CMakeFiles/sylar.dir/sylar/bytearray.cc.o: sylar/util.h
 
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/config.cc
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/config.h
+CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/env.h
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/log.h
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/mutex.h
 CMakeFiles/sylar.dir/sylar/config.cc.o: sylar/noncopyable.h
