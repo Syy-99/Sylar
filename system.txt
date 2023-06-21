@@ -1,1 +1,2 @@
-2023-06-20 09:31:16	LoadConfFile file=/home/gaoxiaoyu/syy/Sylar/bin/conf/log.yml ok
+2023-06-20 14:05:09	LoadConfFile file=/home/gaoxiaoyu/syy/Sylar/bin/conf/log.yml ok
+2023-06-20 14:05:09	LoadConfFile file=/home/gaoxiaoyu/syy/Sylar/bin/conf/server.yml ok

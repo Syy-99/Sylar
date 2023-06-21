@@ -12,16 +12,6 @@ yaml-cpp ： sudo apt-get install libyaml-cpp-dev
 
 ## 日志系统
 
-仿照Java Log4j日志框架实现
-- `Logger`：定义日志类别
-- `Formatter`: 日志格式
-- `LogAppender`: 日志输出地(终端or文件)
-> 观察者模式:Logger是被观察者，里面保存了所有观察者对象LogAppender
->
-> 可以对比Log4cpp
-
-- 可以通过类图理解
-
 ## 配置系统
 
 Config -> Yaml
@@ -561,6 +551,14 @@ setenv
 
 - 定时任务：没过一定周期就扫描文件是否变化，变化就重新加载，以实现实时加载
 
+
+## Server主体框架
+
+1. 防止server重复启动多次 -> 利用pid
+2. 初始化日志文件路径: path/to/log
+3. 工作文件路径: /path/to/work
+
+4. 解析httpserver配置， 通过配置启动httpserver
 
 ## 相关知识
 

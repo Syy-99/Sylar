@@ -214,8 +214,9 @@ namespace sylar {
         for(auto&i : m_appenders) {
             MutexType::Lock lock(i->m_mutex);
             if (!i->m_hasFormatter) {
-                i->m_formatter = m_formatter;       // Q: 为什们不用appender的setFormatter呢？ 因为setFormatter会改变m_hasFormatter
-                                                    // 但是此时的formatter并不是自己的，所以不能直接调
+                // 如果该日志器对象的某个日志输出地没有设置自己的输出格式，则【临时】给它输出格式
+                // 临时：m_hasFormatter仍然是false
+                i->m_formatter = m_formatter;                                   
             }
         }
     }
@@ -287,8 +288,8 @@ namespace sylar {
         MutexType::Lock lock(m_mutex);      // 访问Logger的appender需要加锁
         if (!appender->getFormatter()) {
             MutexType::Lock lock(appender->m_mutex);  // 修改这个appender内部需要加锁
+            // 如果外部提供的appender没有指定格式，则临时使用该日志器的格式
             appender->m_formatter = m_formatter;
-            // appender->setFormatter(m_formatter);    // 如果appender没有指定，则继承logger日志器的
         }
         m_appenders.push_back(appender);
     }
@@ -530,7 +531,7 @@ namespace sylar {
          */
 
         // %d->格式项类
-        // std::function<FormatItem::ptr(const std::string& str)??
+        // std::function<FormatItem::ptr(const std::string& str)
         static std::map<std::string, std::function<FormatItem::ptr(const std::string& str)> > s_format_iterm = {
 #define XX(str,C) \
         {#str, [](const std::string &fmt){ return FormatItem::ptr(new C(fmt));} } \
@@ -751,6 +752,7 @@ sylar::ConfigVar<std::set<LogDefine> >::ptr g_log_defines =
 
 struct LogIniter {
     LogIniter() {
+        SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "LogIniter::LogIniter()";
         g_log_defines->addListener([](const std::set<LogDefine>& old_value, const std::set<LogDefine>& new_value){
             SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "on_logger_conf_changed";
             for (auto& i : new_value) {
