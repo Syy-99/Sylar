@@ -1,0 +1,10 @@
+# 服务器启动时的配置
+http_servers:
+  - address: ["0.0.0.0:8090"]
+    keepalive: 1  # httpServr支持keeplive
+    timeout: 1000 # 长连接的非活跃时间
+    name: sylar/1.1
+  - address: ["0.0.0.0:8070"]
+    keepalive: 1  # httpServr支持keeplive
+    timeout: 1000 # 长连接的非活跃时间
+    name: sylar/22.1
