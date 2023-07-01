@@ -57,6 +57,13 @@ public:
     static void ListAllFile(std::vector<std::string>& files
                             ,const std::string& path
                             ,const std::string& subfix);
+    // 启动时创建pid文件，记录该进程的pid
+    // dirname: pid文件的绝对路径
+    static bool Mkdir(const std::string& dirname);
+    // 判断是否有pid文件，如果有，则认为服务已经在运行
+    // pidfile: pid文件的绝对路径
+    static bool IsRunningPidfile(const std::string& pidfile);
+
 };
 
 }

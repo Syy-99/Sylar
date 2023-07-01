@@ -1,3 +1,4 @@
+/home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_application.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/test_daemon.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/rebuild_cache.dir
 /home/gaoxiaoyu/syy/Sylar/CMakeFiles/edit_cache.dir

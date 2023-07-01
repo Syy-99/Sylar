@@ -3,7 +3,9 @@
 #include <sys/time.h>
 #include <dirent.h>
 #include <unistd.h>
-
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "log.h"
 #include "fiber.h"
 
@@ -126,4 +128,83 @@ void FSUtil::ListAllFile(std::vector<std::string>& files
     closedir(dir);                             
 }
 
+
+static int __lstat(const char* file, struct stat* st = nullptr) {
+    struct stat lst;
+    int ret = lstat(file, &lst);    // lstat：获取文件信息， 成功返回0
+    if(st) {
+        *st = lst;
+    }
+    return ret;
+}
+
+static int __mkdir(const char* dirname) {
+    if(access(dirname, F_OK) == 0) {    //判断指定的文件或目录是否存在(F_OK)
+        return 0;
+    }
+    return mkdir(dirname, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);   // 创建目录，并且权限775
+}
+
+bool FSUtil::Mkdir(const std::string& dirname) {
+    if(__lstat(dirname.c_str()) == 0) {
+        // 如果=0，则说明已经文件存在
+        return true;
+    }
+
+    char* path = strdup(dirname.c_str());
+    char* ptr = strchr(path + 1, '/');  // 查找字符串中某个字符第一次出现的位置， path+1是为了去除/目录
+    do {
+        // 可能需要递归创建目录
+        for(; ptr; *ptr = '/', ptr = strchr(ptr + 1, '/')) {
+            *ptr = '\0';
+            if(__mkdir(path) != 0) {        // 递归创建目录
+                break;
+            }
+        }
+        if(ptr != nullptr) {
+            break;
+        } else if(__mkdir(path) != 0) {
+            break;
+        }
+        free(path);
+        return true;    // 递归创建成功
+    } while(0);
+
+    free(path);
+    return false;   // 递归创建失败
+}
+
+bool FSUtil::IsRunningPidfile(const std::string& pidfile){
+    // 获得文件状态
+    if(__lstat(pidfile.c_str()) != 0) {
+        // 说明没有这个文件
+        return false;
+    }
+
+    // 有这个文件，则其中应该记录了服务器进程的pid
+    std::ifstream ifs(pidfile);
+    std::string line;
+    // 读取第一行
+    if(!ifs || !std::getline(ifs, line)) {
+        return false;
+    }
+    if(line.empty()) {
+        return false;
+    }
+
+    pid_t pid = atoi(line.c_str());
+    if(pid <= 1) {
+        return false;
+    }
+
+    if(kill(pid, 0) != 0) {  // 0: 有任何信号送出，但是系统会执行错误检查，通常会利用sig值为零来检验某个进程是否仍在执行。
+        return false;
+    }
+
+    return true;    // 有文件且文件内记录的pid在运行
+
+
+
+
+}
 }

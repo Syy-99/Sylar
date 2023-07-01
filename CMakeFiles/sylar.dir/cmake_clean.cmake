@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sylar.dir/sylar/address.cc.o"
+  "CMakeFiles/sylar.dir/sylar/application.cc.o"
   "CMakeFiles/sylar.dir/sylar/bytearray.cc.o"
   "CMakeFiles/sylar.dir/sylar/config.cc.o"
   "CMakeFiles/sylar.dir/sylar/daemon.cc.o"

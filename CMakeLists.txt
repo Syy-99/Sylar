@@ -33,6 +33,7 @@ set(LIB_SRC
     sylar/uri.cc
     sylar/daemon.cc
     sylar/env.cc
+    sylar/application.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})    # 生成.so文件
@@ -141,6 +142,10 @@ target_link_libraries(test_daemon ${LIB_LIB})
 add_executable(test_env tests/test_env.cc)
 add_dependencies(test_env sylar)
 target_link_libraries(test_env ${LIB_LIB})
+
+add_executable(test_application tests/test_application.cc)
+add_dependencies(test_application sylar)
+target_link_libraries(test_application ${LIB_LIB})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
