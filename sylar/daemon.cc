@@ -28,7 +28,6 @@ std::string ProcessInfo::toString() const {
 
 static int real_start(int argc, char** argv,
                      std::function<int(int argc, char** argv)> main_cb) {
-    // ?? 这里还需要在负值一次吗???
     ProcessInfoMgr::GetInstance()->main_id = getpid();  // 获得主线程id
     ProcessInfoMgr::GetInstance()->main_start_time = time(0);   // 设置主线程的启动时间戳
     return main_cb(argc, argv);

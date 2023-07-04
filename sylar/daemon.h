@@ -28,7 +28,7 @@ typedef sylar::Singleton<ProcessInfo> ProcessInfoMgr;
  * @brief 启动程序可以选择用守护进程的方式
  * @param[in] argc 参数个数
  * @param[in] argv 参数值数组
- * @param[in] main_cb 启动函数 ??? 好像是一个main
+ * @param[in] main_cb 启动函数
  * @param[in] is_daemon 是否守护进程的方式
  * @return 返回程序的执行结果
  */

@@ -21,7 +21,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>
                     , Noncopyable {
 public:
     typedef std::shared_ptr<TcpServer> ptr;
-    TcpServer(sylar::IOManager* worker = sylar::IOManager::GetThis(), // IOManager需要提前初始化吧??
+    TcpServer(sylar::IOManager* worker = sylar::IOManager::GetThis(), 
               sylar::IOManager* accept_worker = sylar::IOManager::GetThis());
     virtual ~TcpServer();
 
